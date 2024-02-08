@@ -14,10 +14,6 @@ import { useApi } from '../library/api';
 import { useTailwindStore } from '../stores/tailwind';
 
 import iframeManager from '../library/tailwindcss/iframe-manager.js';
-import {
-    resolveConfig as playResolveConfig
-} from '../library/tailwindcss/config-resolver.js';
-import twResolveConfig from 'tailwindcss/resolveConfig';
 
 const notifier = useNotifier();
 const busyStore = useBusyStore();
@@ -121,17 +117,13 @@ function doGenerateCache() {
             return content;
         });
 
-        const tailwind_config = await playResolveConfig(tailwindStore.config).then((data) => {
-            return twResolveConfig(data.config);
-        });
-
         const main_css = tailwindStore.css;
 
         const tw_version = settingsStore.virtualOptions('general.tailwindcss.version', 'latest').value;
 
         const compiled_css = await compileCSS(
             tw_version === 'latest' ? versions.value[0] : tw_version,
-            tailwind_config,
+            tailwindStore.config,
             main_css,
             contents
         );

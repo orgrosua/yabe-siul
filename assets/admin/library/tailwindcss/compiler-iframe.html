@@ -8,14 +8,15 @@
 
 <body>
     <script type="module">
+        import { parse as parsePackage } from 'https://esm.sh/parse-package-name';
         import initLightningcss, { transform, browserslistToTargets } from 'https://esm.sh/lightningcss-wasm';
         import browserslist from 'browserslist';
         import postcss from 'postcss';
         import tailwindcssPackage from 'tailwindcss/package.json.js';
 
         import tailwindcssNesting from 'tailwindcss/nesting';
-        import tailwindcssSrcProcessTailwindFeatures from 'tailwindcss/lib/processTailwindFeatures';
-        import tailwindcssSrcPublicResolveConfig from 'tailwindcss/resolveConfig';
+        import processTailwindFeatures from 'tailwindcss/lib/processTailwindFeatures';
+        import resolveConfig from 'tailwindcss/resolveConfig';
 
         window.__OXIDE__ = false;
         window.__dirname = '/';
@@ -33,6 +34,108 @@
 
         await initLightningcss();
 
+        let importShim;
+        try {
+            await (0, eval)('import("")');
+        } catch (error) {
+            if (error instanceof TypeError) {
+                importShim = (0, eval)('u=>import(u)');
+            } else {
+                var s = document.createElement('script');
+                s.src = 'https://esm.sh/shimport/index.js?raw';
+                document.head.appendChild(s);
+                importShim = __shimport__.load;
+            }
+        }
+
+        async function parseConfig(configStr) {
+            let mod = {};
+
+            class RequireError extends Error {
+                constructor(message, line) {
+                    super(message);
+                    this.name = 'RequireError';
+                    this.line = line;
+                }
+            }
+
+            const before = `(async function(module){
+                const require = async (m, line) => {
+                    if (typeof m !== 'string') {
+                        throw new RequireError('The "id" argument must be of type string. Received ' + typeof m, line)
+                    }
+                    if (m === '') {
+                        throw new RequireError("The argument 'id' must be a non-empty string. Received ''", line)
+                    }
+                    let result
+                    try {
+                        const _m = parsePackage(m);
+                        const href = 'https://esm.sh/' + _m.name + '@' + _m.version + _m.path
+                        result = await importShim(href)
+                    } catch (error) {
+                        throw new RequireError("Cannot find module '" + m + "'", line)
+                    }
+                    return result.default || result
+                }`;
+            const after = `
+                siul = siul;
+                module.exports = siul;
+                })(mod)`;
+
+            try {
+                const evalString =
+                    before +
+                    '\n' +
+                    configStr
+                        .split('\n')
+                        .map((line, i) =>
+                            line.replace(
+                                /\brequire\(([^)]*)\)/g,
+                                (_m, id) =>
+                                    `(await require(${id.trim() === '' ? 'undefined' : id}, ${i + 1}))`
+                            )
+                        )
+                        .join('\n') +
+                    '\n' +
+                    after;
+                await eval(evalString);
+            } catch (error) {
+                let line;
+
+                if (error instanceof RequireError) {
+                    line = error.line;
+                } else if (typeof error.line !== 'undefined') {
+                    line = error.line - 1 - before.split('\n').length;
+                } else {
+                    const lines = error.stack.split('\n');
+                    for (let i = 0; i < lines.length; i++) {
+                        const re = /:([0-9]+):([0-9]+)/g;
+                        const matches = [];
+                        let match;
+                        while ((match = re.exec(lines[i])) !== null) {
+                            matches.push(match);
+                        }
+
+                        if (matches.length > 0) {
+                            line =
+                                parseInt(matches[matches.length - 1][1], 10) -
+                                before.split('\n').length;
+                            break;
+                        }
+                    }
+                }
+
+                return {
+                    _error: {
+                        message: error.name ? error.name + ': ' + error.message : error.message,
+                        line: typeof line === 'undefined' ? undefined : line,
+                    },
+                };
+            }
+
+            return mod.exports || {};
+        }
+
         async function compileCss(tw_config, main_css, contents) {
             let is_preflight_enabled = tw_config.corePlugins.includes('preflight');
 
@@ -42,7 +145,7 @@
                 main_css = `@layer base {${preflight.responseText}}\n${main_css}`;
             }
 
-            const twPostcssPlugin = tailwindcssSrcProcessTailwindFeatures(
+            const twPostcssPlugin = processTailwindFeatures(
                 (processOptions) => () => processOptions.createContext(
                     tw_config,
                     contents.map((content) => (typeof content === 'string' ? { content } : content))
@@ -68,7 +171,11 @@
 
         // event listerner to receive message from the parent window
         window.addEventListener('message', async function (event) {
-            const result = await compileCss(event.data.tw_config, event.data.main_css, event.data.contents);
+            const tw_config = await parseConfig(event.data.tw_config).then((data) => {
+                return resolveConfig(data);
+            })
+
+            const result = await compileCss(tw_config, event.data.main_css, event.data.contents);
             window.parent.postMessage({
                 type: 'action',
                 action: 'compile-css',
