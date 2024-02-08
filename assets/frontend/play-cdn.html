@@ -1,0 +1,43 @@
+<link rel="preconnect" href="https://esm.sh" crossorigin>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<script type="module" id="siul-tailwindcss-play-cdn">
+    import { parse as parsePackage } from 'https://esm.sh/parse-package-name';
+    import { set } from 'https://esm.sh/lodash-es';
+
+    let importShim;
+    try {
+        await (0, eval)('import("")');
+    } catch (error) {
+        if (error instanceof TypeError) {
+            importShim = (0, eval)('u=>import(u)');
+        } else {
+            var s = document.createElement('script');
+            s.src = 'https://esm.sh/shimport/index.js?raw';
+            document.head.appendChild(s);
+            importShim = __shimport__.load;
+        }
+    }
+
+    const require = async (m) => {
+        let result;
+        try {
+            const _m = parsePackage(m);
+            const href = 'https://esm.sh/' + _m.name + '@' + _m.version + _m.path;
+            result = await importShim(href);
+        } catch (error) {
+            console.log(`Cannot find module '${m}'`);
+        }
+        return result.default || result;
+    };
+
+    (async function () {
+        //-@-tailwindcss
+        tailwind.config = siul;
+
+        set(window, 'siul.loaded.siul', true);
+    })();
+</script>
+
+<style type="text/tailwindcss" id="siul-tailwindcss-main-css"></style>

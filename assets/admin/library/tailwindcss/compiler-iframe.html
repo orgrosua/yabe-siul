@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+
+<head>
+    <link rel="preconnect" href="https://esm.sh" crossorigin>
+    <!-- <script type="importmap"></script> -->
+</head>
+
+<body>
+    <script type="module">
+        import initLightningcss, { transform, browserslistToTargets } from 'https://esm.sh/lightningcss-wasm';
+        import browserslist from 'browserslist';
+        import postcss from 'postcss';
+        import tailwindcssPackage from 'tailwindcss/package.json.js';
+
+        import tailwindcssNesting from 'tailwindcss/nesting';
+        import tailwindcssSrcProcessTailwindFeatures from 'tailwindcss/lib/processTailwindFeatures';
+        import tailwindcssSrcPublicResolveConfig from 'tailwindcss/resolveConfig';
+
+        window.__OXIDE__ = false;
+        window.__dirname = '/';
+        window.process = {
+            env: {
+                OXIDE: undefined,
+                DEBUG: undefined,
+                JEST_WORKER_ID: 1,
+            },
+        };
+
+        const preflight = new XMLHttpRequest();
+        preflight.open('GET', `https://esm.sh/tailwindcss@${tailwindcssPackage.version}/src/css/preflight.css?raw`, false);
+        preflight.send(null);
+
+        await initLightningcss();
+
+        async function compileCss(tw_config, main_css, contents) {
+            let is_preflight_enabled = tw_config.corePlugins.includes('preflight');
+
+            tw_config.corePlugins = tw_config.corePlugins.filter((plugin) => plugin !== 'preflight');
+
+            if (is_preflight_enabled) {
+                main_css = `@layer base {${preflight.responseText}}\n${main_css}`;
+            }
+
+            const twPostcssPlugin = tailwindcssSrcProcessTailwindFeatures(
+                (processOptions) => () => processOptions.createContext(
+                    tw_config,
+                    contents.map((content) => (typeof content === 'string' ? { content } : content))
+                ),
+            );
+
+            const processor = postcss();
+
+            processor.use(twPostcssPlugin);
+            processor.use(tailwindcssNesting);
+
+            let processed_css = await processor.process(main_css, { from: undefined, }).then((result) => result.css);
+
+            let { code: transformed_css } = transform({
+                filename: 'style.css',
+                code: new TextEncoder().encode(processed_css),
+                minify: true,
+                targets: browserslistToTargets(browserslist('defaults')),
+            });
+
+            return new TextDecoder().decode(transformed_css);
+        }
+
+        // event listerner to receive message from the parent window
+        window.addEventListener('message', async function (event) {
+            const result = await compileCss(event.data.tw_config, event.data.main_css, event.data.contents);
+            window.parent.postMessage({
+                type: 'action',
+                action: 'compile-css',
+                css: result
+            }, '*');
+        });
+
+        // send ready message to parent with type iframe-ready
+        window.parent.postMessage({ type: 'iframe-ready' }, '*');
+    </script>
+</body>
+
+</html>

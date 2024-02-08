@@ -1,0 +1,22 @@
+@font-face {
+    font-display: block;
+    font-family: codicon;
+    src: url('https://cdn.jsdelivr.net/gh/microsoft/vscode-codicons/dist/codicon.ttf') format('truetype');
+}
+
+#wpcontent {
+    padding-left: 0;
+}
+
+/* Hide the update nag */
+.update-nag {
+    display: none;
+}
+
+#siul-app {
+    svg.inline-svg {
+        display: inline-block;
+        height: 1em;
+        vertical-align: -.125em;
+    }
+}
