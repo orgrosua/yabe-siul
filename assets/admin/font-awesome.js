@@ -26,6 +26,7 @@ import {
     faDownload,
     faAnglesUpDown,
     faGears,
+    faTrashUndo,
 } from '@fortawesome/pro-solid-svg-icons';
 
 import {
@@ -68,6 +69,7 @@ library.add(
     faDownload,
     faAnglesUpDown,
     faGears,
+    faTrashUndo,
 
     /** far */
     faHeartRegular,

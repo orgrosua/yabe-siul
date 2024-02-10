@@ -227,8 +227,16 @@ function updateTwConfig() {
             twConfig.value = formatted;
         } catch (e) { /* empty */ }
     })();
+}
 
-
+function resetToDefault(k) {
+    if (confirm(__('Are you sure you want to reset to default?', 'yabe-siul'))) {
+        if (k === 'css') {
+            editorCss.setValue(tailwindStore.defaultValues.css);
+        } else if (k === 'preset') {
+            editorPreset.setValue(tailwindStore.defaultValues.preset);
+        }
+    }
 }
 
 watch(twWizard, () => {
@@ -325,7 +333,10 @@ defineExpose({
     <div class="flex flex:col">
         <ExpansionPanel namespace="tailwind" name="css" class="my:8">
             <template #header>
-                <span class="font:16 font:semibold">main.css</span>
+                <div class="flex">
+                    <span class="flex-grow:1 font:16 font:semibold">main.css</span>
+                    <div @click="resetToDefault('css')" class="cursor:pointer fg:red-80 font:16 font:semibold mr:20"><font-awesome-icon :icon="['fas', 'trash-undo']" title="Reset to default" /></div>
+                </div>
             </template>
 
             <template #default>
@@ -339,7 +350,10 @@ defineExpose({
 
         <ExpansionPanel namespace="tailwind" name="preset" class="my:8">
             <template #header>
-                <span class="font:16 font:semibold">preset.js</span>
+                <div class="flex">
+                    <span class="flex-grow:1 font:16 font:semibold">preset.js</span>
+                    <div @click="resetToDefault('preset')" class="cursor:pointer fg:red-80 font:16 font:semibold mr:20"><font-awesome-icon :icon="['fas', 'trash-undo']" title="Reset to default" /></div>
+                </div>
             </template>
 
             <template #default>

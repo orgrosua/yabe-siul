@@ -49,11 +49,11 @@ watch(() => expand.value[props.name], (val) => {
 
 <template>
     <div class="expansion-panel box-shadow:0|2px|5px|rgba(0,0,0,.051)">
-        <div @click="expand[name] = !expand[name]" class="expansion-panel__header flex bb:1|solid|#e8e8eb bg:white cursor:pointer justify-content:space-between px:24 py:16">
-            <div>
+        <div class="expansion-panel__header flex bb:1|solid|#e8e8eb bg:white justify-content:space-between px:24 py:16">
+            <div class="flex-grow:1">
                 <slot name="header"></slot>
             </div>
-            <div>
+            <div @click="expand[name] = !expand[name]" class="cursor:pointer ">
                 <font-awesome-icon :icon="['fas', 'chevron-right']" :class="{ 'rotate(-90)': expand[name] }" class="~duration:300 font:18" />
             </div>
         </div>

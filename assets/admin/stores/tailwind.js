@@ -16,6 +16,7 @@ export const useTailwindStore = defineStore('tailwind', () => {
      */
     const css = ref(null);
     const _cssInit = ref(null);
+    const _cssDefault = ref(null);
 
     /**
      * The Tailwind preset that will be used to generate the Tailwind config.
@@ -23,6 +24,7 @@ export const useTailwindStore = defineStore('tailwind', () => {
      */
     const preset = ref(null);
     const _presetInit = ref(null);
+    const _presetDefault = ref(null);
 
     /**
      * The Tailwind config that gets generated from the preset.
@@ -30,6 +32,7 @@ export const useTailwindStore = defineStore('tailwind', () => {
      */
     const config = ref(null);
     const _configInit = ref(null);
+    const _configDefault = ref(null);
 
     /**
      * The Tailwind wizard.
@@ -37,6 +40,7 @@ export const useTailwindStore = defineStore('tailwind', () => {
      */
     const wizard = ref([]);
     const _wizardInit = ref([]);
+    const _wizardDefault = ref([]);
 
     const selectedWizardId = ref(null);
 
@@ -63,13 +67,18 @@ export const useTailwindStore = defineStore('tailwind', () => {
                 method: 'GET',
                 url: '/admin/tailwind/index',
             })
-            .then((response) => {
-                const data = response.data.tailwind;
-                css.value = data.css;
-                preset.value = data.preset;
-                config.value = data.config;
-                wizard.value = data.wizard;
-                selectedWizardId.value = data.wizard[0].id;
+            .then(response => response.data)
+            .then((data) => {
+                css.value = data.tailwind.css;
+                preset.value = data.tailwind.preset;
+                config.value = data.tailwind.config;
+                wizard.value = data.tailwind.wizard;
+                selectedWizardId.value = data.tailwind.wizard[0].id;
+
+                _cssDefault.value = data._default.css;
+                _presetDefault.value = data._default.preset;
+                _configDefault.value = data._default.config;
+                _wizardDefault.value = data._default.wizard;
 
                 updateInitValues();
             })
@@ -145,6 +154,12 @@ export const useTailwindStore = defineStore('tailwind', () => {
             preset: _presetInit,
             config: _configInit,
             wizard: _wizardInit,
+        },
+        defaultValues: {
+            css: _cssDefault,
+            preset: _presetDefault,
+            config: _configDefault,
+            wizard: _wizardDefault,
         },
         css,
         preset,

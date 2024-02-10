@@ -62,6 +62,7 @@ class Tailwind extends AbstractApi implements ApiInterface
 
         return new WP_REST_Response([
             'tailwind' => $tailwind,
+            '_default' => SIUL::default_tailwind(),
         ]);
     }
 
