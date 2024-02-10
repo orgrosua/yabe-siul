@@ -4,7 +4,7 @@ Donate link: https://ko-fi.com/Q5Q75XSF7
 Tags: tailwind css, bricks builder, oxygen builder
 Requires at least: 6.0
 Tested up to: 6.4
-Stable tag: 1.0.2-DEV
+Stable tag: 1.0.2
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -31,12 +31,13 @@ Yabe Siul is packed full of features designed to streamline your workflow. Some 
 It's easy to build design with Tailwind CSS thanks to the seamless integration with the most popular visual/page builders:
 
 * [Bricks](https://bricksbuilder.io/)
+* [Gutenberg](https://wordpress.org/gutenberg)
 * [Oxygen](https://oxygenbuilder.com/)
+* [Timber](https://upstatement.com/timber/)
 * [Breakdance](https://breakdance.com/ref/165/) **[Soon]**
 * [Builderius](https://builderius.io/?referral=afdfca82c8) **[Soon]**
 * [Divi](https://www.elegantthemes.com/affiliates/idevaffiliate.php?id=47622) **[Soon]**
 * [Elementor](https://be.elementor.com/visit/?bta=209150&brand=elementor) **[Soon]**
-* [Gutenberg](https://wordpress.org/gutenberg) **[Soon]**
 * [Kadence WP](https://kadencewp.com) **[Soon]**
 * [Pinegrow](https://pinegrow.com/wordpress) **[Soon]**
 * [Zion Builder](https://zionbuilder.io/) **[Soon]**
@@ -53,6 +54,10 @@ Visit [our website](https://siul.yabe.land) for more information.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= 1.0.2 =
+* **New**: [Gutenberg](https://wordpress.org/gutenberg) integration
+* **New**: [Timber](https://upstatement.com/timber/) integration
 
 = 1.0.1 =
 * **Improve**: better tailwindcss' plugin handling

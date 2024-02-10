@@ -26,7 +26,7 @@ class SIUL
     /**
      * @var string
      */
-    public const VERSION = '1.0.2-DEV';
+    public const VERSION = '1.0.2';
 
     /**
      * @var int
@@ -51,7 +51,7 @@ class SIUL
     /**
      * @var string
      */
-    public const EXTRA_VERSION = 'DEV';
+    public const EXTRA_VERSION = '';
 
     /**
      * @var string
