@@ -1,6 +1,6 @@
 <link rel="preconnect" href="https://esm.sh" crossorigin>
 
-<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.tailwindcss.com" id="siul-tailwindcss-jit"></script>
 
 <script type="module" id="siul-tailwindcss-play-cdn">
     import { parse as parsePackage } from 'https://esm.sh/parse-package-name';
@@ -34,6 +34,11 @@
 
     (async function () {
         //-@-tailwindcss
+
+        while (!window.tailwind) {
+            await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+
         tailwind.config = siul;
 
         set(window, 'siul.loaded.siul', true);
