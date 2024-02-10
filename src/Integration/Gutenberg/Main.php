@@ -49,13 +49,18 @@ class Main implements IntegrationInterface
     {
         $screen = get_current_screen();
         if (is_admin() && $screen->is_block_editor()) {
-            Runtime::get_instance()->enqueue_play_cdn();
+            add_action('admin_head', fn () => $this->admin_head(), 1_000_001);
+        }
+    }
 
-            if (strpos($_SERVER['REQUEST_URI'], 'site-editor.php') !== false) {
-                wp_enqueue_script(SIUL::WP_OPTION . '-gutenberg-fse', plugin_dir_url(SIUL::FILE) . 'build/frontend/gutenberg/fse.js', [], SIUL::VERSION, true);
-            } else {
-                wp_enqueue_script(SIUL::WP_OPTION . '-gutenberg-observer', plugin_dir_url(SIUL::FILE) . 'build/frontend/gutenberg/observer.js', [], SIUL::VERSION, true);
-            }
+    public function admin_head()
+    {
+        Runtime::get_instance()->enqueue_play_cdn();
+
+        if (strpos($_SERVER['REQUEST_URI'], 'site-editor.php') !== false) {
+            wp_enqueue_script(SIUL::WP_OPTION . '-gutenberg-fse', plugin_dir_url(SIUL::FILE) . 'build/frontend/gutenberg/fse.js', [], SIUL::VERSION, true);
+        } else {
+            wp_enqueue_script(SIUL::WP_OPTION . '-gutenberg-observer', plugin_dir_url(SIUL::FILE) . 'build/frontend/gutenberg/observer.js', [], SIUL::VERSION, true);
         }
     }
 }
