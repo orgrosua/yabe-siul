@@ -133,6 +133,7 @@ return [
         'Symfony\Polyfill',
 
         'Bricks',
+        'Timber',
     ],
     'exclude-classes' => array_merge(
         $wp_classes,

@@ -140,7 +140,13 @@ class Runtime
             return;
         }
 
-        $template = file_get_contents(plugin_dir_path(SIUL::FILE) . 'build/frontend/play-cdn.html');
+        $template_path = plugin_dir_path(SIUL::FILE) . 'build/frontend/play-cdn.html';
+
+        if (file_exists($template_path) === false) {
+            return;
+        }
+
+        $template = file_get_contents($template_path);
 
         if ($template === false) {
             return;

@@ -79,7 +79,6 @@ class Compile
             if ($meta_value) {
                 $contents[] = [
                     'content' => $this->transform_meta_value($meta_value),
-                    'type' => 'json',
                 ];
             }
         }

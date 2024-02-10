@@ -84,7 +84,6 @@ class Compile
             return [
                 [
                     'content' => json_decode($shortcode, true),
-                    'type' => 'json',
                 ],
             ];
         }
@@ -102,7 +101,6 @@ class Compile
         return [
             [
                 'content' => $shortcode,
-                'type' => 'json',
             ],
         ];
     }

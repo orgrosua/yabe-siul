@@ -148,22 +148,8 @@ class Cache extends AbstractApi implements ApiInterface
 
         $stopwatch->start('cache-provider:' . $provider['id'], 'cache-provider-scan');
 
-        $callback = $provider['callback'];
-
-        // if class has an "__invoke" method.
-        if (is_string($callback) && class_exists($callback) && method_exists($callback, '__invoke')) {
-            $callback = new $callback();
-        }
-
         try {
-            $contents = array_map(static function ($content) {
-                if (is_array($content['content']) || is_object($content['content'])) {
-                    $content['content'] = json_encode($content['content']);
-                    $content['type'] = 'json';
-                }
-                $content['content'] = is_string($content['content']) ? base64_encode($content['content']) : null;
-                return $content;
-            }, call_user_func($callback));
+            $contents = CoreCache::fetch_contents($provider['callback']);
         } catch (\Throwable $throwable) {
             return new WP_REST_Response([
                 'status' => 'KO',

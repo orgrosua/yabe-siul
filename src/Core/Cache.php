@@ -60,4 +60,34 @@ class Cache
 
         UtilsCache::purge_cache_plugin();
     }
+
+    public static function fetch_contents($callback)
+    {
+        // if class has an "__invoke" method.
+        if (is_string($callback) && class_exists($callback) && method_exists($callback, '__invoke')) {
+            $callback = new $callback();
+        }
+
+        try {
+            $_contents = call_user_func($callback);
+
+            if (!is_array($_contents)) {
+                throw new \Exception('The callback should return an array');
+            }
+
+            $contents = array_map(static function ($content) {
+                if (is_array($content['content']) || is_object($content['content'])) {
+                    $content['content'] = json_encode($content['content']);
+                    $content['type'] = 'json';
+                }
+                $content['content'] = is_string($content['content']) ? base64_encode($content['content']) : null;
+                return $content;
+            }, $_contents);
+
+        } catch (\Throwable $throwable) {
+            throw $throwable;
+        }
+
+        return $contents;
+    }
 }
