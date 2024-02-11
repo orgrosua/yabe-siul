@@ -22,6 +22,10 @@ class Compile
 {
     public function __invoke(): array
     {
+        if (!class_exists(Build::class)) {
+            return [];
+        }
+
         return $this->get_contents();
     }
 

@@ -134,6 +134,7 @@ return [
 
         'Bricks',
         'Timber',
+        'Blockstudio',
     ],
     'exclude-classes' => array_merge(
         $wp_classes,
