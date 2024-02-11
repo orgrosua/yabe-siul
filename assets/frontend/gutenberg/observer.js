@@ -105,7 +105,7 @@
     // Inject the script and style into the root iframe
     console.log('injecting SIUL script and style into the root container');
 
-    if (!contentDocument.querySelector('script#tailwindcss-play')) {
+    if (!contentDocument.querySelector('script#siul-tailwindcss-play-cdn')) {
         console.log('starting the root injection process...');
         contentDocument.head.appendChild(document.createRange().createContextualFragment(jitContent));
         contentDocument.head.appendChild(document.createRange().createContextualFragment(playContent));
