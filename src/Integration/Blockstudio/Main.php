@@ -64,7 +64,6 @@ class Main implements IntegrationInterface
             <script>
                 (async () => {
                     while(!window.blockstudioEditorMarkup && typeof window.blockstudioEditorMarkup !== 'string') {
-                        console.log('waiting for blockstudioEditorMarkup');
                         await new Promise(resolve => setTimeout(resolve, 100));
                     }
                     window.blockstudioEditorMarkup += atob('{$markup}');
