@@ -76,8 +76,11 @@ function doSave() {
     );
 }
 
+const compileError = ref(null);
+
 function doGenerateCache() {
     busyStore.add('settings.performance.cached_css.generate');
+    compileError.value = null;
 
     const promise = (async () => {
         if (tailwindStore.initValues.preset === null) {
@@ -128,6 +131,11 @@ function doGenerateCache() {
             contents
         );
 
+        if (compiled_css._error) {
+            compileError.value = compiled_css._error;
+            throw new Error();
+        }
+
         const license = `/* ! tailwindcss v${tw_version === 'latest' ? versions.value[0] : tw_version} | MIT License | https://tailwindcss.com */`;
 
         await api
@@ -145,7 +153,7 @@ function doGenerateCache() {
     notifier.async(
         promise,
         resp => {
-            notifier.success(`Tailwind CSS: <b>${prettyBytes(css_cache.value.file_size, {maximumFractionDigits: 2, space: false})}</b>`);
+            notifier.success(`Tailwind CSS: <b>${prettyBytes(css_cache.value.file_size, { maximumFractionDigits: 2, space: false })}</b>`);
         },
         err => {
             notifier.alert('Failed to generate cache');
@@ -308,6 +316,18 @@ defineExpose({
 
                                     <!-- Generate cache -->
                                 </button>
+                            </div>
+                            <div v-if="compileError" class="bg:red-5 fg:red-80 px:24">
+                                <h2 class="flex align-items:center f:16 fg:red-95 font:semibold lh:24px mb:16">
+                                    <span class="rounded! b:4|solid|red-20 bg:red-40 box:content h:8 w:8"></span>
+                                    <span v-if="compileError.action === 'parse-config'" class="ml:14">Config Error</span>
+                                    <span v-else-if="compileError.action === 'compile-css'" class="ml:14">Compile Error</span>
+                                    <dl v-if="compileError.line !== undefined" class="rounded! bg:red-10 f:14 fg:red-80 font:medium lh:24px ml:16 my:0 px:12">
+                                        <dt class="inline">Line</dt>
+                                        <dd class="inline ml:4">{{ compileError.line }}</dd>
+                                    </dl>
+                                </h2>
+                                <p class="f:14 font:mono lh:20px"> {{ compileError.message }}</p>
                             </div>
                         </div>
                     </div>

@@ -129,6 +129,7 @@
                     _error: {
                         message: error.name ? error.name + ': ' + error.message : error.message,
                         line: typeof line === 'undefined' ? undefined : line,
+                        action: 'parse-config',
                     },
                 };
             }
@@ -137,36 +138,45 @@
         }
 
         async function compileCss(tw_config, main_css, contents) {
-            let is_preflight_enabled = tw_config.corePlugins.includes('preflight');
+            try {
+                let is_preflight_enabled = tw_config.corePlugins.includes('preflight');
 
-            tw_config.corePlugins = tw_config.corePlugins.filter((plugin) => plugin !== 'preflight');
+                tw_config.corePlugins = tw_config.corePlugins.filter((plugin) => plugin !== 'preflight');
 
-            if (is_preflight_enabled) {
-                main_css = `@layer base {${preflight.responseText}}\n${main_css}`;
+                if (is_preflight_enabled) {
+                    main_css = `@layer base {${preflight.responseText}}\n${main_css}`;
+                }
+
+                const twPostcssPlugin = processTailwindFeatures(
+                    (processOptions) => () => processOptions.createContext(
+                        tw_config,
+                        contents.map((content) => (typeof content === 'string' ? { content } : content))
+                    ),
+                );
+
+                const processor = postcss();
+
+                processor.use(twPostcssPlugin);
+                processor.use(tailwindcssNesting);
+
+                let processed_css = await processor.process(main_css, { from: undefined, }).then((result) => result.css);
+
+                let { code: transformed_css } = transform({
+                    filename: 'style.css',
+                    code: new TextEncoder().encode(processed_css),
+                    minify: true,
+                    targets: browserslistToTargets(browserslist('defaults')),
+                });
+
+                return new TextDecoder().decode(transformed_css);
+            } catch (error) {
+                return {
+                    _error: {
+                        message: error.name ? error.name + ': ' + error.message : error.message,
+                        action: 'compile-css',
+                    },
+                };
             }
-
-            const twPostcssPlugin = processTailwindFeatures(
-                (processOptions) => () => processOptions.createContext(
-                    tw_config,
-                    contents.map((content) => (typeof content === 'string' ? { content } : content))
-                ),
-            );
-
-            const processor = postcss();
-
-            processor.use(twPostcssPlugin);
-            processor.use(tailwindcssNesting);
-
-            let processed_css = await processor.process(main_css, { from: undefined, }).then((result) => result.css);
-
-            let { code: transformed_css } = transform({
-                filename: 'style.css',
-                code: new TextEncoder().encode(processed_css),
-                minify: true,
-                targets: browserslistToTargets(browserslist('defaults')),
-            });
-
-            return new TextDecoder().decode(transformed_css);
         }
 
         // event listerner to receive message from the parent window
@@ -175,7 +185,28 @@
                 return resolveConfig(data);
             })
 
+            if (tw_config._error) {
+                window.parent.postMessage({
+                    type: 'action',
+                    action: 'compile-css',
+                    css: null,
+                    _error: tw_config._error
+                }, '*');
+                return;
+            }
+
             const result = await compileCss(tw_config, event.data.main_css, event.data.contents);
+
+            if (result._error) {
+                window.parent.postMessage({
+                    type: 'action',
+                    action: 'compile-css',
+                    css: null,
+                    _error: result._error
+                }, '*');
+                return;
+            }
+
             window.parent.postMessage({
                 type: 'action',
                 action: 'compile-css',
