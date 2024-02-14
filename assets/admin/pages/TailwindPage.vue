@@ -414,7 +414,7 @@ defineExpose({
 
                 <span class="font:16 font:semibold">tailwind.config.js</span>
 
-                <font-awesome-icon :icon="['fas', 'file-lock']" class="fg:gray-40 ml:6" title="read-only" />
+                <span class="bg:gray-5/.5 fg:gray-70 font:12 font:medium ml:8 outline:1|solid|gray-60/.2 px:8 py:4 r:6">read-only</span>
             </template>
 
             <template #default>
