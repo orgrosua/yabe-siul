@@ -17,10 +17,6 @@ function deleteScreen(id) {
         return;
     }
 
-    if (!confirm('Are you sure you want to delete this screen?')) {
-        return;
-    }
-
     const index = selectedWizard.value.preset.screens.findIndex((item) => item.id === id);
 
     if (index !== -1) {

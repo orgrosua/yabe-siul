@@ -80,10 +80,6 @@ function deletePlugin(id) {
         return;
     }
 
-    if (!confirm('Are you sure you want to delete this plugin?')) {
-        return;
-    }
-
     const index = selectedWizard.value.preset.plugins.findIndex((item) => item.id === id);
 
     if (index !== -1) {

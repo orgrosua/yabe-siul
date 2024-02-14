@@ -27,6 +27,8 @@ import {
     faAnglesUpDown,
     faGears,
     faTrashUndo,
+    faReply,
+    faShare,
 } from '@fortawesome/pro-solid-svg-icons';
 
 import {
@@ -70,6 +72,8 @@ library.add(
     faAnglesUpDown,
     faGears,
     faTrashUndo,
+    faReply,
+    faShare,
 
     /** far */
     faHeartRegular,

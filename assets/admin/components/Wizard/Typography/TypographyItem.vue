@@ -17,10 +17,6 @@ function deleteSpacing(id) {
         return;
     }
 
-    if (!confirm('Are you sure you want to delete this typography?')) {
-        return;
-    }
-
     const index = selectedWizard.value.preset.typography.findIndex((item) => item.id === id);
 
     if (index !== -1) {

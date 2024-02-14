@@ -21,10 +21,6 @@ function deleteColor(id) {
         return;
     }
 
-    if (!confirm('Are you sure you want to delete this color?')) {
-        return;
-    }
-
     const index = selectedWizard.value.preset.colors.findIndex((item) => item.id === id);
 
     if (index !== -1) {

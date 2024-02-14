@@ -5,7 +5,7 @@ import { configureMonacoTailwindcss, tailwindcssData } from 'monaco-tailwindcss'
 import * as monaco from 'monaco-editor';
 import { debounce } from 'lodash-es';
 import { __ } from '@wordpress/i18n';
-import { useStorage } from '@vueuse/core';
+import { useStorage, useRefHistory } from '@vueuse/core';
 
 import * as prettier from 'prettier';
 import prettierPluginBabel from 'prettier/plugins/babel';
@@ -31,6 +31,12 @@ const settingsStore = useSettingsStore();
 const notifier = useNotifier();
 
 const { css: twCss, preset: twPreset, wizard: twWizard, config: twConfig } = storeToRefs(tailwindStore);
+
+// listen undo/redo event key binding, windows: undo: ctrl+z, redo: ctrl+y, mac: undo: cmd+z, redo: cmd+shift+z
+
+const { history: twWizardHistory, undo: twWizardUndo, redo: twWizardRedo, canUndo: twWizardCanUndo, canRedo: twWizardCanRedo } = useRefHistory(twWizard, {
+    deep: true,
+});
 
 const configError = ref(null);
 
@@ -302,7 +308,7 @@ onMounted(() => {
         }
 
         if (Object.keys(settingsStore.options).length === 0) {
-            await settingsStore.doPull();            
+            await settingsStore.doPull();
         }
 
         // set the css editor content
@@ -387,9 +393,22 @@ defineExpose({
 
         <ExpansionPanel namespace="tailwind" name="wizard" class="my:8">
             <template #header>
-                <font-awesome-icon :icon="['fas', 'gear']" class="mr:6" />
-                <span class="font:16 font:semibold">wizard</span>
-                <span class="bg:yellow-5/.5 fg:yellow-70 font:12 font:medium ml:8 outline:1|solid|yellow-60/.2 px:8 py:4 r:6">Experimental</span>
+                <div class="flex">
+                    <div class="flex-grow:1">
+                        <font-awesome-icon :icon="['fas', 'gear']" class="mr:6" />
+                        <span class="font:16 font:semibold">wizard</span>
+                        <span class="bg:yellow-5/.5 fg:yellow-70 font:12 font:medium ml:8 outline:1|solid|yellow-60/.2 px:8 py:4 r:6">Experimental</span>
+                    </div>
+
+                    <div class="flex gap:10 mr:20">
+                        <button type="button" @click="twWizardUndo" :disabled="!twWizardCanUndo" title="undo">
+                            <font-awesome-icon :icon="['fas', 'reply']" />
+                        </button>
+                        <button type="button" @click="twWizardRedo" :disabled="!twWizardCanRedo" title="redo">
+                            <font-awesome-icon :icon="['fas', 'share']" />
+                        </button>
+                    </div>
+                </div>
             </template>
 
             <template #default>

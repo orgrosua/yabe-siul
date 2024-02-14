@@ -17,10 +17,6 @@ function deleteSpacing(id) {
         return;
     }
 
-    if (!confirm('Are you sure you want to delete this spacing?')) {
-        return;
-    }
-
     const index = selectedWizard.value.preset.spacing.findIndex((item) => item.id === id);
 
     if (index !== -1) {
