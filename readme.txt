@@ -4,7 +4,7 @@ Donate link: https://ko-fi.com/Q5Q75XSF7
 Tags: tailwind css, bricks builder, oxygen builder
 Requires at least: 6.0
 Tested up to: 6.4
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -55,6 +55,12 @@ Visit [our website](https://siul.yabe.land) for more information.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= 1.0.5 =
+* **Improve**: Wizard History (Undo/Redo) feature
+* **Improve**: BroadcastChannel for triggering the CSS cache generation
+* **Improve**: The CSS cache generation is now more imformative when an error occurs
+* **Change**: The Wizard's Screens feature are now extending the default Tailwind CSS configuration instead of overridding it
 
 = 1.0.4 =
 * **New**: [Blockstudio](https://blockstudio.dev/?ref=7) integration
