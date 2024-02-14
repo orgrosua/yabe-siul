@@ -389,6 +389,7 @@ defineExpose({
             <template #header>
                 <font-awesome-icon :icon="['fas', 'gear']" class="mr:6" />
                 <span class="font:16 font:semibold">wizard</span>
+                <span class="bg:yellow-5/.5 fg:yellow-70 font:12 font:medium ml:8 outline:1|solid|yellow-60/.2 px:8 py:4 r:6">Experimental</span>
             </template>
 
             <template #default>
