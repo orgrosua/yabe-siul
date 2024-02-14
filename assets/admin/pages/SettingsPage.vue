@@ -323,6 +323,9 @@ defineExpose({
                                         <font-awesome-icon :icon="['far', 'arrow-up-right-from-square']" />
                                     </a>
                                 </template>
+                                <template v-if="css_cache.file_size">
+                                    <div class="bg:lime-5/.5 fg:lime-70 font:12 font:medium ml:8 outline:1|solid|lime-60/.2 px:8 py:2 r:6">{{ prettyBytes(css_cache.file_size, { maximumFractionDigits: 2, space: false }) }}</div>
+                                </template>
                             </p>
                             <div>
                                 <button @click="doGenerateCache" :disabled="busyStore.isBusy" type="button" class="button button-secondary inline-flex align-items:center gap:8">
