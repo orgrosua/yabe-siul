@@ -1,7 +1,7 @@
 import { stringify } from 'javascript-stringify';
 
-const wizardToTailwindConfig = (wizards) => {
-    let configStr = '';
+const wizardToTailwindConfig = (wizards, tw_version) => {
+    let configStr = `const _wizardDefaultTheme = require('tailwindcss@${tw_version}/defaultTheme');`;
 
     let {
         screensItems,
@@ -12,7 +12,6 @@ const wizardToTailwindConfig = (wizards) => {
     } = traverseWizards(wizards);
 
     // screens
-    screensItems = sortBreakpoints(screensItems);
     if (screensItems.length > 0) {
         let _screenItems = {};
         screensItems.forEach((screen) => {
@@ -36,11 +35,74 @@ const wizardToTailwindConfig = (wizards) => {
         configStr += `
             \n\n
             // https://tailwindcss.com/docs/screens
+            const _wizardScreens = {};
+
+            _wizardSortBreakpoints(Object.entries({...${stringify(_screenItems)}, ..._wizardDefaultTheme.screens}).map(([key, value]) => {
+                return {
+                    breakpoint: key,
+                    ...(typeof value === 'string' ? { min: value } : value),
+                };
+            })).forEach((screen) => {
+                let _screen = screen;
+                let screenKey = _screen.breakpoint;
+    
+                delete _screen.breakpoint;
+                delete _screen.id;
+    
+                Object.keys(_screen).forEach((key) => {
+                    if (_screen[key] && !isNaN(parseInt(_screen[key]))) {
+                        _screen[key] = _screen[key] + 'px';
+                    } else {
+                        delete _screen[key];
+                    }
+                });
+    
+                _wizardScreens[screenKey] = _screen;
+            });
+
             _merge(siul, {
                 theme: {
-                    screens: ${stringify(_screenItems)},
+                    screens: _wizardScreens,
                 },
             });
+
+            function _wizardNormalizeBreakpoint(value) {
+                // Convert string formats like '640px' to numeric values
+                const toNumber = value => value ? parseInt(value, 10) : null;
+            
+                // Handle different breakpoint formats
+                if (typeof value === 'string') {
+                    return { min: toNumber(value), max: Infinity };
+                } else if (typeof value === 'object' && value !== null) {
+                    return {
+                        min: value.min ? toNumber(value.min) : Infinity, // Set to Infinity if min is not specified
+                        max: value.max ? toNumber(value.max) : Infinity
+                    };
+                } else {
+                    return { ...value, min: Infinity, max: Infinity };
+                }
+            }
+            
+            /**
+             * 
+             * @param {any[]} breakpoints 
+             * @returns 
+             */
+            function _wizardSortBreakpoints(breakpoints) {
+                return breakpoints
+                    .map((breakpoint) => ({ ...breakpoint, ..._wizardNormalizeBreakpoint(breakpoint) }))
+                    .sort((a, b) => {
+                        if (a.min !== b.min) {
+                            return a.min - b.min;
+                        }
+                        return b.max - a.max;
+                    })
+                    .reduce((sortedBreakpoints, bp) => {
+                        // Reconstruct the original object structure
+                        sortedBreakpoints.push(bp);
+                        return sortedBreakpoints;
+                    }, []);
+            }
         `;
     }
 
@@ -226,43 +288,6 @@ function traverseWizards(wizards) {
     };
 }
 
-function normalizeBreakpoint(value) {
-    // Convert string formats like '640px' to numeric values
-    const toNumber = value => value ? parseInt(value, 10) : null;
-
-    // Handle different breakpoint formats
-    if (typeof value === 'string') {
-        return { min: toNumber(value), max: Infinity };
-    } else if (typeof value === 'object' && value !== null) {
-        return {
-            min: value.min ? toNumber(value.min) : Infinity, // Set to Infinity if min is not specified
-            max: value.max ? toNumber(value.max) : Infinity
-        };
-    } else {
-        return { ...value, min: Infinity, max: Infinity };
-    }
-}
-
-/**
- * 
- * @param {any[]} breakpoints 
- * @returns 
- */
-function sortBreakpoints(breakpoints) {
-    return breakpoints
-        .map((breakpoint) => ({ ...breakpoint, ...normalizeBreakpoint(breakpoint) }))
-        .sort((a, b) => {
-            if (a.min !== b.min) {
-                return a.min - b.min;
-            }
-            return b.max - a.max;
-        })
-        .reduce((sortedBreakpoints, bp) => {
-            // Reconstruct the original object structure
-            sortedBreakpoints.push(bp);
-            return sortedBreakpoints;
-        }, []);
-}
 
 export {
     wizardToTailwindConfig,

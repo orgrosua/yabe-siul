@@ -19,6 +19,7 @@ import twResolveConfig from 'tailwindcss/resolveConfig';
 
 import ExpansionPanel from '../components/ExpansionPanel.vue';
 import { useTailwindStore } from '../stores/tailwind.js';
+import { useSettingsStore } from '../stores/settings.js';
 import { storeToRefs } from 'pinia';
 import WizardLayout from '../components/Wizard/WizardLayout.vue';
 import { useNotifier } from '../library/notifier';
@@ -26,6 +27,7 @@ import { useNotifier } from '../library/notifier';
 import { wizardToTailwindConfig } from '../components/Wizard/TailwindConfig.js';
 
 const tailwindStore = useTailwindStore();
+const settingsStore = useSettingsStore();
 const notifier = useNotifier();
 
 const { css: twCss, preset: twPreset, wizard: twWizard, config: twConfig } = storeToRefs(tailwindStore);
@@ -180,7 +182,7 @@ async function consumeConfig() {
     await playResolveConfig(model.config.getValue())
         .then((tailwindConfig) => {
             if (tailwindConfig._error) {
-                console.log('tailwindConfig._error', tailwindConfig._error);
+                console.error('tailwindConfig._error', tailwindConfig._error);
                 return;
             }
 
@@ -215,7 +217,7 @@ watch(twConfig, (value, oldValue) => {
 
 function updateTwConfig() {
     const _preset = twPreset.value.includes('//-@-wizard')
-        ? twPreset.value.replace('//-@-wizard', wizardToTailwindConfig(toRaw(twWizard.value)))
+        ? twPreset.value.replace('//-@-wizard', wizardToTailwindConfig(toRaw(twWizard.value), settingsStore.options?.general?.tailwindcss?.version ?? 'latest'))
         : twPreset.value;
 
     (async () => {
@@ -297,6 +299,10 @@ onMounted(() => {
         if (tailwindStore.initValues.preset === null) {
             // get the stored data
             await tailwindStore.doPull();
+        }
+
+        if (Object.keys(settingsStore.options).length === 0) {
+            await settingsStore.doPull();            
         }
 
         // set the css editor content

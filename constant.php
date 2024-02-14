@@ -117,7 +117,7 @@ class SIUL
 
         /* That's all, stop editing! Happy building. */
 
-        siul = _merge(presetConfig, siul);
+        _merge(siul, presetConfig);
 
         JS;
 
