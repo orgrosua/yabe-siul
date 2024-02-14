@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onBeforeMount } from 'vue';
+import { ref, onBeforeMount, onMounted, onUnmounted } from 'vue';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { stringify as stringifyYaml } from 'yaml';
@@ -188,6 +188,9 @@ async function compileCSS(tw_version, tw_config, main_css, contents) {
     return iframeEval;
 }
 
+const bc = new BroadcastChannel('siul_channel');
+
+
 onBeforeMount(() => {
     fetchVersion();
     licenseStore.doPull().then(() => {
@@ -201,6 +204,18 @@ onBeforeMount(() => {
         .then((resp) => {
             css_cache.value = resp.data.cache;
         });
+});
+
+onMounted(() => {
+    bc.addEventListener('message', (event) => {
+        if (event.data.key === 'generate-cache') {
+            doGenerateCache();
+        }
+    });
+});
+
+onUnmounted(() => {
+    bc.close();
 });
 
 // Expose the doSave function to be used by the App.vue
