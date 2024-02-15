@@ -61,7 +61,7 @@ class Runtime
      */
     public static function get_instance(): self
     {
-        if (!isset(self::$instance)) {
+        if (! isset(self::$instance)) {
             self::$instance = new self();
         }
 
@@ -70,7 +70,7 @@ class Runtime
 
     public function init()
     {
-        if (!is_admin()) {
+        if (! is_admin()) {
             $is_prevent_load = apply_filters('f!yabe/siul/core/runtime:is_prevent_load', false);
 
             if ($is_prevent_load) {
@@ -89,7 +89,7 @@ class Runtime
         $is_exclude_admin = Config::get('performance.cache.exclude_admin', false) && current_user_can('manage_options');
         $is_exclude_admin = apply_filters('f!yabe/siul/core/runtime:append_header.exclude_admin', $is_exclude_admin);
 
-        if ($is_cache_enabled && $this->is_cache_exists() && !$is_exclude_admin) {
+        if ($is_cache_enabled && $this->is_cache_exists() && ! $is_exclude_admin) {
             add_action('wp_head', fn () => $this->enqueue_css_cache(), 1);
         } else {
             add_action('wp_head', fn () => $this->enqueue_play_cdn(), 1_000_001);
@@ -111,7 +111,7 @@ class Runtime
             return;
         }
 
-        if (!$this->is_cache_exists()) {
+        if (! $this->is_cache_exists()) {
             return;
         }
 
@@ -177,7 +177,7 @@ class Runtime
             sprintf('<style type="text/tailwindcss" id="siul-tailwindcss-main-css">%s</style>', $tailwind->css),
             $template
         );
-        
+
         if ($display) {
             echo $template;
             define('SIUL_PLAY_CDN_WAS_LOADED', true);

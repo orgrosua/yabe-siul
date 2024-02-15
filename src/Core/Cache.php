@@ -58,7 +58,7 @@ class Cache
             throw $throwable;
         }
 
-        UtilsCache::purge_cache_plugin();
+        UtilsCache::flush_cache_plugin();
     }
 
     public static function fetch_contents($callback)
@@ -71,7 +71,7 @@ class Cache
         try {
             $_contents = call_user_func($callback);
 
-            if (!is_array($_contents)) {
+            if (! is_array($_contents)) {
                 throw new \Exception('The callback should return an array');
             }
 
@@ -80,10 +80,10 @@ class Cache
                     $content['content'] = json_encode($content['content']);
                     $content['type'] = 'json';
                 }
+
                 $content['content'] = is_string($content['content']) ? base64_encode($content['content']) : null;
                 return $content;
             }, $_contents);
-
         } catch (\Throwable $throwable) {
             throw $throwable;
         }

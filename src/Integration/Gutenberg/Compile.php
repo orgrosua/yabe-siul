@@ -29,17 +29,17 @@ class Compile
     {
         $contents = [];
 
-        $query = new WP_Query([
+        $wpQuery = new WP_Query([
             'posts_per_page' => -1,
             'post_type' => [
                 'post',
                 'page',
-                'wp_template'
-            ]
+                'wp_template',
+            ],
         ]);
 
-        foreach ($query->posts as $post) {
-            if (empty(trim($post->post_content))) {
+        foreach ($wpQuery->posts as $post) {
+            if (trim($post->post_content) === '' || trim($post->post_content) === '0') {
                 continue;
             }
 
@@ -53,7 +53,7 @@ class Compile
 
             $contents[] = [
                 'id' => $post->ID,
-                'title' => "#{$post->ID}: {$post->post_title}",
+                'title' => sprintf('#%s: %s', $post->ID, $post->post_title),
                 'content' => $post_content,
             ];
         }

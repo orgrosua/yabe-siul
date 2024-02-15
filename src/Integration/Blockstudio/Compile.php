@@ -22,7 +22,7 @@ class Compile
 {
     public function __invoke(): array
     {
-        if (!class_exists(Build::class)) {
+        if (! class_exists(Build::class)) {
             return [];
         }
 
@@ -37,7 +37,7 @@ class Compile
 
         foreach ($build_data as $block) {
             foreach ($block['filesPaths'] as $path) {
-                if (!is_readable($path)) {
+                if (! is_readable($path)) {
                     continue;
                 }
 

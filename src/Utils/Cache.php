@@ -23,7 +23,7 @@ class Cache
     /**
      * Clear the cache from various cache plugins.
      */
-    public static function purge_cache_plugin()
+    public static function flush_cache_plugin()
     {
         /**
          * WordPress Object Cache

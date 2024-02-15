@@ -24,7 +24,7 @@ class Compile
 {
     public function __invoke(): array
     {
-        if (!class_exists(Timber::class)) {
+        if (! class_exists(Timber::class)) {
             return [];
         }
 
@@ -46,7 +46,7 @@ class Compile
         foreach ($finder as $file) {
             $template_file = $file->getPathname();
 
-            if (!is_readable($template_file)) {
+            if (! is_readable($template_file)) {
                 continue;
             }
 
