@@ -140,7 +140,8 @@ function doGenerateCache() {
 
         await api
             .post('admin/settings/cache/store', {
-                content: btoa(`${license}\n${compiled_css.css}`),
+                // @see https://developer.mozilla.org/en-US/docs/Glossary/Base64#the_unicode_problem
+                content: btoa(String.fromCodePoint(...new TextEncoder().encode(`${license}\n${compiled_css.css}`))),
             })
             .then((resp) => {
                 css_cache.value = resp.data.cache;
