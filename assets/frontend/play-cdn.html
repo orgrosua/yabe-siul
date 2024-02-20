@@ -41,8 +41,14 @@
 
         tailwind.config = siul;
 
+        const oldStyleEl = document.getElementById('siul-tailwindcss-main-css');
+        const newStyleEl = document.createElement('style');
+        newStyleEl.type = 'text/tailwindcss';
+        newStyleEl.textContent = oldStyleEl.textContent;
+        oldStyleEl.replaceWith(newStyleEl);
+
         set(window, 'siul.loaded.siul', true);
     })();
 </script>
 
-<style type="text/tailwindcss" id="siul-tailwindcss-main-css"></style>
+<style type="text/siul-tailwindcss-main-css" id="siul-tailwindcss-main-css"></style>

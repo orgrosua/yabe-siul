@@ -173,8 +173,8 @@ class Runtime
         );
 
         $template = str_replace(
-            '<style type="text/tailwindcss" id="siul-tailwindcss-main-css"></style>',
-            sprintf('<style type="text/tailwindcss" id="siul-tailwindcss-main-css">%s</style>', $tailwind->css),
+            '<style type="text/siul-tailwindcss-main-css" id="siul-tailwindcss-main-css"></style>',
+            sprintf('<style type="text/siul-tailwindcss-main-css" id="siul-tailwindcss-main-css">%s</style>', $tailwind->css),
             $template
         );
 
