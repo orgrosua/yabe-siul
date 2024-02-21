@@ -4,7 +4,7 @@ Donate link: https://ko-fi.com/Q5Q75XSF7
 Tags: tailwind css, bricks builder, oxygen builder
 Requires at least: 6.0
 Tested up to: 6.4
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -55,6 +55,11 @@ Visit [our website](https://siul.yabe.land) for more information.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= 1.0.6 =
+* **Improve**: Batch scanner on compile
+* **Improve**: Delay the `main.css` usage on the frontend to avoid race condition with `preset.js`
+* **Fix**: Failed to store the cached CSS when the content has unicode characters
 
 = 1.0.5 =
 * **Improve**: Wizard History (Undo/Redo) feature
