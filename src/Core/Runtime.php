@@ -90,7 +90,7 @@ class Runtime
         $is_exclude_admin = apply_filters('f!yabe/siul/core/runtime:append_header.exclude_admin', $is_exclude_admin);
 
         if ($is_cache_enabled && $this->is_cache_exists() && ! $is_exclude_admin) {
-            add_action('wp_head', fn () => $this->enqueue_css_cache(), 1);
+            add_action('wp_head', fn () => $this->enqueue_css_cache(), 1_000_001);
         } else {
             add_action('wp_head', fn () => $this->enqueue_play_cdn(), 1_000_001);
 
