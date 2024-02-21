@@ -22,7 +22,6 @@ class Compile
 {
     /**
      * @param array $metadata
-     * @return array
      */
     public function __invoke($metadata): array
     {
@@ -33,7 +32,7 @@ class Compile
     {
         $contents = [];
 
-        $next_batch = $metadata['next_batch'] !==  false ? $metadata['next_batch'] : 1;
+        $next_batch = $metadata['next_batch'] !== false ? $metadata['next_batch'] : 1;
 
         $wpQuery = new WP_Query([
             'posts_per_page' => apply_filters('f!yabe/siul/integration/gutenberg:compile.post_per_page', (int) get_option('posts_per_page', 10)),
