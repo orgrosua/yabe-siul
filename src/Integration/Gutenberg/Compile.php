@@ -20,22 +20,29 @@ use WP_Query;
  */
 class Compile
 {
-    public function __invoke(): array
+    /**
+     * @param array $metadata
+     * @return array
+     */
+    public function __invoke($metadata): array
     {
-        return $this->get_contents();
+        return $this->get_contents($metadata);
     }
 
-    public function get_contents(): array
+    public function get_contents($metadata): array
     {
         $contents = [];
 
+        $next_batch = $metadata['next_batch'] !==  false ? $metadata['next_batch'] : 1;
+
         $wpQuery = new WP_Query([
-            'posts_per_page' => -1,
+            'posts_per_page' => apply_filters('f!yabe/siul/integration/gutenberg:compile.post_per_page', (int) get_option('posts_per_page', 10)),
             'post_type' => [
                 'post',
                 'page',
                 'wp_template',
             ],
+            'paged' => $next_batch,
         ]);
 
         foreach ($wpQuery->posts as $post) {
@@ -58,6 +65,11 @@ class Compile
             ];
         }
 
-        return $contents;
+        return [
+            'metadata' => [
+                'next_batch' => $wpQuery->max_num_pages > $next_batch ? $next_batch + 1 : false,
+            ],
+            'contents' => $contents,
+        ];
     }
 }

@@ -61,7 +61,7 @@ class Cache
         UtilsCache::flush_cache_plugin();
     }
 
-    public static function fetch_contents($callback)
+    public static function fetch_contents($callback, $metadata = [])
     {
         // if class has an "__invoke" method.
         if (is_string($callback) && class_exists($callback) && method_exists($callback, '__invoke')) {
@@ -69,13 +69,16 @@ class Cache
         }
 
         try {
-            $_contents = call_user_func($callback);
+            $result = call_user_func($callback, $metadata);
 
-            if (! is_array($_contents)) {
+            if (! is_array($result)) {
                 throw new \Exception('The callback should return an array');
             }
 
-            $contents = array_map(static function ($content) {
+            $_metadata = array_key_exists('metadata', $result) ? $result['metadata'] : [];
+
+            $_contents = array_key_exists('contents', $result) ? $result['contents'] : $result;
+            $_contents = array_map(static function ($content) {
                 if (is_array($content['content']) || is_object($content['content'])) {
                     $content['content'] = json_encode($content['content']);
                     $content['type'] = 'json';
@@ -88,6 +91,9 @@ class Cache
             throw $throwable;
         }
 
-        return $contents;
+        return [
+            'metadata' => $_metadata,
+            'contents' => $_contents,
+        ];
     }
 }

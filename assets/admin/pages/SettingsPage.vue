@@ -100,14 +100,20 @@ function doGenerateCache() {
         let content_pool = [];
 
         for (const provider of providers) {
+            let batch = false;
 
-            const scan = await api
-                .post('admin/settings/cache/providers/scan', {
-                    provider_id: provider.id,
-                })
-                .then((resp) => resp.data);
+            do {
+                const scan = await api
+                    .post('admin/settings/cache/providers/scan', {
+                        provider_id: provider.id,
+                        metadata: { next_batch: batch },
+                    })
+                    .then((resp) => resp.data);
 
-            content_pool.push(...scan.contents);
+                content_pool.push(...scan.contents);
+
+                batch = scan.metadata?.next_batch || false;
+            } while (batch !== false);
         }
 
         const contents = content_pool.map((c) => {

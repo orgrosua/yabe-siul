@@ -134,6 +134,7 @@ class Cache extends AbstractApi implements ApiInterface
         $stopwatch = Debug::stopwatch();
 
         $provider_id = $wprestRequest->get_param('provider_id');
+        $metadata = $wprestRequest->get_param('metadata') ?? [];
 
         $provider = array_filter(CoreCache::get_providers(), static fn ($provider) => $provider['id'] === $provider_id);
 
@@ -149,7 +150,7 @@ class Cache extends AbstractApi implements ApiInterface
         $stopwatch->start('cache-provider:' . $provider['id'], 'cache-provider-scan');
 
         try {
-            $contents = CoreCache::fetch_contents($provider['callback']);
+            $result = CoreCache::fetch_contents($provider['callback'], $metadata);
         } catch (\Throwable $throwable) {
             return new WP_REST_Response([
                 'status' => 'KO',
@@ -168,8 +169,9 @@ class Cache extends AbstractApi implements ApiInterface
                     'duration' => $event->getDuration() . ' ms',
                     'memory' => sprintf('%.2F MiB', $event->getMemory() / 1024 / 1024),
                 ],
+                'next_batch' => $result['metadata']['next_batch'] ?? false,
             ],
-            'contents' => $contents,
+            'contents' => $result['contents'],
             'status' => 'OK',
         ]);
     }
