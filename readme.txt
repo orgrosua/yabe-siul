@@ -4,7 +4,7 @@ Donate link: https://ko-fi.com/Q5Q75XSF7
 Tags: tailwind css, bricks builder, oxygen builder
 Requires at least: 6.0
 Tested up to: 6.4
-Stable tag: 1.0.7
+Stable tag: 1.0.8
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -56,16 +56,19 @@ Visit [our website](https://siul.yabe.land) for more information.
 
 == Changelog ==
 
+= 1.0.8 =
+* **Improve**: Support `import` syntax in the `preset.js` file
+
 = 1.0.7 =
 * **Improve**: Batch scanner on compile
-* **Improve**: Delay the `main.css` usage on the frontend to avoid race condition with `preset.js`
-* **Fix**: Failed to store the cached CSS when the content has unicode characters
+* **Improve**: Delay the `main.css` file usage on the front end to avoid race conditions with `preset.js` file
+* **Fix**: Failed to store the cached CSS when the content has Unicode characters
 
 = 1.0.5 =
-* **Improve**: Wizard History (Undo/Redo) feature
+* **Improve**: Wizard History (undo/redo) feature
 * **Improve**: BroadcastChannel for triggering the CSS cache generation
-* **Improve**: The CSS cache generation is now more imformative when an error occurs
-* **Change**: The Wizard's Screens feature are now extending the default Tailwind CSS configuration instead of overridding it
+* **Improve**: The CSS cache generation is now more informative when an error occurs
+* **Change**: The Wizard's Screens feature is now extending the default Tailwind CSS configuration instead of overriding it
 
 = 1.0.4 =
 * **New**: [Blockstudio](https://blockstudio.dev/?ref=7) integration
@@ -75,7 +78,7 @@ Visit [our website](https://siul.yabe.land) for more information.
 * **New**: [Timber](https://upstatement.com/timber/) integration
 
 = 1.0.1 =
-* **Improve**: better tailwindcss' plugin handling
+* **Improve**: Better Tailwind CSS plugins plugin handling
 
 = 1.0.0 =
 * 🐣 Initial release.
