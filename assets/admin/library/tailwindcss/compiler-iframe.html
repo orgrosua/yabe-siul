@@ -88,6 +88,17 @@
                     '\n' +
                     configStr
                         .split('\n')
+                        .map((line, i) => 
+                            line.replace(
+                                /\bimport\s+(.+)\s+from\s+['"](.+)['"]/g,
+                                (_m, variable, url) => {
+                                    return `const ${variable.indexOf('{') === -1
+                                        ? `{default: ${variable}}`
+                                        : variable.replace(/\s+as\s+/, ': ')
+                                    } = await import('${url}')`;
+                                }
+                            )
+                        )
                         .map((line, i) =>
                             line.replace(
                                 /\brequire\(([^)]*)\)/g,

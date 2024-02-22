@@ -32,23 +32,21 @@
         return result.default || result;
     };
 
-    (async function () {
-        //-@-tailwindcss
+    //-@-tailwindcss
 
-        while (!window.tailwind) {
-            await new Promise((resolve) => setTimeout(resolve, 100));
-        }
+    while (!window.tailwind) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+    }
 
-        tailwind.config = siul;
+    tailwind.config = siul;
 
-        const oldStyleEl = document.getElementById('siul-tailwindcss-main-css');
-        const newStyleEl = document.createElement('style');
-        newStyleEl.type = 'text/tailwindcss';
-        newStyleEl.textContent = oldStyleEl.textContent;
-        oldStyleEl.replaceWith(newStyleEl);
+    const oldStyleEl = document.getElementById('siul-tailwindcss-main-css');
+    const newStyleEl = document.createElement('style');
+    newStyleEl.type = 'text/tailwindcss';
+    newStyleEl.textContent = oldStyleEl.textContent;
+    oldStyleEl.replaceWith(newStyleEl);
 
-        set(window, 'siul.loaded.siul', true);
-    })();
+    set(window, 'siul.loaded.siul', true);
 </script>
 
 <style type="text/siul-tailwindcss-main-css" id="siul-tailwindcss-main-css"></style>
