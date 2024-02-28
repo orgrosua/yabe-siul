@@ -4,7 +4,7 @@ Donate link: https://ko-fi.com/Q5Q75XSF7
 Tags: tailwind css, bricks builder, oxygen builder
 Requires at least: 6.0
 Tested up to: 6.4
-Stable tag: 1.0.8
+Stable tag: 1.0.9
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -15,7 +15,7 @@ Tailwind CSS for WordPress.
 
 ### Yabe Siul: the #1 Tailwind CSS plugin for WordPress.
 
-Yabe Siul is a framework agnostic Tailwind CSS plugin for WordPress that allows you to use the full power of Tailwind CSS within the WordPress ecosystem.
+Yabe Siul is a platform agnostic Tailwind CSS plugin for WordPress that allows you to use the full power of Tailwind CSS within the WordPress ecosystem.
 
 ### FEATURES
 
@@ -55,6 +55,9 @@ Visit [our website](https://siul.yabe.land) for more information.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= 1.0.9 =
+* **New**: Autocomplete integration for [Yabe Bricksbender](https://bricksbender.yabe.land/)
 
 = 1.0.8 =
 * **Improve**: Support `import` syntax in the `preset.js` file
