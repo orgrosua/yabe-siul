@@ -9,11 +9,16 @@ const colors = Object.keys(masterCssVariables.variables).reduce((acc, key) => {
             return c;
         }, {});
     }
+    
     return acc;
 }, {});
 
 for (const key in colors) {
     colors[key].DEFAULT = colors[key][500];
+
+    if (colors[key][NaN]) {
+        delete colors[key][NaN];
+    }
 }
 
 export {

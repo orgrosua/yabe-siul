@@ -129,6 +129,7 @@ return [
         // '',                            // Any namespace,
 
         'Yabe\Siul',
+        'SIUL',
         'WP_CLI',
         'Symfony\Polyfill',
 

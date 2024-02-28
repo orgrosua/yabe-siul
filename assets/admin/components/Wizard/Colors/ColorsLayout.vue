@@ -36,6 +36,8 @@ watch(() => newColor.value.value, (value) => {
         try {
             const masterCSSColorShades = Object.entries(masterCSSColors).find(([key, value]) => value['DEFAULT'] === newColor.value.value);
             
+            console.log(masterCSSColorShades);
+
             if (masterCSSColorShades) {
                 newColor.value.key = masterCSSColorShades[0];
                 newColor.value.shades = Object.fromEntries(Object.entries(masterCSSColorShades[1]).filter(([key, value]) => key !== 'DEFAULT'));

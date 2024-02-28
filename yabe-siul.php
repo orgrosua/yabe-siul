@@ -7,7 +7,7 @@
  * Plugin Name:         Yabe Siul
  * Plugin URI:          https://siul.yabe.land
  * Description:         Tailwind CSS for WordPress
- * Version:             1.0.9
+ * Version:             1.0.10
  * Requires at least:   6.0
  * Requires PHP:        7.4
  * Author:              Rosua
