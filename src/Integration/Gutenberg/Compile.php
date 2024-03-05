@@ -31,16 +31,17 @@ class Compile
     public function get_contents($metadata): array
     {
         $contents = [];
+        $post_types = apply_filters('f!yabe/siul/integration/gutenberg/compile:get_contents.post_types', [
+            'post',
+            'page',
+            'wp_template',
+        ]);
 
         $next_batch = $metadata['next_batch'] !== false ? $metadata['next_batch'] : 1;
 
         $wpQuery = new WP_Query([
-            'posts_per_page' => apply_filters('f!yabe/siul/integration/gutenberg:compile.post_per_page', (int) get_option('posts_per_page', 10)),
-            'post_type' => [
-                'post',
-                'page',
-                'wp_template',
-            ],
+            'posts_per_page' => apply_filters('f!yabe/siul/integration/gutenberg/compile:get_contents.post_per_page', (int) get_option('posts_per_page', 10)),
+            'post_type' => $post_types,
             'paged' => $next_batch,
         ]);
 
@@ -50,12 +51,17 @@ class Compile
             }
 
             $post_content = $post->post_content;
-            $post_content = \do_blocks($post_content);
-            $post_content = \wptexturize($post_content);
-            $post_content = \convert_smilies($post_content);
-            $post_content = \shortcode_unautop($post_content);
-            $post_content = \wp_filter_content_tags($post_content);
-            $post_content = \do_shortcode($post_content);
+
+            if (apply_filters('f!yabe/siul/integration/gutenberg/compile:get_contents.render', true, $post)) {
+                $post_content = \do_blocks($post_content);
+                $post_content = \wptexturize($post_content);
+                $post_content = \convert_smilies($post_content);
+                $post_content = \shortcode_unautop($post_content);
+                $post_content = \wp_filter_content_tags($post_content);
+                $post_content = \do_shortcode($post_content);
+            }
+
+            $post_content = apply_filters('f!yabe/siul/integration/gutenberg/compile:get_contents.post_content', $post_content, $post);
 
             $contents[] = [
                 'id' => $post->ID,

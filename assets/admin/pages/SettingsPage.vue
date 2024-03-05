@@ -102,6 +102,11 @@ function doGenerateCache() {
         for (const provider of providers) {
             let batch = false;
 
+            // if the provider is not enabled, skip
+            if (!provider.enabled) {
+                continue;
+            }
+
             do {
                 const scan = await api
                     .post('admin/settings/cache/providers/scan', {

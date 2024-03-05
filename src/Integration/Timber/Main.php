@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Yabe\Siul\Integration\Timber;
 
 use Yabe\Siul\Integration\IntegrationInterface;
+use Yabe\Siul\Utils\Config;
 
 /**
  * @author Joshua Gugun Siagian <suabahasa@gmail.com>
@@ -28,6 +29,17 @@ class Main implements IntegrationInterface
     public function get_name(): string
     {
         return 'timber';
+    }
+
+    public function is_enabled(): bool
+    {
+        return (bool) apply_filters(
+            'f!yabe/siul/integration/timber:enabled',
+            Config::get(sprintf(
+                'integration.%s.enabled',
+                $this->get_name()
+            ), true)
+        );
     }
 
     public function register_provider(array $providers): array

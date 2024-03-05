@@ -15,6 +15,7 @@ namespace Yabe\Siul\Integration\Blockstudio;
 
 use Yabe\Siul\Core\Runtime;
 use Yabe\Siul\Integration\IntegrationInterface;
+use Yabe\Siul\Utils\Config;
 
 /**
  * @author Joshua Gugun Siagian <suabahasa@gmail.com>
@@ -24,12 +25,26 @@ class Main implements IntegrationInterface
     public function __construct()
     {
         add_filter('f!yabe/siul/core/cache:compile.providers', fn (array $providers): array => $this->register_provider($providers));
-        add_action('admin_head', fn () => $this->admin_head());
+
+        if ($this->is_enabled()) {
+            add_action('admin_head', fn () => $this->admin_head());
+        }
     }
 
     public function get_name(): string
     {
         return 'blockstudio';
+    }
+
+    public function is_enabled(): bool
+    {
+        return (bool) apply_filters(
+            'f!yabe/siul/integration/blockstudio:enabled',
+            Config::get(sprintf(
+                'integration.%s.enabled',
+                $this->get_name()
+            ), true)
+        );
     }
 
     public function register_provider(array $providers): array
@@ -39,6 +54,7 @@ class Main implements IntegrationInterface
             'name' => 'Blockstudio',
             'description' => 'Blockstudio integration',
             'callback' => Compile::class,
+            'enabled' => $this->is_enabled(),
         ];
 
         return $providers;

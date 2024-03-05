@@ -43,6 +43,8 @@ class Compile
 
         $finder->files()->name('*.twig');
 
+        do_action('f!yabe/siul/integration/timber/compile:get_contents.finder', $finder);
+
         foreach ($finder as $file) {
             $template_file = $file->getPathname();
 

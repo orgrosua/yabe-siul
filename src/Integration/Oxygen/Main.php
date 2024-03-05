@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Yabe\Siul\Integration\Oxygen;
 
 use Yabe\Siul\Integration\IntegrationInterface;
+use Yabe\Siul\Utils\Config;
 
 /**
  * @author Joshua Gugun Siagian <suabahasa@gmail.com>
@@ -23,13 +24,27 @@ class Main implements IntegrationInterface
     public function __construct()
     {
         add_filter('f!yabe/siul/core/cache:compile.providers', fn (array $providers): array => $this->register_provider($providers));
-        add_filter('f!yabe/siul/core/runtime:is_prevent_load', fn (bool $is_prevent_load): bool => $this->is_prevent_load($is_prevent_load));
-        add_filter('f!yabe/siul/core/runtime:append_header.exclude_admin', fn (bool $is_exclude_admin): bool => $this->is_exclude_admin($is_exclude_admin));
+
+        if ($this->is_enabled()) {
+            add_filter('f!yabe/siul/core/runtime:is_prevent_load', fn (bool $is_prevent_load): bool => $this->is_prevent_load($is_prevent_load));
+            add_filter('f!yabe/siul/core/runtime:append_header.exclude_admin', fn (bool $is_exclude_admin): bool => $this->is_exclude_admin($is_exclude_admin));
+        }
     }
 
     public function get_name(): string
     {
         return 'oxygen';
+    }
+
+    public function is_enabled(): bool
+    {
+        return (bool) apply_filters(
+            'f!yabe/siul/integration/oxygen:enabled',
+            Config::get(sprintf(
+                'integration.%s.enabled',
+                $this->get_name()
+            ), true)
+        );
     }
 
     public function register_provider(array $providers): array
@@ -39,6 +54,7 @@ class Main implements IntegrationInterface
             'name' => 'Oxygen Builder',
             'description' => 'Oxygen Builder integration',
             'callback' => Compile::class,
+            'enabled' => $this->is_enabled(),
         ];
 
         return $providers;
@@ -46,7 +62,7 @@ class Main implements IntegrationInterface
 
     public function is_prevent_load(bool $is_prevent_load): bool
     {
-        if ($is_prevent_load || ! $this->is_editor()) {
+        if ($is_prevent_load || !$this->is_editor()) {
             return $is_prevent_load;
         }
 
@@ -55,7 +71,7 @@ class Main implements IntegrationInterface
 
     public function is_exclude_admin(bool $is_exclude_admin): bool
     {
-        if ($is_exclude_admin || ! $this->is_preview()) {
+        if ($is_exclude_admin || !$this->is_preview()) {
             return $is_exclude_admin;
         }
 
@@ -74,6 +90,6 @@ class Main implements IntegrationInterface
 
     public function is_editor(): bool
     {
-        return $this->is_inside_builder() && ! isset($_GET['oxygen_iframe']);
+        return $this->is_inside_builder() && !isset($_GET['oxygen_iframe']);
     }
 }

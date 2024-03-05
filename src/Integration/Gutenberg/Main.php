@@ -16,6 +16,7 @@ namespace Yabe\Siul\Integration\Gutenberg;
 use SIUL;
 use Yabe\Siul\Core\Runtime;
 use Yabe\Siul\Integration\IntegrationInterface;
+use Yabe\Siul\Utils\Config;
 
 /**
  * @author Joshua Gugun Siagian <suabahasa@gmail.com>
@@ -25,12 +26,26 @@ class Main implements IntegrationInterface
     public function __construct()
     {
         add_filter('f!yabe/siul/core/cache:compile.providers', fn (array $providers): array => $this->register_provider($providers));
-        add_action('enqueue_block_editor_assets', fn () => $this->enqueue_block_editor_assets());
+
+        if ($this->is_enabled()) {
+            add_action('enqueue_block_editor_assets', fn () => $this->enqueue_block_editor_assets());
+        }
     }
 
     public function get_name(): string
     {
         return 'gutenberg';
+    }
+
+    public function is_enabled(): bool
+    {
+        return (bool) apply_filters(
+            'f!yabe/siul/integration/gutenberg:enabled',
+            Config::get(sprintf(
+                'integration.%s.enabled',
+                $this->get_name()
+            ), true)
+        );
     }
 
     public function register_provider(array $providers): array
@@ -40,6 +55,7 @@ class Main implements IntegrationInterface
             'name' => 'Gutenberg',
             'description' => 'Gutenberg integration',
             'callback' => Compile::class,
+            'enabled' => $this->is_enabled(),
         ];
 
         return $providers;

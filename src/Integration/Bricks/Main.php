@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Yabe\Siul\Integration\Bricks;
 
 use Yabe\Siul\Integration\IntegrationInterface;
+use Yabe\Siul\Utils\Config;
 
 /**
  * @author Joshua Gugun Siagian <suabahasa@gmail.com>
@@ -23,14 +24,28 @@ class Main implements IntegrationInterface
     public function __construct()
     {
         add_filter('f!yabe/siul/core/cache:compile.providers', fn (array $providers): array => $this->register_provider($providers));
-        add_filter('f!yabe/siul/core/runtime:is_prevent_load', fn (bool $is_prevent_load): bool => $this->is_prevent_load($is_prevent_load));
-        add_filter('f!yabe/siul/core/runtime:append_header.exclude_admin', fn (bool $is_exclude_admin): bool => $this->is_exclude_admin($is_exclude_admin));
-        add_action('a!yabe/bricksbender/module/plainclasses:register_autocomplete', fn () => $this->register_bricksbender_autocomplete());
+
+        if ($this->is_enabled()) {
+            add_filter('f!yabe/siul/core/runtime:is_prevent_load', fn (bool $is_prevent_load): bool => $this->is_prevent_load($is_prevent_load));
+            add_filter('f!yabe/siul/core/runtime:append_header.exclude_admin', fn (bool $is_exclude_admin): bool => $this->is_exclude_admin($is_exclude_admin));
+            add_action('a!yabe/bricksbender/module/plainclasses:register_autocomplete', fn () => $this->register_bricksbender_autocomplete());
+        }
     }
 
     public function get_name(): string
     {
         return 'bricks';
+    }
+
+    public function is_enabled(): bool
+    {
+        return (bool) apply_filters(
+            'f!yabe/siul/integration/bricks:enabled',
+            Config::get(sprintf(
+                'integration.%s.enabled',
+                $this->get_name()
+            ), true)
+        );
     }
 
     public function register_provider(array $providers): array
@@ -40,6 +55,7 @@ class Main implements IntegrationInterface
             'name' => 'Bricks Builder',
             'description' => 'Bricks Builder integration',
             'callback' => Compile::class,
+            'enabled' => $this->is_enabled(),
         ];
 
         return $providers;

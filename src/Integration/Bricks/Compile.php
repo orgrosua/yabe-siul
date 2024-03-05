@@ -47,6 +47,8 @@ class Compile
         $post_types = Database::$global_settings['postTypes'] ?? [];
         $post_types[] = BRICKS_DB_TEMPLATE_SLUG;
 
+        $post_types = apply_filters('f!yabe/siul/integration/bricks/compile:get_contents.post_types', $post_types);
+
         foreach (get_option(BRICKS_DB_GLOBAL_CLASSES, []) as $value) {
             $this->global_classes_index[$value['id']] = $value['name'];
         }

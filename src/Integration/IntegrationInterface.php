@@ -19,4 +19,9 @@ interface IntegrationInterface
      * Get the Integration name (slug).
      */
     public function get_name(): string;
+
+    /**
+     * Check if the Integration is enabled.
+     */
+    public function is_enabled(): bool;
 }
