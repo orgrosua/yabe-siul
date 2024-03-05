@@ -62,7 +62,7 @@ class Main implements IntegrationInterface
 
     public function is_prevent_load(bool $is_prevent_load): bool
     {
-        if ($is_prevent_load || !$this->is_editor()) {
+        if ($is_prevent_load || ! $this->is_editor()) {
             return $is_prevent_load;
         }
 
@@ -71,7 +71,7 @@ class Main implements IntegrationInterface
 
     public function is_exclude_admin(bool $is_exclude_admin): bool
     {
-        if ($is_exclude_admin || !$this->is_preview()) {
+        if ($is_exclude_admin || ! $this->is_preview()) {
             return $is_exclude_admin;
         }
 
@@ -90,6 +90,6 @@ class Main implements IntegrationInterface
 
     public function is_editor(): bool
     {
-        return $this->is_inside_builder() && !isset($_GET['oxygen_iframe']);
+        return $this->is_inside_builder() && ! isset($_GET['oxygen_iframe']);
     }
 }
