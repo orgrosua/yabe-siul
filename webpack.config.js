@@ -185,17 +185,13 @@ Encore
 
 const webpackConfig = Encore.getWebpackConfig();
 
-// webpackConfig.resolve.fallback = {
-//     ...webpackConfig.resolve.fallback,
-//     'buffer': require.resolve('buffer/'),
-// };
+webpackConfig.experiments = {
+    outputModule: true,
+};
+webpackConfig.externalsType = 'module';
 
-// webpackConfig.module.parser = {
-//     ...webpackConfig.module.parser,
-//     javascript: {
-//         url: 'relative',
-//     },
-// };
-
+webpackConfig.externals = {
+    '@jspm/generator': 'https://esm.sh/@jspm/generator?bundle',
+};
 
 module.exports = webpackConfig;

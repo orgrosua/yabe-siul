@@ -59,11 +59,22 @@ class AdminPage
 
     private function enqueue_scripts()
     {
+        $handle = SIUL::WP_OPTION . ':admin.js';
+
+        // add_filter('script_loader_tag', fn ($tag, $handle) => str_replace(' src', ' defer src', $tag), 10, 2);
+        add_filter('script_loader_tag', function ($tag, $h) use ($handle) {
+            if ($handle !== $h) {
+                return $tag;
+            }
+    
+            return str_replace(' src', ' type="module" defer src', $tag);
+        }, 1_000_001, 2);
+
         Asset::enqueue_entry('admin', [], true);
 
-        wp_set_script_translations(SIUL::WP_OPTION . ':admin.js', 'yabe-siul');
+        wp_set_script_translations($handle, 'yabe-siul');
 
-        wp_localize_script(SIUL::WP_OPTION . ':admin.js', 'siul', [
+        wp_localize_script($handle, 'siul', [
             '_version' => SIUL::VERSION,
             '_wpnonce' => wp_create_nonce(SIUL::WP_OPTION),
             'web_history' => self::get_page_url(),

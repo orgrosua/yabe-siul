@@ -32,7 +32,7 @@ function fetchVersion() {
         .get('https://data.jsdelivr.com/v1/package/npm/tailwindcss')
         .then((response) => {
             versions.value = response.data.versions.filter((v) => {
-                return v >= '3.0.0';
+                return v >= '3.0.0' && v < '4.0.0';
             });
         })
         .finally(() => {

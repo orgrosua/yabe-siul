@@ -2,6 +2,7 @@ import configResolverIframe from './config-resolver-iframe.html';
 import compilerIframe from './compiler-iframe.html';
 import axios from 'axios';
 import { useStorage } from '@vueuse/core';
+import { Generator as JspmGenerator } from '@jspm/generator';
 
 class IframeManager {
     static configResolverIframeEl = null;
@@ -69,31 +70,72 @@ class IframeManager {
 
             let jspm = jspmStorage.value[`${version}`];
 
-            if (jspm === undefined || jspm.generatedAt < new Date().getTime() - 60 * 60 * 24 * 1000) {
-                jspm = await axios
-                    .get('https://api.jspm.io/generate', {
-                        params: {
-                            env: JSON.stringify(['production', 'browser', 'module']),
-                            install: JSON.stringify([
-                                {
-                                    target: 'tailwindcss@' + version,
-                                    subpaths: [
-                                        './nesting',
-                                        './resolveConfig',
-                                        './lib/processTailwindFeatures',
-                                        './package.json.js',
-                                    ]
-                                },
-                                { target: 'browserslist' },
-                                { target: 'postcss' },
-                            ]),
-                            defaultProvider: 'esm.sh',
-                        },
-                    }).then((response) => response.data);
+            if (jspm === undefined || jspm.generatedAt < new Date().getTime() - 1000 * 60 * 60 * 24 * 7) {
+                try {
+                    jspm = await axios
+                        .get('https://api.jspm.io/generate', {
+                            params: {
+                                env: JSON.stringify(['production', 'browser', 'module']),
+                                install: JSON.stringify([
+                                    {
+                                        target: 'tailwindcss@' + version,
+                                        subpaths: [
+                                            './nesting',
+                                            './resolveConfig',
+                                            './lib/processTailwindFeatures',
+                                            './package.json.js',
+                                        ]
+                                    },
+                                    { target: 'browserslist' },
+                                    { target: 'postcss' },
+                                ]),
+                                defaultProvider: 'esm.sh',
+                            },
+                        }).then((response) => response.data);
+                    jspm.generatedAt = new Date().getTime();
 
-                jspm.generatedAt = new Date().getTime();
+                    jspmStorage.value[`${version}`] = jspm;
+                } catch (err1) {
+                    const generator = new JspmGenerator({
+                        // The URL of the import map, for normalising relative URLs:
+                        // mapUrl: import.meta.url,
+                        mapUrl: window.siul.assets.url,
 
-                jspmStorage.value[`${version}`] = jspm;
+                        // The default CDN to use for external package resolutions:
+                        defaultProvider: 'esm.sh',
+
+                        // The environment(s) to target. Note that JSPM will use these to resolve
+                        // conditional exports in any package it encounters:
+                        env: ['production', 'browser', 'module'],
+                    });
+
+                    try {
+                        await generator.install({
+                            target: 'tailwindcss@' + version,
+                            subpaths: [
+                                './nesting',
+                                './resolveConfig',
+                                './lib/processTailwindFeatures',
+                                './package.json.js'
+                            ]
+                        });
+                        await generator.install('postcss');
+                        await generator.install('browserslist');
+
+                        jspm = {
+                            map: generator.getMap(),
+                        };
+
+                        jspm.generatedAt = new Date().getTime();
+
+                        jspmStorage.value[`${version}`] = jspm;
+                    } catch (err2) {
+                        console.error('Failed to generate importmap.');
+                        console.error('err1:' + err1);
+                        console.error('err2:' + err2);
+                        return;
+                    }
+                }
             }
 
             IframeManager.compilerIframeEl = document.createElement('iframe');
