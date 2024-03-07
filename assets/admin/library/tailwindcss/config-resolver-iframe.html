@@ -70,6 +70,11 @@
                     before +
                     '\n' +
                     configStr
+                        // catch multi-line import statements and replace them with single line
+                        .replace(/import\s+({[^}]+})\s+from\s+['"](.+)['"]/g, (_m, $1, $2) => {
+                            return `import ${$1.replace(/\n/g, '')} from '${$2}'`;
+                        })
+                        // do the rest
                         .split('\n')
                         .map((line, i) =>
                             line.replace(
