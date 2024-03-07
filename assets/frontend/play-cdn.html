@@ -1,10 +1,35 @@
 <link rel="preconnect" href="https://esm.sh" crossorigin>
 
+<script type="importmap">
+    {
+        "imports": {
+            "fs": "https://ga.jspm.io/npm:@jspm/core@2.0.1/nodelibs/browser/fs.js"
+        }
+    }
+</script>
+
 <script src="https://cdn.tailwindcss.com" id="siul-tailwindcss-jit"></script>
 
 <script type="module" id="siul-tailwindcss-play-cdn">
     import { parse as parsePackage } from 'https://esm.sh/parse-package-name';
     import { set } from 'https://esm.sh/lodash-es';
+    import fs from 'fs';
+    
+    // intercept fs read, and if the path is contains `css/preflight.css`, return the preflight.css content
+    let preflightCss = null;
+    fs.readFileSync = function (path, encoding) {
+        // create browser virtual file ./css/preflight.css
+        if (path.includes('css/preflight.css')) {
+            if (preflightCss === null) {
+                const preflight = new XMLHttpRequest();
+                preflight.open('GET', `https://esm.sh/tailwindcss/src/css/preflight.css?raw`, false);
+                preflight.send(null);
+                preflightCss = preflight.responseText;
+            }
+            return preflightCss;
+        }
+        return fs.readFileSync
+    }
 
     let importShim;
     try {

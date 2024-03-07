@@ -92,9 +92,6 @@ class IframeManager {
                                 defaultProvider: 'esm.sh',
                             },
                         }).then((response) => response.data);
-                    jspm.generatedAt = new Date().getTime();
-
-                    jspmStorage.value[`${version}`] = jspm;
                 } catch (err1) {
                     const generator = new JspmGenerator({
                         // The URL of the import map, for normalising relative URLs:
@@ -126,9 +123,6 @@ class IframeManager {
                             map: generator.getMap(),
                         };
 
-                        jspm.generatedAt = new Date().getTime();
-
-                        jspmStorage.value[`${version}`] = jspm;
                     } catch (err2) {
                         console.error('Failed to generate importmap.');
                         console.error('err1:' + err1);
@@ -136,6 +130,18 @@ class IframeManager {
                         return;
                     }
                 }
+
+                // Add node:fs polyfill. This is a temporary solution.
+                jspm.map.imports['fs'] = 'https://ga.jspm.io/npm:@jspm/core@2.0.1/nodelibs/browser/fs.js';
+                jspm.map.scopes['https://esm.sh/'] = {
+                    ...jspm.map.scopes['https://esm.sh/'] || {},
+                    'https://esm.sh/v135/node_fs.js': 'https://ga.jspm.io/npm:@jspm/core@2.0.1/nodelibs/browser/fs.js',
+                    'https://esm.sh/v136/node_fs.js': 'https://ga.jspm.io/npm:@jspm/core@2.0.1/nodelibs/browser/fs.js',
+                };
+                
+                jspm.generatedAt = new Date().getTime();
+
+                jspmStorage.value[`${version}`] = jspm;
             }
 
             IframeManager.compilerIframeEl = document.createElement('iframe');

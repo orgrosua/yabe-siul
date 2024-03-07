@@ -3,6 +3,14 @@
 
 <head>
     <link rel="preconnect" href="https://esm.sh" crossorigin>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "fs": "https://ga.jspm.io/npm:@jspm/core@2.0.1/nodelibs/browser/fs.js"
+            }
+        }
+    </script>
 </head>
 
 <body>
@@ -63,14 +71,14 @@
                     '\n' +
                     configStr
                         .split('\n')
-                        .map((line, i) => 
+                        .map((line, i) =>
                             line.replace(
                                 /\bimport\s+(.+)\s+from\s+['"](.+)['"]/g,
                                 (_m, variable, url) => {
                                     return `const ${variable.indexOf('{') === -1
                                         ? `{default: ${variable}}`
                                         : variable.replace(/\s+as\s+/, ': ')
-                                    } = await import('${url}')`;
+                                        } = await import('${url}')`;
                                 }
                             )
                         )

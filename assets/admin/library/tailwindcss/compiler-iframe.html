@@ -8,6 +8,7 @@
 
 <body>
     <script type="module">
+        import fs from 'fs';
         import { parse as parsePackage } from 'https://esm.sh/parse-package-name';
         import initLightningcss, { transform, browserslistToTargets } from 'https://esm.sh/lightningcss-wasm';
         import browserslist from 'browserslist';
@@ -28,9 +29,21 @@
             },
         };
 
-        const preflight = new XMLHttpRequest();
-        preflight.open('GET', `https://esm.sh/tailwindcss@${tailwindcssPackage.version}/src/css/preflight.css?raw`, false);
-        preflight.send(null);
+        // intercept fs read, and if the path is contains `css/preflight.css`, return the preflight.css content
+        let preflightCss = null;
+        fs.readFileSync = function (path, encoding) {
+            // create browser virtual file ./css/preflight.css
+            if (path.includes('css/preflight.css')) {
+                if (preflightCss === null) {
+                    const preflight = new XMLHttpRequest();
+                    preflight.open('GET', `https://esm.sh/tailwindcss@${tailwindcssPackage.version}/src/css/preflight.css?raw`, false);
+                    preflight.send(null);
+                    preflightCss = preflight.responseText;
+                }
+                return preflightCss;
+            }
+            return fs.readFileSync
+        }
 
         await initLightningcss();
 
@@ -87,15 +100,20 @@
                     before +
                     '\n' +
                     configStr
+                        // catch multi-line import statements and replace them with single line
+                        .replace(/import\s+({[^}]+})\s+from\s+['"](.+)['"]/g, (_m, $1, $2) => {
+                            return `import ${$1.replace(/\n/g, '')} from '${$2}'`;
+                        })
+                        // do the rest
                         .split('\n')
-                        .map((line, i) => 
+                        .map((line, i) =>
                             line.replace(
                                 /\bimport\s+(.+)\s+from\s+['"](.+)['"]/g,
                                 (_m, variable, url) => {
                                     return `const ${variable.indexOf('{') === -1
                                         ? `{default: ${variable}}`
                                         : variable.replace(/\s+as\s+/, ': ')
-                                    } = await import('${url}')`;
+                                        } = await import('${url}')`;
                                 }
                             )
                         )
@@ -150,14 +168,6 @@
 
         async function compileCss(tw_config, main_css, contents) {
             try {
-                let is_preflight_enabled = tw_config.corePlugins.includes('preflight');
-
-                tw_config.corePlugins = tw_config.corePlugins.filter((plugin) => plugin !== 'preflight');
-
-                if (is_preflight_enabled) {
-                    main_css = `@layer base {${preflight.responseText}}\n${main_css}`;
-                }
-
                 const twPostcssPlugin = processTailwindFeatures(
                     (processOptions) => () => processOptions.createContext(
                         tw_config,

@@ -178,6 +178,12 @@ class Runtime
             $template
         );
 
+        $template = str_replace(
+            'https://esm.sh/tailwindcss/src/css/preflight.css?raw',
+            sprintf('https://esm.sh/tailwindcss@%s/src/css/preflight.css?raw', $tw_version),
+            $template
+        );
+
         if ($display) {
             echo $template;
             define('SIUL_PLAY_CDN_WAS_LOADED', true);
