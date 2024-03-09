@@ -57,7 +57,7 @@ jobs:
         - run: pnpm prod
 
         # clean up the assets dev files
-        - run: rm -rf assets node_modules package.json pnpm-lock.yaml webpack.config.js .eslintrc.js
+        - run: rm -rf assets node_modules package.json pnpm-lock.yaml webpack.config.js .eslintrc.js jsconfig.json
 
         # scoped using php-scoper.phar which require #[\ReturnTypeWillChange] inside so use php 8.0 for scoping
         - uses: shivammathur/setup-php@v2

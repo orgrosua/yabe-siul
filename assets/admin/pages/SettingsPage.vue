@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import { stringify as stringifyYaml } from 'yaml';
 import prettyBytes from 'pretty-bytes';
 
+import { Switch } from '@headlessui/vue';
 import { useBusyStore } from '../stores/busy';
 import ExpansionPanel from '../components/ExpansionPanel.vue';
 import { useLicenseStore } from '../stores/license';
@@ -22,6 +23,7 @@ const api = useApi();
 const licenseStore = useLicenseStore();
 const settingsStore = useSettingsStore();
 const tailwindStore = useTailwindStore();
+const providers = ref([]);
 
 const versions = ref([]);
 
@@ -78,6 +80,28 @@ function doSave() {
 
 const compileError = ref(null);
 
+async function pullProviders() {
+    await api
+        .get('admin/settings/cache/providers')
+        .then((resp) => {
+            providers.value = resp.data.providers;
+        });
+}
+
+function handleEnableKeyup(e, providerId) {
+    if (e.code === 'Space') {
+        e.preventDefault();
+        // item.status = !item.status;
+        settingsStore.virtualOptions(`integration.${providerId}.enabled`, true).value = !settingsStore.virtualOptions(`integration.${providerId}.enabled`, true).value;
+    }
+}
+
+function switchProviderStatus(providerId) {
+    settingsStore.virtualOptions(`integration.${providerId}.enabled`, true).value = !settingsStore.virtualOptions(`integration.${providerId}.enabled`, true).value;
+    // save the settings
+    doSave();
+}
+
 function doGenerateCache() {
     busyStore.add('settings.performance.cached_css.generate');
     compileError.value = null;
@@ -87,19 +111,16 @@ function doGenerateCache() {
             await tailwindStore.doPull();
         }
 
-        const providers = await api
-            .get('admin/settings/cache/providers')
-            .then((resp) => resp.data.providers);
+        await pullProviders();
 
-
-        if (providers.length === 0) {
+        if (providers.value.length === 0) {
             notifier.alert('No cache provider found');
             return;
         }
 
         let content_pool = [];
 
-        for (const provider of providers) {
+        for (const provider of providers.value) {
             let batch = false;
 
             // if the provider is not enabled, skip
@@ -210,6 +231,8 @@ onBeforeMount(() => {
     });
 
     settingsStore.doPull();
+
+    pullProviders();
 
     api
         .get('admin/settings/cache/index')
@@ -358,6 +381,43 @@ defineExpose({
                                     </dl>
                                 </h2>
                                 <p class="f:14 font:mono lh:20px"> {{ compileError.message }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </ExpansionPanel>
+
+
+        <ExpansionPanel namespace="settings" name="integration" class="border:1|solid|#e8e8eb box-shadow:none! max-w:screen-2xs mx:auto my:8 w:full">
+            <template #header>
+                <span class="fg:gray-90 font:18 font:semibold">Integrations</span>
+            </template>
+
+            <template #default>
+                <div class="bg:white">
+                    <div class="{mt:-1;mb:0}>:not([hidden])~:not([hidden])">
+                        <div v-for="provider in providers" :key="provider.id" :class="[settingsStore.virtualOptions(`integration.${provider.id}.enabled`, true).value ? 'b:1|solid|sky-20/.5 bg:sky-5 z:10' : 'b:1|solid|gray-20/.5']" class="flex rel p:12">
+                            <div class="flex align-items:center">
+                                <Switch :aria-disabled="busyStore.isBusy" :checked="settingsStore.virtualOptions(`integration.${provider.id}.enabled`, true).value" @click="switchProviderStatus(provider.id)" @keyup="e => handleEnableKeyup(e, provider.id)" :class="[settingsStore.virtualOptions(`integration.${provider.id}.enabled`, true).value ? 'bg:sky-70' : 'bg:gray-15 opacity:.5']" class="inline-flex rel rounded b:2 b:transparent box-shadow:rgb(255,255,255)|0|0|0|2,rgb(14,165,233)|0|0|0|4,rgba(0,0,0,0)|0|0|0|0:focus cursor:pointer flex-shrink:0 h:24 outline:2|solid|transparent:focus p:0 transition-duration:200 transition-property:color,background-color,border-color,text-decoration-color,fill,stroke transition-timing-function:cubic-bezier(0.4,0,0.2,1) w:44">
+                                    <span :class="[settingsStore.virtualOptions(`integration.${provider.id}.enabled`, true).value ? 'translateX(20)' : 'translateX(0)']" class="inline-block rel rounded bg:white box-shadow:rgb(255,255,255)|0|0|0|0,rgba(59,130,246,0.5)|0|0|0|0,rgba(0,0,0,0.1)|0|1|3|0,rgba(0,0,0,0.1)|0|1|2|-1 font:12 h:20 pointer-events:none transition-duration:200 transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter transition-timing-function:cubic-bezier(0.4,0,0.2,1) w:20">
+                                        <span aria-hidden="true" :class="[settingsStore.virtualOptions(`integration.${provider.id}.enabled`, true).value ? 'opacity:0 transition-duration:100 transition-timing-function:ease-out' : 'opacity:1 transition-duration:200 transition-timing-function:ease-in']" class="abs flex align-items:center h:full inset:0 justify-content:center w:full">
+                                            <font-awesome-icon :icon="['fas', 'xmark']" class="fg:gray-40" />
+                                        </span>
+                                        <span aria-hidden="true" :class="[settingsStore.virtualOptions(`integration.${provider.id}.enabled`, true).value ? 'opacity:1 transition-duration:200 transition-timing-function:ease-in' : 'opacity:0 transition-duration:100 transition-timing-function:ease-out']" class="abs flex align-items:center h:full inset:0 justify-content:center w:full">
+                                            <font-awesome-icon :icon="['fas', 'check']" class="fg:sky-70" />
+                                        </span>
+                                    </span>
+                                </Switch>
+                            </div>
+                            <div class="flex flex:col ml:12">
+                                <div>
+                                    <span class="font:semibold">{{ provider.name }}</span>
+                                    <span class="fg:gray-40 font:10 ml:8">[ {{ provider.id }} ]</span>
+                                </div>
+                                <span class="">
+                                    {{ provider.description }}
+                                </span>
                             </div>
                         </div>
                     </div>

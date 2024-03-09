@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Yabe\Siul\Integration\Gutenberg;
+namespace Yabe\Siul\Integration\LiveCanvas;
 
 use WP_Query;
 
@@ -25,24 +25,39 @@ class Compile
      */
     public function __invoke($metadata): array
     {
+        if (! defined('LC_MU_PLUGIN_NAME')) {
+            return [];
+        }
+
         return $this->get_contents($metadata);
     }
 
     public function get_contents($metadata): array
     {
         $contents = [];
-        $post_types = apply_filters('f!yabe/siul/integration/gutenberg/compile:get_contents.post_types', [
+        $post_types = apply_filters('f!yabe/siul/integration/livecanvas/compile:get_contents.post_types', [
             'post',
             'page',
             'wp_template',
+            'lc_block',
+            'lc_partial',
+            'lc_section',
+            'lc_dynamic_template',
         ]);
 
         $next_batch = $metadata['next_batch'] !== false ? $metadata['next_batch'] : 1;
 
         $wpQuery = new WP_Query([
-            'posts_per_page' => apply_filters('f!yabe/siul/integration/gutenberg/compile:get_contents.post_per_page', (int) get_option('posts_per_page', 10)),
+            'posts_per_page' => apply_filters('f!yabe/siul/integration/livecanvas/compile:get_contents.post_per_page', (int) get_option('posts_per_page', 10)),
             'post_type' => $post_types,
             'paged' => $next_batch,
+            'meta_query' => [
+                [
+                    'key' => '_lc_livecanvas_enabled',
+                    'value' => '1',
+                    'compare' => '=',
+                ],
+            ],
         ]);
 
         foreach ($wpQuery->posts as $post) {
@@ -52,28 +67,17 @@ class Compile
 
             $post_content = $post->post_content;
 
-            if (apply_filters('f!yabe/siul/integration/gutenberg/compile:get_contents.render', true, $post)) {
-                $fn_renders = apply_filters('f!yabe/siul/integration/gutenberg/compile:get_contents.render_fn', [
-                    'do_blocks',
-                    'wptexturize',
-                    'convert_smilies',
-                    'shortcode_unautop',
-                    'wp_filter_content_tags',
-                    'do_shortcode',
-                ]);
-
-                foreach ($fn_renders as $fn_render) {
-                    try {
-                        $post_content = $fn_render($post_content);
-                    } catch (\Throwable $th) {
-                        if (WP_DEBUG) {
-                            error_log($th->getMessage());
-                        }
+            if (apply_filters('f!yabe/siul/integration/livecanvas/compile:get_contents.render', true, $post)) {
+                try {
+                    $post_content = \do_shortcode($post_content);
+                } catch (\Throwable $th) {
+                    if (WP_DEBUG) {
+                        error_log($th->getMessage());
                     }
                 }
             }
 
-            $post_content = apply_filters('f!yabe/siul/integration/gutenberg/compile:get_contents.post_content', $post_content, $post);
+            $post_content = apply_filters('f!yabe/siul/integration/livecanvas/compile:get_contents.post_content', $post_content, $post);
 
             $contents[] = [
                 'id' => $post->ID,

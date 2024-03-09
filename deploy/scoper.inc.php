@@ -184,14 +184,16 @@ return [
             'MONTH_IN_SECONDS',
             'debugger',
 
-            'BRICKS_VERSION',
+            'BRICKS_VERSION', // Bricks
             'BRICKS_DB_PAGE_HEADER',
             'BRICKS_DB_PAGE_CONTENT',
             'BRICKS_DB_PAGE_FOOTER',
             'BRICKS_DB_TEMPLATE_SLUG',
             'BRICKS_DB_GLOBAL_CLASSES',
 
-            'CT_PLUGIN_MAIN_FILE',
+            'CT_PLUGIN_MAIN_FILE', // Oxygen
+
+            'LC_MU_PLUGIN_NAME', // LiveCanvas
         ]
     ),
 
