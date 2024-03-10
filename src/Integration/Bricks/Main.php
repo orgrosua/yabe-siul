@@ -63,7 +63,7 @@ class Main implements IntegrationInterface
 
     public function is_prevent_load(bool $is_prevent_load): bool
     {
-        if ($is_prevent_load || ! function_exists('bricks_is_builder_main')) {
+        if ($is_prevent_load || !function_exists('bricks_is_builder_main')) {
             return $is_prevent_load;
         }
 
@@ -72,7 +72,7 @@ class Main implements IntegrationInterface
 
     public function is_exclude_admin(bool $is_exclude_admin): bool
     {
-        if ($is_exclude_admin || ! function_exists('bricks_is_builder_iframe')) {
+        if ($is_exclude_admin || !function_exists('bricks_is_builder_iframe')) {
             return $is_exclude_admin;
         }
 
@@ -84,14 +84,21 @@ class Main implements IntegrationInterface
         wp_add_inline_script('bricksbender:editor', <<<JS
             document.addEventListener('DOMContentLoaded', function () {
                 iframeWindow = document.getElementById('bricks-builder-iframe');
-    
-                wp.hooks.addFilter('bricksbender-autocomplete-items-query', 'bricksbender', async (autocompleteItems, text) => {
-                    if (!iframeWindow.contentWindow.siul?.loaded?.module?.autocomplete) {
-                        return autocompleteItems;
+
+                // Cached query for autocomplete items.
+                const cached_query = new Map();
+                async function searchQuery(query) {
+                    // split query by `:` and search for each subquery
+                    let prefix = query.split(':');
+                    let q = prefix.pop();
+                    for (let i = query.length; i > query.length - q.length; i--) {
+                        const subquery = query.slice(0, i);
+                        if (cached_query.has(subquery)) {
+                            return cached_query.get(subquery);
+                        }
                     }
-                    
-                    const siul_suggestions = await iframeWindow.contentWindow.wp.hooks.applyFilters('siul.module.autocomplete', text)
-                        .then((suggestions) => suggestions.slice(0, 45))
+
+                    const suggestions = await iframeWindow.contentWindow.wp.hooks.applyFilters('siul.module.autocomplete', query)
                         .then((suggestions) => {
                             return suggestions.map((s) => {
                                 return {
@@ -100,7 +107,19 @@ class Main implements IntegrationInterface
                                 };
                             });
                         });
-    
+
+                    cached_query.set(query, suggestions);
+
+                    return suggestions;
+                }
+
+                wp.hooks.addFilter('bricksbender-autocomplete-items-query', 'bricksbender', async (autocompleteItems, text) => {
+                    if (!iframeWindow.contentWindow.siul?.loaded?.module?.autocomplete) {
+                        return autocompleteItems;
+                    }
+
+                    const siul_suggestions = await searchQuery(text);
+
                     return [...siul_suggestions, ...autocompleteItems];
                 });
             });

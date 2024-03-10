@@ -115,6 +115,46 @@ class Asset
         }
     }
 
+    public static function get_entry_assets(string $key): array
+    {
+        $assets = [
+            'js' => [],
+            'css' => [],
+        ];
+
+        $entrypoints = static::read_entrypoints();
+
+        $manifest = static::read_manifest();
+
+        if (isset($entrypoints[$key])) {
+            $entry = $entrypoints[$key];
+
+            if (isset($entry['js'])) {
+                foreach ($entry['js'] as $js) {
+                    $manifest_key = array_search($js, $manifest, true);
+
+                    $assets['js'][] = [
+                        'key' => $manifest_key,
+                        'src' => strncmp($manifest[$manifest_key], 'http', strlen('http')) === 0 ? $manifest[$manifest_key] : plugins_url('build/' . $manifest[$manifest_key], SIUL::FILE),
+                    ];
+                }
+            }
+
+            if (isset($entry['css'])) {
+                foreach ($entry['css'] as $css) {
+                    $manifest_key = array_search($css, $manifest, true);
+
+                    $assets['css'][] = [
+                        'key' => $manifest_key,
+                        'src' => strncmp($manifest[$manifest_key], 'http', strlen('http')) === 0 ? $manifest[$manifest_key] : plugins_url('build/' . $manifest[$manifest_key], SIUL::FILE),
+                    ];
+                }
+            }
+        }
+
+        return $assets;
+    }
+
     /**
      * Register a script.
      *

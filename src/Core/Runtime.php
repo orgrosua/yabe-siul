@@ -92,6 +92,7 @@ class Runtime
         if ($is_cache_enabled && $this->is_cache_exists() && ! $is_exclude_admin) {
             add_action('wp_head', fn () => $this->enqueue_css_cache(), 1_000_001);
         } else {
+            add_action('wp_head', fn () => $this->enqueue_importmap(), 1);
             add_action('wp_head', fn () => $this->enqueue_play_cdn(), 1_000_001);
 
             if (Config::get('general.autocomplete.engine.enabled', false)) {
@@ -132,6 +133,32 @@ class Runtime
         }
 
         define('SIUL_CSS_CACHE_WAS_LOADED', true);
+    }
+
+    public function enqueue_importmap($display = true)
+    {
+        if ($display && defined('SIUL_IMPORTMAP_WAS_LOADED')) {
+            return;
+        }
+
+        $template_path = plugin_dir_path(SIUL::FILE) . 'build/frontend/importmap.html';
+
+        if (file_exists($template_path) === false) {
+            return;
+        }
+
+        $template = file_get_contents($template_path);
+
+        if ($template === false) {
+            return;
+        }
+
+        if ($display) {
+            echo $template;
+            define('SIUL_IMPORTMAP_WAS_LOADED', true);
+        } else {
+            return $template;
+        }
     }
 
     public function enqueue_play_cdn($display = true)
@@ -194,20 +221,30 @@ class Runtime
 
     public function enqueue_module_autocomplete()
     {
+        $prepared = $this->prepare_module_autocomplete();
+
         Asset::enqueue_entry('module-autocomplete', ['wp-hooks'], true);
 
         $handle = SIUL::WP_OPTION . ':module-autocomplete.js';
 
         wp_set_script_translations($handle, 'yabe-siul');
 
-        wp_localize_script($handle, 'siul', [
-            '_version' => SIUL::VERSION,
-            'assets' => [
-                'url' => Asset::asset_base_url(),
+        wp_localize_script($handle, 'siul', $prepared['data']);
+    }
+
+    public function prepare_module_autocomplete() {
+        return [
+            'dependencies' => ['wp-hooks'],
+            'assets' => Asset::get_entry_assets('module-autocomplete'),
+            'data' => [
+                '_version' => SIUL::VERSION,
+                'assets' => [
+                    'url' => Asset::asset_base_url(),
+                ],
+                'tailwind' => [
+                    'version' => Config::get('general.tailwindcss.version', 'latest'),
+                ],
             ],
-            'tailwind' => [
-                'version' => Config::get('general.tailwindcss.version', 'latest'),
-            ],
-        ]);
+        ];
     }
 }
