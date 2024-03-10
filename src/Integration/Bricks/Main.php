@@ -81,9 +81,13 @@ class Main implements IntegrationInterface
 
     public function register_bricksbender_autocomplete()
     {
+        if (!Config::get('general.autocomplete.engine.enabled', false)) {
+            return;
+        }
+
         wp_add_inline_script('bricksbender:editor', <<<JS
             document.addEventListener('DOMContentLoaded', function () {
-                iframeWindow = document.getElementById('bricks-builder-iframe');
+                const iframeWindow = document.getElementById('bricks-builder-iframe');
 
                 // Cached query for autocomplete items.
                 const cached_query = new Map();
