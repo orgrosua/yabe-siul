@@ -15,6 +15,7 @@
   "devDependencies": {
     "@babel/core": "^7.24.0",
     "@babel/preset-env": "^7.24.0",
+    "@shufo/tailwindcss-class-sorter": "^3.0.1",
     "@symfony/webpack-encore": "^4.6.1",
     "@types/lodash": "^4.14.202",
     "@vue/compiler-sfc": "^3.4.21",

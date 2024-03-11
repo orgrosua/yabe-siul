@@ -194,6 +194,11 @@ return [
             'CT_PLUGIN_MAIN_FILE', // Oxygen
 
             'LC_MU_PLUGIN_NAME', // LiveCanvas
+
+            'GREENSHIFT_DIR_PATH', // Greenshift
+
+            'KADENCE_BLOCKS_VERSION', // Kadence Blocks
+            'KADENCE_VERSION', // Kadence
         ]
     ),
 

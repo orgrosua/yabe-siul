@@ -10,7 +10,11 @@ import { set } from 'lodash-es';
 
     const getSuggestionList = async (value) => await autocomplete.getSuggestionList(value);
 
-    window.wp.hooks.addFilter('siul.module.autocomplete', 'siul', getSuggestionList);
+    // check if the wp-hooks is available
+    if (window.wp?.hooks) {
+        window.wp.hooks.addFilter('siul.module.autocomplete', 'siul', getSuggestionList);
+    }
 
     set(window, 'siul.loaded.module.autocomplete', true);
+    set(window, 'siul.module.autocomplete.query', async (q) => await getSuggestionList(q));
 })();

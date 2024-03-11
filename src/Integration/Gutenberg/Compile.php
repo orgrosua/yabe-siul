@@ -60,7 +60,7 @@ class Compile
                     'shortcode_unautop',
                     'wp_filter_content_tags',
                     'do_shortcode',
-                ]);
+                ], $post);
 
                 foreach ($fn_renders as $fn_render) {
                     try {
