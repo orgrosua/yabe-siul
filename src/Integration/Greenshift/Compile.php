@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Yabe\Siul\Integration\Greenshift;
+namespace Yabe\Siul\Integration\GreenShift;
 
 /**
  * @author Joshua Gugun Siagian <suabahasa@gmail.com>

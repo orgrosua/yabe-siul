@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Yabe\Siul\Integration\Greenshift;
+namespace Yabe\Siul\Integration\GreenShift;
 
 use SIUL;
 use Yabe\Siul\Integration\IntegrationInterface;
@@ -51,8 +51,8 @@ class Main implements IntegrationInterface
     {
         $providers[] = [
             'id' => $this->get_name(),
-            'name' => 'Greenshift',
-            'description' => 'Greenshift integration',
+            'name' => 'GreenShift',
+            'description' => 'GreenShift integration',
             'callback' => fn () => [],
             'enabled' => $this->is_enabled(),
             'meta' => [

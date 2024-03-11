@@ -4,7 +4,7 @@ Donate link: https://ko-fi.com/Q5Q75XSF7
 Tags: tailwind css, bricks builder, oxygen builder
 Requires at least: 6.0
 Tested up to: 6.4
-Stable tag: 1.0.15
+Stable tag: 1.0.16
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -33,13 +33,15 @@ It's easy to build design with Tailwind CSS thanks to the seamless integration w
 * [Blockstudio](https://blockstudio.dev/?ref=7)
 * [Bricks](https://bricksbuilder.io/)
 * [Gutenberg](https://wordpress.org/gutenberg)
+* [GreenShift](https://greenshiftwp.com/)
+* [Kadence WP](https://kadencewp.com)
+* [LiveCanvas](https://livecanvas.com/)
 * [Oxygen](https://oxygenbuilder.com/)
 * [Timber](https://upstatement.com/timber/)
 * [Breakdance](https://breakdance.com/ref/165/) **[Soon]**
 * [Builderius](https://builderius.io/?referral=afdfca82c8) **[Soon]**
 * [Divi](https://www.elegantthemes.com/affiliates/idevaffiliate.php?id=47622) **[Soon]**
 * [Elementor](https://be.elementor.com/visit/?bta=209150&brand=elementor) **[Soon]**
-* [Kadence WP](https://kadencewp.com) **[Soon]**
 * [Pinegrow](https://pinegrow.com/wordpress) **[Soon]**
 * [Zion Builder](https://zionbuilder.io/) **[Soon]**
 
@@ -55,6 +57,11 @@ Visit [our website](https://siul.yabe.land) for more information.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= 1.0.16 =
+* **New**: [GreenShift](https://greenshiftwp.com/) integration
+* **New**: [Kadence WP](https://www.kadencewp.com/) integration
+* **Improve**: Bricksbender Autocomplete performance
 
 = 1.0.15 =
 * **[LiveCanvas] New**: Autocomplete integration on the LiveCanvas editor

@@ -50,8 +50,8 @@ class Main implements IntegrationInterface
     {
         $providers[] = [
             'id' => $this->get_name(),
-            'name' => 'Kadence',
-            'description' => 'Kadence integration',
+            'name' => 'Kadence WP',
+            'description' => 'Kadence WP integration',
             'callback' => fn () => [],
             'enabled' => $this->is_enabled(),
             'meta' => [
