@@ -136,6 +136,7 @@ return [
         'Bricks',
         'Timber',
         'Blockstudio',
+        'Breakdance',
     ],
     'exclude-classes' => array_merge(
         $wp_classes,
@@ -199,6 +200,8 @@ return [
 
             'KADENCE_BLOCKS_VERSION', // Kadence Blocks
             'KADENCE_VERSION', // Kadence
+
+            '__BREAKDANCE_VERSION', // Breakdance
         ]
     ),
 

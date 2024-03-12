@@ -80,6 +80,7 @@ class Compile
             $meta_value = get_post_meta($post_id, $post_metum_key, true);
             if ($meta_value) {
                 $contents[] = [
+                    'name' => $post_id,
                     'content' => $this->transform_meta_value($meta_value),
                 ];
             }
