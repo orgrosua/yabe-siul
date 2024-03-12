@@ -4,7 +4,7 @@ Donate link: https://ko-fi.com/Q5Q75XSF7
 Tags: tailwind css, bricks builder, oxygen builder
 Requires at least: 6.0
 Tested up to: 6.4
-Stable tag: 1.0.17
+Stable tag: 1.0.18
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -58,8 +58,9 @@ Visit [our website](https://siul.yabe.land) for more information.
 
 == Changelog ==
 
-= 1.0.17 =
+= 1.0.18 =
 * **New**: [Breakdance](https://breakdance.com/ref/165/) integration
+* **Fix**: Plugin's .Zip file is not generated properly
 
 = 1.0.16 =
 * **New**: [GreenShift](https://greenshiftwp.com/) integration

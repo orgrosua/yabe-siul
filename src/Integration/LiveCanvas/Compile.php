@@ -51,13 +51,13 @@ class Compile
             'posts_per_page' => apply_filters('f!yabe/siul/integration/livecanvas/compile:get_contents.post_per_page', (int) get_option('posts_per_page', 10)),
             'post_type' => $post_types,
             'paged' => $next_batch,
-            'meta_query' => [
-                [
-                    'key' => '_lc_livecanvas_enabled',
-                    'value' => '1',
-                    'compare' => '=',
-                ],
-            ],
+            // 'meta_query' => [
+            //     [
+            //         'key' => '_lc_livecanvas_enabled',
+            //         'value' => '1',
+            //         'compare' => '=',
+            //     ],
+            // ],
         ]);
 
         foreach ($wpQuery->posts as $post) {
