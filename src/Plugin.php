@@ -123,7 +123,7 @@ final class Plugin
 
         $this->maybe_update_plugin();
 
-        add_action('plugins_loaded', fn () => $this->plugins_loaded());
+        add_action('plugins_loaded', fn () => $this->plugins_loaded(), 9);
         add_action('init', fn () => $this->init_plugin());
 
         do_action('a!yabe/siul/plugin:boot.end');

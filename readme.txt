@@ -1,10 +1,10 @@
 === Yabe Siul ===
 Contributors: suabahasa, rosua
 Donate link: https://ko-fi.com/Q5Q75XSF7
-Tags: tailwind css, bricks builder, oxygen builder
+Tags: tailwind css, bricks builder, oxygen builder, breakdance builder
 Requires at least: 6.0
 Tested up to: 6.4
-Stable tag: 1.0.19
+Stable tag: 1.0.20
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -57,6 +57,9 @@ Visit [our website](https://siul.yabe.land) for more information.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= 1.0.20 =
+* **New**: Autocomplete integration for [Yabe Movebender](https://movebender.yabe.land/)
 
 = 1.0.19 =
 * **New**: [Breakdance](https://breakdance.com/ref/165/) integration
