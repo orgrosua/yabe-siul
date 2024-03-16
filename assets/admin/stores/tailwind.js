@@ -11,6 +11,21 @@ export const useTailwindStore = defineStore('tailwind', () => {
     const notifier = useNotifier();
 
     /**
+     * The custom Tailwind CSS and config added with the filter hooks.
+     * @param {object} _custom
+     */
+    const _custom = ref({
+        css: {
+            prepend: '',
+            append: ''
+        },
+        config: {
+            prepend: '',
+            append: ''
+        }
+    });
+
+    /**
      * The Tailwind main CSS file.
      * @param {string} css
      */
@@ -79,6 +94,8 @@ export const useTailwindStore = defineStore('tailwind', () => {
                 _presetDefault.value = data._default.preset;
                 _configDefault.value = data._default.config;
                 _wizardDefault.value = data._default.wizard;
+
+                _custom.value = data._custom;
 
                 updateInitValues();
             })
@@ -161,6 +178,7 @@ export const useTailwindStore = defineStore('tailwind', () => {
             config: _configDefault,
             wizard: _wizardDefault,
         },
+        customValue: _custom,
         css,
         preset,
         config,

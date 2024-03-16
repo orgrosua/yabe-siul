@@ -152,14 +152,12 @@ function doGenerateCache() {
             return content;
         });
 
-        const main_css = tailwindStore.css;
-
         const tw_version = settingsStore.virtualOptions('general.tailwindcss.version', 'latest').value;
 
         const compiled_css = await compileCSS(
             tw_version === 'latest' ? versions.value[0] : tw_version,
-            tailwindStore.config,
-            main_css,
+            `${tailwindStore.customValue.config.prepend}\n${tailwindStore.config}\n${tailwindStore.customValue.config.append}`,
+            `${tailwindStore.customValue.css.prepend}\n${tailwindStore.css}\n${tailwindStore.customValue.css.append}`,
             contents
         );
 

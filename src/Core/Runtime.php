@@ -61,7 +61,7 @@ class Runtime
      */
     public static function get_instance(): self
     {
-        if (! isset(self::$instance)) {
+        if (!isset(self::$instance)) {
             self::$instance = new self();
         }
 
@@ -70,7 +70,7 @@ class Runtime
 
     public function init()
     {
-        if (! is_admin()) {
+        if (!is_admin()) {
             $is_prevent_load = apply_filters('f!yabe/siul/core/runtime:is_prevent_load', false);
 
             if ($is_prevent_load) {
@@ -89,7 +89,7 @@ class Runtime
         $is_exclude_admin = Config::get('performance.cache.exclude_admin', false) && current_user_can('manage_options');
         $is_exclude_admin = apply_filters('f!yabe/siul/core/runtime:append_header.exclude_admin', $is_exclude_admin);
 
-        if ($is_cache_enabled && $this->is_cache_exists() && ! $is_exclude_admin) {
+        if ($is_cache_enabled && $this->is_cache_exists() && !$is_exclude_admin) {
             add_action('wp_head', fn () => $this->enqueue_css_cache(), 1_000_001);
         } else {
             add_action('wp_head', fn () => $this->enqueue_importmap(), 1);
@@ -112,7 +112,7 @@ class Runtime
             return;
         }
 
-        if (! $this->is_cache_exists()) {
+        if (!$this->is_cache_exists()) {
             return;
         }
 
@@ -195,13 +195,23 @@ class Runtime
 
         $template = str_replace(
             '//-@-tailwindcss',
-            preg_replace('/(?<!await )require\(/', 'await require(', $tailwind->config),
+            sprintf(
+                "%s\n%s\n%s",
+                apply_filters('f!yabe/siul/core/runtime:enqueue_play_cdn.config.prepend', ''),
+                preg_replace('/(?<!await )require\(/', 'await require(', $tailwind->config),
+                apply_filters('f!yabe/siul/core/runtime:enqueue_play_cdn.config.append', '')
+            ),
             $template
         );
 
         $template = str_replace(
             '<style type="text/siul-tailwindcss-main-css" id="siul-tailwindcss-main-css"></style>',
-            sprintf('<style type="text/siul-tailwindcss-main-css" id="siul-tailwindcss-main-css">%s</style>', $tailwind->css),
+            sprintf(
+                '<style type="text/siul-tailwindcss-main-css" id="siul-tailwindcss-main-css">' . "%s\n%s\n%s" . '</style>',
+                apply_filters('f!yabe/siul/core/runtime:enqueue_play_cdn.css.prepend', ''),
+                $tailwind->css,
+                apply_filters('f!yabe/siul/core/runtime:enqueue_play_cdn.css.append', '')
+            ),
             $template
         );
 
@@ -232,7 +242,8 @@ class Runtime
         wp_localize_script($handle, 'siul', $prepared['data']);
     }
 
-    public function prepare_module_autocomplete() {
+    public function prepare_module_autocomplete()
+    {
         return [
             'dependencies' => ['wp-hooks'],
             'assets' => Asset::get_entry_assets('module-autocomplete'),

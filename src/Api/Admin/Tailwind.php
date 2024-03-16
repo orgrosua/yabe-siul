@@ -63,6 +63,16 @@ class Tailwind extends AbstractApi implements ApiInterface
         return new WP_REST_Response([
             'tailwind' => $tailwind,
             '_default' => SIUL::default_tailwind(),
+            '_custom' => [
+                'css' => [
+                    'prepend' => apply_filters('f!yabe/siul/core/runtime:enqueue_play_cdn.css.prepend', ''),
+                    'append' => apply_filters('f!yabe/siul/core/runtime:enqueue_play_cdn.css.append', ''),
+                ],
+                'config' => [
+                    'prepend' => apply_filters('f!yabe/siul/core/runtime:enqueue_play_cdn.config.prepend', ''),
+                    'append' => apply_filters('f!yabe/siul/core/runtime:enqueue_play_cdn.config.append', ''),
+                ],
+            ]
         ]);
     }
 

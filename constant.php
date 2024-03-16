@@ -26,12 +26,12 @@ class SIUL
     /**
      * @var string
      */
-    public const VERSION = '1.0.20';
+    public const VERSION = '1.0.21';
 
     /**
      * @var int
      */
-    public const VERSION_ID = 10020;
+    public const VERSION_ID = 10021;
 
     /**
      * @var int
@@ -46,7 +46,7 @@ class SIUL
     /**
      * @var int
      */
-    public const RELEASE_VERSION = 20;
+    public const RELEASE_VERSION = 21;
 
     /**
      * @var string

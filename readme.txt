@@ -4,7 +4,7 @@ Donate link: https://ko-fi.com/Q5Q75XSF7
 Tags: tailwind css, bricks builder, oxygen builder, breakdance builder
 Requires at least: 6.0
 Tested up to: 6.4
-Stable tag: 1.0.20
+Stable tag: 1.0.21
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -57,6 +57,9 @@ Visit [our website](https://siul.yabe.land) for more information.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= 1.0.21 =
+* **New**: Added 4 new filter hooks to add custom `Main.CSS` and `tailwind.config.js` content. Please check the documentation [#1](https://siul.yabe.land/guides/integrations/developer/#maincss) [#2](https://siul.yabe.land/guides/integrations/developer/#tailwindconfigjs) for the information.
 
 = 1.0.20 =
 * **New**: Autocomplete integration for [Yabe Movebender](https://movebender.yabe.land/)

@@ -218,7 +218,7 @@ watch(twConfig, (value, oldValue) => {
         return;
     }
 
-    editorConfig.setValue(twConfig.value);
+    editorConfig.setValue(`${tailwindStore.customValue.config.prepend}\n${twConfig.value}\n${tailwindStore.customValue.config.append}`);
 });
 
 function updateTwConfig() {
@@ -232,7 +232,9 @@ function updateTwConfig() {
                 parser: 'babel',
                 plugins: [prettierPluginBabel, prettierPluginEstree],
             });
+
             twConfig.value = formatted;
+
         } catch (e) { /* empty */ }
     })();
 }
