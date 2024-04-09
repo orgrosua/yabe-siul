@@ -4,7 +4,7 @@ Donate link: https://ko-fi.com/Q5Q75XSF7
 Tags: tailwind css, bricks builder, oxygen builder, breakdance builder
 Requires at least: 6.0
 Tested up to: 6.4
-Stable tag: 1.0.22
+Stable tag: 1.0.23
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -58,7 +58,7 @@ Visit [our website](https://siul.yabe.land) for more information.
 
 == Changelog ==
 
-= 1.0.22 =
+= 1.0.23 =
 * **New**: Class Sorter module. Based on the official [Prettier plugin for Tailwind CSS](https://tailwindcss.com/blog/automatic-class-sorting-with-prettier).
 * **New**: Class Sorter integration for [Yabe Bricksbender](https://bricksbender.yabe.land/)
 

@@ -142,6 +142,7 @@
         window.wp.hooks.addFilter('siul.module.class-sorter', 'siul', sortClasses);
     }
 
+    set(window, 'siul.loaded.module.classSorter', true);
     set(window, 'siul.module.classSorter.sort', (classes) => sortClasses(classes));
 </script>
 
