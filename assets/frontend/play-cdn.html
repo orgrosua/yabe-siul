@@ -4,7 +4,10 @@
     import { parse as parsePackage } from 'https://esm.sh/parse-package-name';
     import { set } from 'https://esm.sh/lodash-es';
     import fs from 'fs';
-    
+    import generateRules from "tailwindcss/lib/lib/generateRules";
+    import setupContextUtil from "tailwindcss/lib/lib/setupContextUtils";
+    import resolveConfig from "tailwindcss/resolveConfig";
+
     // intercept fs read, and if the path is contains `css/preflight.css`, return the preflight.css content
     let preflightCss = null;
     fs.readFileSync = function (path, encoding) {
@@ -62,6 +65,84 @@
     oldStyleEl.replaceWith(newStyleEl);
 
     set(window, 'siul.loaded.siul', true);
+
+    let context = setupContextUtil.createContext(resolveConfig(tailwind.config));
+
+    // class sorter module
+    function sortClasses(classStr) {
+        let tailwindConfig = tailwind.config;
+
+        const parts = classStr
+            .split(/\s+/)
+            .filter((x) => x !== "" && x !== "|");
+
+        const unknownClassNames = [];
+
+        const knownClassNamesWithOrder = context.getClassOrder
+            ? context.getClassOrder(parts)
+            : getClassOrderPolyfill(parts, context);
+
+        const knownClassNames = knownClassNamesWithOrder
+
+            .sort(([, a], [, z]) => {
+                if (a === z) return 0;
+
+                if (a === null) return -1;
+
+                if (z === null) return 1;
+
+                return bigSign(a - z);
+            })
+
+            .map(([className]) => className);
+
+        return [...unknownClassNames, ...knownClassNames].join(" ");
+    }
+
+    function bigSign(bigIntValue) {
+        const left = bigIntValue > 0n;
+        const right = bigIntValue < 0n;
+
+        return left - right;
+    }
+
+    function prefixCandidate(context, selector) {
+        const prefix = context.tailwindConfig.prefix;
+
+        return typeof prefix === "function" ? prefix(selector) : prefix + selector;
+    }
+
+    function getClassOrderPolyfill(classes, context) {
+        const parasiteUtilities = new Set([
+            prefixCandidate(context, "group"),
+
+            prefixCandidate(context, "peer"),
+        ]);
+
+        const classNamesWithOrder = [];
+
+        for (const className of classes) {
+            let order =
+                generateRules.generateRules(new Set([className]), context).sort(([a], [z]) =>
+                    bigSign(z - a)
+                )[0]?.[0] ?? null;
+
+            if (order === null && parasiteUtilities.has(className)) {
+                order = context.layerOrder.components;
+            }
+
+            classNamesWithOrder.push([className, order]);
+        }
+
+        return classNamesWithOrder;
+    }
+
+    // if the wp-hooks is available
+    if (window.wp?.hooks) {
+        window.wp.hooks.addFilter('siul.module.class-sorter', 'siul', sortClasses);
+    }
+
+    set(window, 'siul.module.classSorter.sort', (classes) => sortClasses(classes));
 </script>
 
 <style type="text/siul-tailwindcss-main-css" id="siul-tailwindcss-main-css"></style>
