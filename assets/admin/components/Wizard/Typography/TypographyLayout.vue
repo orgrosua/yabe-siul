@@ -57,13 +57,13 @@ function generateFluidTypography(config) {
     }
 
     for (let i = 1; i <= config.stepsSmaller; i++) {
-        let key;
+        let key = config.miscPrefix || '';
         if (i === config.stepsSmaller) {
-            key = 's';
+            key += 'sm';
         } else if (i === config.stepsSmaller - 1) {
-            key = 'xs';
+            key += 'xs';
         } else {
-            key = `${config.stepsSmaller - i}xs`;
+            key += `${config.stepsSmaller - i}xs`;
         }
 
         let currentMinSize = config.minSize;
@@ -83,18 +83,18 @@ function generateFluidTypography(config) {
 
     selectedWizard.value.preset.typography.push({
         id: nanoid(10),
-        key: 'base',
+        key: (config.miscPrefix || '') + 'base',
         value: calcFluid(config.minSize, config.maxSize, config.minViewport, config.maxViewport),
     });
 
     for (let i = 1; i <= config.stepsLarger; i++) {
-        let key;
+        let key = config.miscPrefix || '';
         if (i === 1) {
-            key = 'l';
+            key += 'lg';
         } else if (i === 2) {
-            key = 'xl';
+            key += 'xl';
         } else {
-            key = `${i}xl`;
+            key += `${i-1}xl`;
         }
 
         let currentMinSize = config.minSize;

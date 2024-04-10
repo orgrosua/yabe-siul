@@ -92,6 +92,7 @@ const defaultFluid = useStorage('siul.ui.wizard.fluid-calculator', {
     maxViewport: 1400,
     stepsSmaller: 4,
     stepsLarger: 4,
+    miscPrefix: 'fluid-',
 });
 
 function submitForm() {
@@ -108,6 +109,7 @@ function submitForm() {
         maxViewport: defaultFluid.value.maxViewport,
         stepsSmaller: defaultFluid.value.stepsSmaller,
         stepsLarger: defaultFluid.value.stepsLarger,
+        miscPrefix: defaultFluid.value.miscPrefix,
     });
 }
 </script>
@@ -212,13 +214,13 @@ function submitForm() {
                         <font-awesome-icon :icon="['fas', 'plus']" class="fg:gray-60" />
                     </div>
                     <div v-for="step in defaultFluid.stepsSmaller" :key="step" @click="defaultFluid.stepsSmaller -= (step === 1)" :class="step === 1 ? 'cursor:pointer border:gray-20:hover' : ''" class="flex align-items:center bg:gray-10 border:1|solid|transparent justify-content:center px:15 py:10 r:6">
-                        <span v-if="step === defaultFluid.stepsSmaller">s</span>
+                        <span v-if="step === defaultFluid.stepsSmaller">sm</span>
                         <span v-else-if="step === defaultFluid.stepsSmaller - 1">xs</span>
                         <span v-else>{{ defaultFluid.stepsSmaller - step }}xs</span>
                     </div>
                     <div class="flex align-items:center bg:blue-40 fg:white font:semibold justify-content:center px:15 py:10 r:6">base</div>
                     <div v-for="step in defaultFluid.stepsLarger" :key="step" @click="defaultFluid.stepsLarger -= (step === defaultFluid.stepsLarger)" :class="step === defaultFluid.stepsLarger ? 'cursor:pointer border:gray-20:hover' : ''" class="flex align-items:center bg:gray-20 border:1|solid|transparent font:semibold justify-content:center px:15 py:10 r:6">
-                        <span v-if="step === 1">l</span>
+                        <span v-if="step === 1">lg</span>
                         <span v-else-if="step === 2">xl</span>
                         <span v-else>{{ step - 1 }}xl</span>
                     </div>
@@ -226,6 +228,19 @@ function submitForm() {
                         <font-awesome-icon :icon="['fas', 'plus']" class="fg:gray-60" />
                     </div>
                 </div>
+            </div>
+
+            <!-- misc -->
+
+            <div class="grid gap:8 p:20">
+                <div class="block capitalize fg:gray-70 font:16">Misc</div>
+                <div>
+                    <div class="rel mt:8 r:8">
+                        <label for="prefix" class="abs inline-block bg:white fg:gray-90 font:12 font:medium left:8 px:4 top:-8">Prefix</label>
+                        <input type="text" v-model="defaultFluid.miscPrefix" class="block border:1|solid|gray-20 fg:gray-90 fg:gray-30::placeholder outline:2|solid|crimson-40:invalid py:6 r:6 w:full" placeholder="fluid-" />
+                    </div>
+                </div>
+
             </div>
 
             <!-- import button -->
