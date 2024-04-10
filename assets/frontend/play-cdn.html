@@ -4,9 +4,12 @@
     import { parse as parsePackage } from 'https://esm.sh/parse-package-name';
     import { set } from 'https://esm.sh/lodash-es';
     import fs from 'fs';
+    import postcss from "postcss";
     import generateRules from "tailwindcss/lib/lib/generateRules";
     import setupContextUtil from "tailwindcss/lib/lib/setupContextUtils";
+    import evaluateTailwindFunctions from "tailwindcss/lib/lib/evaluateTailwindFunctions";
     import resolveConfig from "tailwindcss/resolveConfig";
+    import { addEquivalents } from 'https://esm.sh/gh/tailwindlabs/tailwindcss-intellisense@daa8bb2821/packages/tailwindcss-language-service/src/util/equivalents.ts';
 
     // intercept fs read, and if the path is contains `css/preflight.css`, return the preflight.css content
     let preflightCss = null;
@@ -66,84 +69,157 @@
 
     set(window, 'siul.loaded.siul', true);
 
-    let context = setupContextUtil.createContext(resolveConfig(tailwind.config));
+    let twContext = setupContextUtil.createContext(resolveConfig(tailwind.config));
 
-    // class sorter module
-    function sortClasses(classStr) {
-        let tailwindConfig = tailwind.config;
+    /**
+     * @module class-sorter
+     */
 
-        const parts = classStr
-            .split(/\s+/)
-            .filter((x) => x !== "" && x !== "|");
+    const moduleClassSorter = {
+        sort(classes) {
+            let tailwindConfig = tailwind.config;
 
-        const unknownClassNames = [];
+            const parts = classes
+                .split(/\s+/)
+                .filter((x) => x !== "" && x !== "|");
 
-        const knownClassNamesWithOrder = context.getClassOrder
-            ? context.getClassOrder(parts)
-            : getClassOrderPolyfill(parts, context);
+            const unknownClassNames = [];
 
-        const knownClassNames = knownClassNamesWithOrder
+            const knownClassNamesWithOrder = twContext.getClassOrder
+                ? twContext.getClassOrder(parts)
+                : this.getClassOrderPolyfill(parts, twContext);
 
-            .sort(([, a], [, z]) => {
-                if (a === z) return 0;
+            const knownClassNames = knownClassNamesWithOrder
 
-                if (a === null) return -1;
+                .sort(([, a], [, z]) => {
+                    if (a === z) return 0;
 
-                if (z === null) return 1;
+                    if (a === null) return -1;
 
-                return bigSign(a - z);
-            })
+                    if (z === null) return 1;
 
-            .map(([className]) => className);
+                    return this.bigSign(a - z);
+                })
 
-        return [...unknownClassNames, ...knownClassNames].join(" ");
-    }
+                .map(([className]) => className);
 
-    function bigSign(bigIntValue) {
-        const left = bigIntValue > 0n;
-        const right = bigIntValue < 0n;
+            return [...unknownClassNames, ...knownClassNames].join(" ");
+        },
 
-        return left - right;
-    }
+        bigSign(bigIntValue) {
+            return (bigIntValue > 0n) - (bigIntValue < 0n);
+        },
 
-    function prefixCandidate(context, selector) {
-        const prefix = context.tailwindConfig.prefix;
+        prefixCandidate(context, selector) {
+            const prefix = context.tailwindConfig.prefix;
 
-        return typeof prefix === "function" ? prefix(selector) : prefix + selector;
-    }
+            return typeof prefix === "function" ? prefix(selector) : prefix + selector;
+        },
 
-    function getClassOrderPolyfill(classes, context) {
-        const parasiteUtilities = new Set([
-            prefixCandidate(context, "group"),
+        getClassOrderPolyfill(classes, context) {
+            const parasiteUtilities = new Set([
+                this.prefixCandidate(context, "group"),
 
-            prefixCandidate(context, "peer"),
-        ]);
+                this.prefixCandidate(context, "peer"),
+            ]);
 
-        const classNamesWithOrder = [];
+            const classNamesWithOrder = [];
 
-        for (const className of classes) {
-            let order =
-                generateRules.generateRules(new Set([className]), context).sort(([a], [z]) =>
-                    bigSign(z - a)
-                )[0]?.[0] ?? null;
+            for (const className of classes) {
+                let order =
+                    generateRules.generateRules(new Set([className]), context).sort(([a], [z]) =>
+                        bigSign(z - a)
+                    )[0]?.[0] ?? null;
 
-            if (order === null && parasiteUtilities.has(className)) {
-                order = context.layerOrder.components;
+                if (order === null && parasiteUtilities.has(className)) {
+                    order = context.layerOrder.components;
+                }
+
+                classNamesWithOrder.push([className, order]);
             }
 
-            classNamesWithOrder.push([className, order]);
-        }
-
-        return classNamesWithOrder;
+            return classNamesWithOrder;
+        },
     }
 
     // if the wp-hooks is available
     if (window.wp?.hooks) {
-        window.wp.hooks.addFilter('siul.module.class-sorter', 'siul', sortClasses);
+        window.wp.hooks.addFilter('siul.module.class-sorter', 'siul', moduleClassSorter.sort);
     }
 
     set(window, 'siul.loaded.module.classSorter', true);
-    set(window, 'siul.module.classSorter.sort', (classes) => sortClasses(classes));
+    set(window, 'siul.module.classSorter.sort', (classes) => moduleClassSorter.sort(classes));
+
+    /**
+     * @module class-name-to-css
+     */
+    const moduleClassNameToCss = {
+        generate(className) {
+            if (className === null) return null;
+
+            let { root, rules } = this.generateRules([className]);
+
+            if (rules.length === 0) {
+                return null;
+            }
+
+            return this.stringifyRoot(root);
+        },
+
+        generateRules(classNames, filter = () => true) {
+            let rules = generateRules.generateRules(new Set(classNames), twContext)
+                .sort(([a], [z]) => bigSign(a - z));
+
+            let root = postcss.root({ nodes: rules.map(([, rule]) => rule) });
+
+            // expandApplyAtRules.expandApplyAtRules(twContext)(root);
+            evaluateTailwindFunctions.default(twContext)(root);
+
+            let actualRules = [];
+            root.walkRules((subRule) => {
+                if (filter(subRule)) {
+                    actualRules.push(subRule)
+                }
+            });
+
+            return {
+                root,
+                rules: actualRules,
+            };
+        },
+
+        stringifyRoot(root) {
+            let clone = root.clone();
+
+            clone.walkAtRules('defaults', (node) => {
+                node.remove();
+            });
+
+            let css = clone.toString();
+
+            css = addEquivalents(css, {
+                showPixelEquivalents: true,
+                rootFontSize: 16
+            });
+
+            let identSize = 4;
+            let identPattern = /^(?:    )+/gm;
+
+            return css
+                .replace(/([^;{}\s])(\n\s*})/g, (_match, before, after) => `${before};${after}`)
+                .replace(identPattern, (indent) =>
+                    ' '.repeat((indent.length / identSize) * 4),
+                );
+        }
+    }
+
+    // if the wp-hooks is available
+    if (window.wp?.hooks) {
+        window.wp.hooks.addFilter('siul.module.class-name-to-css', 'siul', moduleClassNameToCss.generate);
+    }
+
+    set(window, 'siul.loaded.module.classNameToCss', true);
+    set(window, 'siul.module.classNameToCss.generate', (className) => moduleClassNameToCss.generate(className));
 </script>
 
 <style type="text/siul-tailwindcss-main-css" id="siul-tailwindcss-main-css"></style>
