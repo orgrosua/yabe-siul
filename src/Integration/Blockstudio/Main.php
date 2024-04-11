@@ -74,7 +74,7 @@ class Main implements IntegrationInterface
      */
     public function append_editor_markup()
     {
-        $markup = base64_encode(Runtime::get_instance()->enqueue_play_cdn(false));
+        $markup = base64_encode(Runtime::get_instance()->enqueue_importmap(false) . Runtime::get_instance()->enqueue_play_cdn(false));
 
         echo <<<HTML
             <script>
