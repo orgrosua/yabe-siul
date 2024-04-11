@@ -4,7 +4,7 @@ Donate link: https://ko-fi.com/Q5Q75XSF7
 Tags: tailwind css, bricks builder, oxygen builder, breakdance builder
 Requires at least: 6.0
 Tested up to: 6.4
-Stable tag: 1.0.23
+Stable tag: 1.0.24
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -58,19 +58,24 @@ Visit [our website](https://siul.yabe.land) for more information.
 
 == Changelog ==
 
+= 1.0.24 =
+* **New**: Hover Preview module. Based on the official [Tailwind CSS extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss#hover-preview)
+* **New**: Hover Preview integration for [Yabe Bricksbender](https://bricksbender.yabe.land/)
+* **Fix**: Fluid calculator generating wrong labels
+* **[Gutenberg] Improve**: Load the required assets properly on the editor
+
 = 1.0.23 =
-* **New**: Class Sorter module. Based on the official [Prettier plugin for Tailwind CSS](https://tailwindcss.com/blog/automatic-class-sorting-with-prettier).
+* **New**: Class Sorter module. Based on the official [Prettier plugin for Tailwind CSS](https://tailwindcss.com/blog/automatic-class-sorting-with-prettier)
 * **New**: Class Sorter integration for [Yabe Bricksbender](https://bricksbender.yabe.land/)
 
 = 1.0.21 =
-* **New**: Added 4 new filter hooks to add custom `Main.CSS` and `tailwind.config.js` content. Please check the documentation [#1](https://siul.yabe.land/guides/integrations/developer/#maincss) [#2](https://siul.yabe.land/guides/integrations/developer/#tailwindconfigjs) for the information.
+* **New**: Added 4 new filter hooks to add custom `Main.CSS` and `tailwind.config.js` content. Please check the documentation [#1](https://siul.yabe.land/guides/integrations/developer/#maincss) [#2](https://siul.yabe.land/guides/integrations/developer/#tailwindconfigjs) for the information
 
 = 1.0.20 =
 * **New**: Autocomplete integration for [Yabe Movebender](https://movebender.yabe.land/)
 
 = 1.0.19 =
 * **New**: [Breakdance](https://breakdance.com/ref/165/) integration
-* **Fix**: Plugin's .Zip file is not generated properly
 
 = 1.0.16 =
 * **New**: [GreenShift](https://greenshiftwp.com/) integration

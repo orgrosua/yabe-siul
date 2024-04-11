@@ -71,6 +71,7 @@ class Main implements IntegrationInterface
 
     public function admin_head()
     {
+        Runtime::get_instance()->enqueue_importmap();
         Runtime::get_instance()->enqueue_play_cdn();
 
         if (strpos($_SERVER['REQUEST_URI'], 'site-editor.php') !== false) {

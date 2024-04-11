@@ -23,8 +23,9 @@
         let cssElement = document.querySelector('style#siul-tailwindcss-main-css');
         let jitElement = document.querySelector('script#siul-tailwindcss-jit');
         let playElement = document.querySelector('script#siul-tailwindcss-play-cdn');
+        let importMapElement = document.querySelector('script#siul-tailwindcss-importmap');
 
-        if (cssElement && jitElement && playElement) {
+        if (cssElement && jitElement && playElement && importMapElement) {
             clearTimeout(timeout);
             break;
         }
@@ -42,6 +43,7 @@
     // Create a textarea element to manipulate script content
     let textareaPlayElement = document.createElement('textarea');
     let textareaJitElement = document.createElement('textarea');
+    let textareaImportMapElement = document.createElement('textarea');
 
     // Copy the Play CDN script content to the textarea
     textareaPlayElement.innerHTML = document.querySelector('script#siul-tailwindcss-play-cdn').outerHTML;
@@ -51,6 +53,9 @@
     textareaJitElement.innerHTML = document.querySelector('script#siul-tailwindcss-jit').outerHTML;
     let jitContent = textareaJitElement.value;
 
+    // Copy the content of import map script
+    textareaImportMapElement.innerHTML = document.querySelector('script#siul-tailwindcss-importmap').outerHTML;
+    let importMapContent = textareaImportMapElement.value;
 
     let contentWindow = rootContainer.contentWindow || rootContainer;
     let contentDocument = rootContainer.contentDocument || contentWindow.document;
@@ -61,6 +66,7 @@
         // Create a textarea element to manipulate script content
         let textareaPlayElement = document.createElement('textarea');
         let textareaJitElement = document.createElement('textarea');
+        let textareaImportMapElement = document.createElement('textarea');
 
         // Copy the Play CDN script content to the textarea
         textareaPlayElement.innerHTML = document.querySelector('script#siul-tailwindcss-play-cdn').outerHTML;
@@ -70,6 +76,10 @@
         textareaJitElement.innerHTML = document.querySelector('script#siul-tailwindcss-jit').outerHTML;
         let jitContent = textareaJitElement.value;
 
+        // Copy the content of import map script
+        textareaImportMapElement.innerHTML = document.querySelector('script#siul-tailwindcss-importmap').outerHTML;
+        let importMapContent = textareaImportMapElement.value;
+
         // Function to inject the script and style into the iframe
         let inject = () => {
             let iframes = document.querySelectorAll('iframe.components-sandbox');
@@ -78,6 +88,7 @@
                 let contentDocument = iframe.contentDocument || contentWindow.document;
 
                 if (!contentDocument.querySelector('script#tailwindcss-play')) {
+                    contentDocument.head.appendChild(document.createRange().createContextualFragment(importMapContent));
                     contentDocument.head.appendChild(document.createRange().createContextualFragment(jitContent));
                     contentDocument.head.appendChild(document.createRange().createContextualFragment(playContent));
                     contentDocument.head.appendChild(document.querySelector('style#siul-tailwindcss-main-css').cloneNode(true));
@@ -102,11 +113,19 @@
         });
     `;
 
+
+    // wait until contentDocument.head is available
+    console.log('waiting for the contentDocument.head to be available...');
+    while (!contentDocument.head) {
+        await new Promise(resolve => setTimeout(resolve, 300));
+    }
+
     // Inject the script and style into the root iframe
     console.log('injecting SIUL script and style into the root container');
 
     if (!contentDocument.querySelector('script#siul-tailwindcss-play-cdn')) {
         console.log('starting the root injection process...');
+        contentDocument.head.appendChild(document.createRange().createContextualFragment(importMapContent));
         contentDocument.head.appendChild(document.createRange().createContextualFragment(jitContent));
         contentDocument.head.appendChild(document.createRange().createContextualFragment(playContent));
         contentDocument.head.appendChild(document.querySelector('style#siul-tailwindcss-main-css').cloneNode(true));
