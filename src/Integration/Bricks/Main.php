@@ -126,6 +126,11 @@ class Main implements IntegrationInterface
 
                     return [...siul_suggestions, ...autocompleteItems];
                 });
+
+                // clear cache each 1 minute to avoid memory leak
+                setInterval(() => {
+                    cached_query.clear();
+                }, 60000);
             });
         JS, 'after');
     }

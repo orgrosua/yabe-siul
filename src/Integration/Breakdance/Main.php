@@ -24,7 +24,7 @@ class Main implements IntegrationInterface
     public function __construct()
     {
         add_filter('f!yabe/siul/core/cache:compile.providers', fn (array $providers): array => $this->register_provider($providers));
-        
+
         if ($this->is_enabled()) {
             add_filter('f!yabe/siul/core/runtime:is_prevent_load', fn (bool $is_prevent_load): bool => $this->is_prevent_load($is_prevent_load));
             add_filter('f!yabe/siul/core/runtime:append_header.exclude_admin', fn (bool $is_exclude_admin): bool => $this->is_exclude_admin($is_exclude_admin));
@@ -131,6 +131,11 @@ class Main implements IntegrationInterface
 
                         return [...siul_suggestions, ...autocompleteItems];
                     });
+
+                    // clear cache each 1 minute to avoid memory leak
+                    setInterval(() => {
+                        cached_query.clear();
+                    }, 60000);
                 });
             </script>
         HTML;
