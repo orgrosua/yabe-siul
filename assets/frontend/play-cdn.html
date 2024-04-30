@@ -11,6 +11,9 @@
     import resolveConfig from "tailwindcss/resolveConfig";
     import { addEquivalents } from 'https://esm.sh/gh/tailwindlabs/tailwindcss-intellisense@daa8bb2821/packages/tailwindcss-language-service/src/util/equivalents.ts';
 
+    // listen broadcast message from the settings page
+    const bc = new BroadcastChannel('siul_channel');
+
     // intercept fs read, and if the path is contains `css/preflight.css`, return the preflight.css content
     let preflightCss = null;
     fs.readFileSync = function (path, encoding) {
@@ -66,6 +69,12 @@
     newStyleEl.type = 'text/tailwindcss';
     newStyleEl.textContent = oldStyleEl.textContent;
     oldStyleEl.replaceWith(newStyleEl);
+
+    bc.addEventListener('message', (event) => {
+        if (event.data.key === 'update-main-css') {
+            newStyleEl.textContent = event.data.value;
+        }
+    });
 
     set(window, 'siul.loaded.siul', true);
 

@@ -30,6 +30,8 @@ const tailwindStore = useTailwindStore();
 const settingsStore = useSettingsStore();
 const notifier = useNotifier();
 
+const bc = new BroadcastChannel('siul_channel');
+
 const { css: twCss, preset: twPreset, wizard: twWizard, config: twConfig } = storeToRefs(tailwindStore);
 
 // listen undo/redo event key binding, windows: undo: ctrl+z, redo: ctrl+y, mac: undo: cmd+z, redo: cmd+shift+z
@@ -249,6 +251,10 @@ function resetToDefault(k) {
     }
 }
 
+const debouncedBroadcast = debounce((data) => {
+    bc.postMessage(data);
+}, 150);
+
 watch(twWizard, () => {
     updateTwConfig();
 }, { deep: true });
@@ -290,6 +296,7 @@ onMounted(() => {
     // if the css editor content changes
     model.css?.onDidChangeContent(() => {
         twCss.value = model.css.getValue();
+        debouncedBroadcast({ key: 'update-main-css', value: model.css.getValue() });
     });
 
     // if the preset editor content changes

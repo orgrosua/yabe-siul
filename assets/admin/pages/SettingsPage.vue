@@ -221,7 +221,6 @@ async function compileCSS(tw_version, tw_config, main_css, contents) {
 
 const bc = new BroadcastChannel('siul_channel');
 
-
 onBeforeMount(() => {
     fetchVersion();
     licenseStore.doPull().then(() => {
