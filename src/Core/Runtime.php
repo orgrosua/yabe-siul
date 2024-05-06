@@ -77,7 +77,7 @@ class Runtime
                 return;
             }
 
-            $this->append_header();
+            // $this->append_header();
         }
     }
 

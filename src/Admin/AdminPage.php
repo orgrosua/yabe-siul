@@ -15,6 +15,7 @@ namespace Yabe\Siul\Admin;
 
 use SIUL;
 use Yabe\Siul\Utils\Asset;
+use Yabe\Siul\Utils\AssetVite;
 
 class AdminPage
 {
@@ -38,7 +39,7 @@ class AdminPage
             'manage_options',
             SIUL::WP_OPTION,
             fn () => $this->render(),
-            'data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNTEyIDUxMjsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgoJPGc+CgkJPGc+CgkJCTxwYXRoIGQ9Ik0xNzYsMzg0SDE2Yy04LjgzMiwwLTE2LDcuMTY4LTE2LDE2YzAsOC44MzIsNy4xNjgsMTYsMTYsMTZoMTYwYzguODMyLDAsMTYsNy4yLDE2LDE2cy03LjE2OCwxNi0xNiwxNgoJCQljLTguODMyLDAtMTYsNy4xNjgtMTYsMTZjMCw4LjgzMiw3LjE2OCwxNiwxNiwxNmMyNi40NjQsMCw0OC0yMS41MzYsNDgtNDhTMjAyLjQ2NCwzODQsMTc2LDM4NHoiIC8+CgkJPC9nPgoJPC9nPgoJPGc+CgkJPGc+CgkJCTxwYXRoIGQ9Ik0yNDAsMjU2Yy04LjgzMiwwLTE2LDcuMTY4LTE2LDE2YzAsOC44MzIsNy4xNjgsMTYsMTYsMTZjOC44MzIsMCwxNiw3LjIsMTYsMTZzLTcuMTY4LDE2LTE2LDE2SDE2CgkJCWMtOC44MzIsMC0xNiw3LjE2OC0xNiwxNmMwLDguODMyLDcuMTY4LDE2LDE2LDE2aDIyNGMyNi40NjQsMCw0OC0yMS41MzYsNDgtNDhTMjY2LjQ2NCwyNTYsMjQwLDI1NnoiIC8+CgkJPC9nPgoJPC9nPgoJPGc+CgkJPGc+CgkJCTxwYXRoIGQ9Ik0yODgsMzJDMTY0LjI4OCwzMiw2NCwxMzIuMjg4LDY0LDI1NmMwLDEwLjg4LDEuMDU2LDIxLjUzNiwyLjU2LDMyaDEyOC4xOTJjLTEuNzkyLTQuOTkyLTIuNzUyLTEwLjQtMi43NTItMTYKCQkJYzAtMjYuNDY0LDIxLjUzNi00OCw0OC00OGM0NC4wOTYsMCw4MCwzNS45MDQsODAsODBjMCw0NC4xMjgtMzUuOTA0LDgwLTgwLDgwaC0wLjQxNkMyNDkuNzYsMzk3LjQwOCwyNTYsNDEzLjkyLDI1Niw0MzIKCQkJYzAsMTYuMDMyLTQuODY0LDMwLjk0NC0xMy4wMjQsNDMuNDU2YzE0LjU2LDIuOTc2LDI5LjYsNC41NDQsNDUuMDI0LDQuNTQ0YzEyMy43MTIsMCwyMjQtMTAwLjI4OCwyMjQtMjI0UzQxMS43MTIsMzIsMjg4LDMyeiIgLz4KCQk8L2c+Cgk8L2c+Cjwvc3ZnPg==',
+            'data:image/svg+xml;base64,' . base64_encode(file_get_contents(dirname(SIUL::FILE) . '/siul.svg')),
             1_000_001
         );
 
@@ -47,7 +48,7 @@ class AdminPage
 
     private function render()
     {
-        add_filter('admin_footer_text', static fn ($text) => 'Thank you for using <b>Siul</b>!', 1_000_001);
+        add_filter('admin_footer_text', static fn ($text) => 'Thank you for using <b>Siul</b>! Join us on the <a href="https://www.facebook.com/groups/1142662969627943" target="_blank">Facebook Group</a>.', 1_000_001);
         add_filter('update_footer', static fn ($text) => $text . ' | Siul ' . SIUL::VERSION, 1_000_001);
         echo '<div id="siul-app" class=""></div>';
     }
@@ -59,18 +60,12 @@ class AdminPage
 
     private function enqueue_scripts()
     {
-        $handle = SIUL::WP_OPTION . ':admin.js';
+        $handle = SIUL::WP_OPTION . ':admin';
 
-        // add_filter('script_loader_tag', fn ($tag, $handle) => str_replace(' src', ' defer src', $tag), 10, 2);
-        add_filter('script_loader_tag', function ($tag, $h) use ($handle) {
-            if ($handle !== $h) {
-                return $tag;
-            }
-    
-            return str_replace(' src', ' type="module" defer src', $tag);
-        }, 1_000_001, 2);
-
-        Asset::enqueue_entry('admin', [], true);
+        AssetVite::get_instance()->enqueue_asset('assets/admin/main.js', [
+            'handle' => $handle,
+            'in_footer' => true,
+        ]);
 
         wp_set_script_translations($handle, 'yabe-siul');
 
