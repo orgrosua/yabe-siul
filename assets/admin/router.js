@@ -13,7 +13,8 @@ const router = createRouter({
         {
             path: '/tailwind',
             name: 'tailwind',
-            component: TailwindPage,
+            // component: TailwindPage,
+            component: () => import('./pages/TailwindPage.vue'),
         },
         // {
         //     path: '/settings',

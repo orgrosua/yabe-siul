@@ -5,29 +5,32 @@ import { storeToRefs } from 'pinia';
 import { useMonaco } from '@guolao/vue-monaco-editor';
 import { useStorage, useRefHistory } from '@vueuse/core';
 import { __ } from '@wordpress/i18n';
-import { useTailwindStore } from '../stores/tailwind.js';
-import { useSettingsStore } from '../stores/settings.js';
-import { useNotifier } from '../library/notifier';
-// import { includes } from 'lodash';
+import { debounce } from 'lodash-es';
 
 // import * as monaco from 'monaco-editor';
 
+import { configureMonacoTailwindcss, tailwindcssData } from 'monaco-tailwindcss';
+
+import { useTailwindStore } from '../stores/tailwind.js';
+import { useSettingsStore } from '../stores/settings.js';
+import { useNotifier } from '../library/notifier';
 import ExpansionPanel from '../components/ExpansionPanel.vue';
+import { editor } from 'monaco-editor';
 
 const tailwindStore = useTailwindStore();
 const settingsStore = useSettingsStore();
 const notifier = useNotifier();
+const { monacoRef, unload } = useMonaco();
 
 const bc = new BroadcastChannel('siul_channel');
 
 const { css: twCss, preset: twPreset, wizard: twWizard, config: twConfig } = storeToRefs(tailwindStore);
 
+const configError = ref(null);
+
 // monaco theme
 const theme = useStorage('theme', 'light');
 const monacoTheme = computed(() => theme.value === 'light' ? 'vs' : 'vs-dark');
-
-
-const { monacoRef, unload } = useMonaco();
 
 const MONACO_EDITOR_OPTIONS = {
     colorDecorators: true,
@@ -35,25 +38,173 @@ const MONACO_EDITOR_OPTIONS = {
     formatOnPaste: true,
 }
 
+const langJSDiagnosticOptions = {
+    noSemanticValidation: false,
+    noSyntaxValidation: false,
+    noSuggestionDiagnostics: false,
+    diagnosticCodesToIgnore: [
+        80001, // "File is a CommonJS module; it may be converted to an ES6 module."
+        2307, // "Cannot find module 'x'."
+    ],
+};
+
+const langJSCompilerOptions = {
+    allowJs: true,
+    allowNonTsExtensions: true,
+    module: 1, // monaco.languages.typescript.ModuleKind.CommonJS,
+    target: 99, // monaco.languages.typescript.ScriptTarget.Latest,
+    checkJs: true,
+    moduleResolution: 2, // monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+    typeRoots: ['node_modules/@types'],
+};
+
+// configure monaco for tailwind
+let monacoTailwindcss;
+
 // CSS Editor
 /** @type {?import('monaco-editor').editor.IStandaloneCodeEditor} */
 const editorCssRef = shallowRef();
-const handleCssEditorMount = editor => (editorCssRef.value = editor)
+const handleCssEditorMount = editor => (editorCssRef.value = editor);
+
+// Preset editor
+/** @type {?import('monaco-editor').editor.IStandaloneCodeEditor} */
+const editorPresetRef = shallowRef();
+const handlePresetEditorMount = editor => (editorPresetRef.value = editor);
+
+// Config editor
+/** @type {?import('monaco-editor').editor.IStandaloneCodeEditor} */
+const editorConfigRef = shallowRef();
+const handleConfigEditorMount = editor => (editorConfigRef.value = editor);
 
 
 
+
+function doSave() {
+    const promise = tailwindStore.doPush();
+
+    notifier.async(
+        promise,
+        resp => notifier.success(resp.message),
+        err => notifier.alert(err.message),
+        'Storing TailwindCSS config...'
+    );
+}
+
+const handleConfigEditorBeforeMount = editor => {
+    if (monacoRef.value) {
+
+        console.log('editorConfigRef', editorConfigRef.value)
+
+        // monacoRef.value.editor
+        console.log('monacoRef.value', monacoRef.value);
+
+        monacoRef.value.languages.typescript.javascriptDefaults.setDiagnosticsOptions(langJSDiagnosticOptions);
+        monacoRef.value.languages.typescript.typescriptDefaults.setDiagnosticsOptions(langJSDiagnosticOptions);
+
+        monacoRef.value.languages.typescript.javascriptDefaults.setCompilerOptions(langJSCompilerOptions);
+        monacoRef.value.languages.typescript.typescriptDefaults.setCompilerOptions(langJSCompilerOptions);
+
+
+        // Vite
+        const lodashTypes = import.meta.glob('../../../node_modules/@types/lodash/*.d.ts', {
+            query: '?raw',
+            import: 'default',
+            eager: true,
+        });
+
+        console.log('lt', lodashTypes);
+
+        // lodashTypes is object, not array, let's loop through it
+
+        for (const [key, value] of Object.entries(lodashTypes)) {
+            monacoRef.value.languages.typescript.javascriptDefaults.addExtraLib(
+                value,
+                `file:///${key.replaceAll('../', '')}`
+            );
+            monacoRef.value.languages.typescript.typescriptDefaults.addExtraLib(
+                value,
+                `file:///${key.replaceAll('../', '')}`
+            );
+        }
+
+
+        console.log('compilers', monacoRef.value.languages.typescript.javascriptDefaults.getCompilerOptions());
+
+        console.log('extralibs', monacoRef.value.languages.typescript.typescriptDefaults.getExtraLibs());
+
+
+    
+        
+
+        // add key binding command to monaco.editor to save all changes
+        monacoRef.value.editor.addEditorAction({
+            id: 'save',
+            label: 'Save',
+            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS],
+            run: () => {
+                doSave();
+            }
+        });
+    }
+};
 
 
 // const stop = watchEffect(() => {
-//     if (monacoRef.value && editorCssRef.value) {
+//     if (monacoRef.value) {
 //         nextTick(() => stop())
 
-//         monacoRef.value.editor.create(editorCssRef.value, {
-//             colorDecorators: true,
-//             automaticLayout: true,
-//             formatOnPaste: true,
-//             language: 'css',
-//         })
+//         console.log('editorConfigRef', editorConfigRef.value)
+
+//         // monacoRef.value.editor
+//         console.log('monacoRef.value', monacoRef.value);
+
+//         monacoRef.value.languages.typescript.javascriptDefaults.setDiagnosticsOptions(langJSDiagnosticOptions);
+//         monacoRef.value.languages.typescript.typescriptDefaults.setDiagnosticsOptions(langJSDiagnosticOptions);
+
+//         monacoRef.value.languages.typescript.javascriptDefaults.setCompilerOptions(langJSCompilerOptions);
+//         monacoRef.value.languages.typescript.typescriptDefaults.setCompilerOptions(langJSCompilerOptions);
+
+
+//         // Vite
+//         const lodashTypes = import.meta.glob('../../../node_modules/@types/lodash/*.d.ts', {
+//             query: '?raw',
+//             import: 'default',
+//             eager: true,
+//         });
+
+//         console.log('lt', lodashTypes);
+
+//         // lodashTypes is object, not array, let's loop through it
+
+//         for (const [key, value] of Object.entries(lodashTypes)) {
+//             monacoRef.value.languages.typescript.javascriptDefaults.addExtraLib(
+//                 value,
+//                 `file:///${key.replaceAll('../', '')}`
+//             );
+//             monacoRef.value.languages.typescript.typescriptDefaults.addExtraLib(
+//                 value,
+//                 `file:///${key.replaceAll('../', '')}`
+//             );
+//         }
+
+
+//         console.log('compilers', monacoRef.value.languages.typescript.javascriptDefaults.getCompilerOptions());
+
+//         console.log('extralibs', monacoRef.value.languages.typescript.typescriptDefaults.getExtraLibs());
+
+
+    
+        
+
+//         // add key binding command to monaco.editor to save all changes
+//         monacoRef.value.editor.addEditorAction({
+//             id: 'save',
+//             label: 'Save',
+//             keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS],
+//             run: () => {
+//                 doSave();
+//             }
+//         });
 //     }
 // })
 
@@ -68,21 +219,8 @@ function resetToDefault(k) {
     }
 }
 
-function doSave() {
-    const promise = tailwindStore.doPush();
-
-    notifier.async(
-        promise,
-        resp => notifier.success(resp.message),
-        err => notifier.alert(err.message),
-        'Storing TailwindCSS config...'
-    );
-}
 
 onMounted(() => {
-
-
-
     // set the monaco editor content
     (async () => {
         if (tailwindStore.initValues.preset === null) {
@@ -129,7 +267,7 @@ defineExpose({
             </template>
         </ExpansionPanel>
 
-        <!-- <ExpansionPanel namespace="tailwind" name="preset" class="my:8">
+        <ExpansionPanel namespace="tailwind" name="preset" class="my:8">
             <template #header>
                 <div class="flex">
                     <span class="flex-grow:1 font:16 font:semibold">preset.js</span>
@@ -140,7 +278,10 @@ defineExpose({
             <template #default>
                 <div class="">
                     <div class="editor-container">
-                        <div id="editorPreset" ref="editorPresetEl" class="h:600"></div>
+                        <!-- <div id="editorPreset" ref="editorPresetEl" class="h:600"></div> -->
+                        <div class="h:600">
+                            <vue-monaco-editor v-model:value="twPreset" language="javascript" :theme="monacoTheme" :options="MONACO_EDITOR_OPTIONS" @mount="handlePresetEditorMount" />
+                        </div>
                     </div>
                 </div>
             </template>
@@ -158,7 +299,7 @@ defineExpose({
                     <p class="f:14 font:mono lh:20px"> {{ configError.message }}</p>
                 </div>
             </template>
-        </ExpansionPanel> -->
+        </ExpansionPanel>
 
         <!-- <ExpansionPanel namespace="tailwind" name="wizard" class="my:8">
             <template #header>
@@ -187,7 +328,7 @@ defineExpose({
             </template>
         </ExpansionPanel> -->
 
-        <!-- <ExpansionPanel namespace="tailwind" name="config" class="my:8">
+        <ExpansionPanel namespace="tailwind" name="config" class="my:8">
             <template #header>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 54 33" class="h:1em mr:6 vertical-align:-0.125em">
                     <g clip-path="url(#prefix__clip0)">
@@ -208,10 +349,14 @@ defineExpose({
             <template #default>
                 <div class="">
                     <div class="editor-container">
-                        <div id="editorConfig" ref="editorConfigEl" class="h:600"></div>
+                        <!-- <div id="editorConfig" ref="editorConfigEl" class="h:600"></div> -->
+
+                        <div class="h:600">
+                            <vue-monaco-editor v-model:value="twConfig" language="typescript" :theme="monacoTheme" :options="{ ...MONACO_EDITOR_OPTIONS, readOnly: true }" @mount="handleConfigEditorMount" @beforeMount="handleConfigEditorBeforeMount" />
+                        </div>
                     </div>
                 </div>
             </template>
-        </ExpansionPanel> -->
+        </ExpansionPanel>
     </div>
 </template>

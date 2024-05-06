@@ -75,8 +75,7 @@ const langJSCompilerOptions = {
     module: monaco.languages.typescript.ModuleKind.CommonJS,
     target: monaco.languages.typescript.ScriptTarget.Latest,
     checkJs: true,
-    moduleResolution:
-        monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+    moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
     typeRoots: ['node_modules/@types'],
 };
 
