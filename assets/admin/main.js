@@ -20,7 +20,6 @@ import { FontAwesomeIcon } from './font-awesome.js';
 // import LvColorpicker from 'lightvue/color-picker';
 // import LvOverlayPanel from 'lightvue/overlay-panel';
 
-
 import { install as VueMonacoEditorPlugin } from '@guolao/vue-monaco-editor';
 
 import App from './App.vue';

@@ -76,9 +76,6 @@ const handlePresetEditorMount = editor => (editorPresetRef.value = editor);
 const editorConfigRef = shallowRef();
 const handleConfigEditorMount = editor => (editorConfigRef.value = editor);
 
-
-
-
 function doSave() {
     const promise = tailwindStore.doPush();
 
@@ -90,8 +87,10 @@ function doSave() {
     );
 }
 
-const handleConfigEditorBeforeMount = editor => {
+
+const stop = watchEffect(() => {
     if (monacoRef.value) {
+        nextTick(() => stop())
 
         console.log('editorConfigRef', editorConfigRef.value)
 
@@ -104,37 +103,67 @@ const handleConfigEditorBeforeMount = editor => {
         monacoRef.value.languages.typescript.javascriptDefaults.setCompilerOptions(langJSCompilerOptions);
         monacoRef.value.languages.typescript.typescriptDefaults.setCompilerOptions(langJSCompilerOptions);
 
+        const typeFiles = [];
 
-        // Vite
-        const lodashTypes = import.meta.glob('../../../node_modules/@types/lodash/*.d.ts', {
+        // Lodash
+        Object.entries(import.meta.glob('../../../node_modules/@types/lodash/*.d.ts', {
             query: '?raw',
             import: 'default',
             eager: true,
+        })).forEach(([key, value]) => {
+            typeFiles.push({
+                path: key.replaceAll('../', ''),
+                content: value,
+            });
         });
 
-        console.log('lt', lodashTypes);
+        // TailwindCSS
+        Object.entries(import.meta.glob('../../../node_modules/tailwindcss/**/*.d.ts', {
+            query: '?raw',
+            import: 'default',
+            eager: true,
+        })).forEach(([key, value]) => {
+            typeFiles.push({
+                path: key.replaceAll('../', ''),
+                content: value,
+            });
+        });
 
-        // lodashTypes is object, not array, let's loop through it
+        console.log('typeFiles', typeFiles);
 
-        for (const [key, value] of Object.entries(lodashTypes)) {
+
+
+        
+
+        
+
+        // for (const [key, value] of Object.entries(lodashTypes)) {
+        //     monacoRef.value.languages.typescript.javascriptDefaults.addExtraLib(
+        //         value,
+        //         `file:///${key.replaceAll('../', '')}`
+        //     );
+        //     monacoRef.value.languages.typescript.typescriptDefaults.addExtraLib(
+        //         value,
+        //         `file:///${key.replaceAll('../', '')}`
+        //     );
+        // }
+
+        typeFiles.forEach(({ path, content }) => {
             monacoRef.value.languages.typescript.javascriptDefaults.addExtraLib(
-                value,
-                `file:///${key.replaceAll('../', '')}`
+                content,
+                `file:///${path}`
             );
             monacoRef.value.languages.typescript.typescriptDefaults.addExtraLib(
-                value,
-                `file:///${key.replaceAll('../', '')}`
+                content,
+                `file:///${path}`
             );
-        }
+        });
+
 
 
         console.log('compilers', monacoRef.value.languages.typescript.javascriptDefaults.getCompilerOptions());
 
         console.log('extralibs', monacoRef.value.languages.typescript.typescriptDefaults.getExtraLibs());
-
-
-    
-        
 
         // add key binding command to monaco.editor to save all changes
         monacoRef.value.editor.addEditorAction({
@@ -146,67 +175,7 @@ const handleConfigEditorBeforeMount = editor => {
             }
         });
     }
-};
-
-
-// const stop = watchEffect(() => {
-//     if (monacoRef.value) {
-//         nextTick(() => stop())
-
-//         console.log('editorConfigRef', editorConfigRef.value)
-
-//         // monacoRef.value.editor
-//         console.log('monacoRef.value', monacoRef.value);
-
-//         monacoRef.value.languages.typescript.javascriptDefaults.setDiagnosticsOptions(langJSDiagnosticOptions);
-//         monacoRef.value.languages.typescript.typescriptDefaults.setDiagnosticsOptions(langJSDiagnosticOptions);
-
-//         monacoRef.value.languages.typescript.javascriptDefaults.setCompilerOptions(langJSCompilerOptions);
-//         monacoRef.value.languages.typescript.typescriptDefaults.setCompilerOptions(langJSCompilerOptions);
-
-
-//         // Vite
-//         const lodashTypes = import.meta.glob('../../../node_modules/@types/lodash/*.d.ts', {
-//             query: '?raw',
-//             import: 'default',
-//             eager: true,
-//         });
-
-//         console.log('lt', lodashTypes);
-
-//         // lodashTypes is object, not array, let's loop through it
-
-//         for (const [key, value] of Object.entries(lodashTypes)) {
-//             monacoRef.value.languages.typescript.javascriptDefaults.addExtraLib(
-//                 value,
-//                 `file:///${key.replaceAll('../', '')}`
-//             );
-//             monacoRef.value.languages.typescript.typescriptDefaults.addExtraLib(
-//                 value,
-//                 `file:///${key.replaceAll('../', '')}`
-//             );
-//         }
-
-
-//         console.log('compilers', monacoRef.value.languages.typescript.javascriptDefaults.getCompilerOptions());
-
-//         console.log('extralibs', monacoRef.value.languages.typescript.typescriptDefaults.getExtraLibs());
-
-
-    
-        
-
-//         // add key binding command to monaco.editor to save all changes
-//         monacoRef.value.editor.addEditorAction({
-//             id: 'save',
-//             label: 'Save',
-//             keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS],
-//             run: () => {
-//                 doSave();
-//             }
-//         });
-//     }
-// })
+})
 
 function resetToDefault(k) {
     if (confirm(__('Are you sure you want to reset to default?', 'yabe-siul'))) {
@@ -352,7 +321,7 @@ defineExpose({
                         <!-- <div id="editorConfig" ref="editorConfigEl" class="h:600"></div> -->
 
                         <div class="h:600">
-                            <vue-monaco-editor v-model:value="twConfig" language="typescript" :theme="monacoTheme" :options="{ ...MONACO_EDITOR_OPTIONS, readOnly: true }" @mount="handleConfigEditorMount" @beforeMount="handleConfigEditorBeforeMount" />
+                            <vue-monaco-editor v-model:value="twConfig" language="typescript" :theme="monacoTheme" :options="{ ...MONACO_EDITOR_OPTIONS, readOnly: true }" @mount="handleConfigEditorMount" />
                         </div>
                     </div>
                 </div>
