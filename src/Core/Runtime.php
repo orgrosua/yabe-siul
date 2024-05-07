@@ -77,7 +77,7 @@ class Runtime
                 return;
             }
 
-            // $this->append_header();
+            $this->append_header();
         }
     }
 
@@ -94,10 +94,6 @@ class Runtime
         } else {
             add_action('wp_head', fn () => $this->enqueue_importmap(), 1);
             add_action('wp_head', fn () => $this->enqueue_play_cdn(), 1_000_001);
-
-            if (Config::get('general.autocomplete.engine.enabled', false)) {
-                $this->enqueue_module_autocomplete();
-            }
         }
     }
 
@@ -141,7 +137,7 @@ class Runtime
             return;
         }
 
-        $template_path = plugin_dir_path(SIUL::FILE) . 'build/frontend/importmap.html';
+        $template_path = plugin_dir_path(SIUL::FILE) . 'build/public/importmap.html';
 
         if (file_exists($template_path) === false) {
             return;
@@ -167,7 +163,7 @@ class Runtime
             return;
         }
 
-        $template_path = plugin_dir_path(SIUL::FILE) . 'build/frontend/play-cdn.html';
+        $template_path = plugin_dir_path(SIUL::FILE) . 'build/public/play-cdn.html';
 
         if (file_exists($template_path) === false) {
             return;
@@ -227,35 +223,5 @@ class Runtime
         } else {
             return $template;
         }
-    }
-
-    public function enqueue_module_autocomplete()
-    {
-        $prepared = $this->prepare_module_autocomplete();
-
-        Asset::enqueue_entry('module-autocomplete', ['wp-hooks'], true);
-
-        $handle = SIUL::WP_OPTION . ':module-autocomplete.js';
-
-        wp_set_script_translations($handle, 'yabe-siul');
-
-        wp_localize_script($handle, 'siul', $prepared['data']);
-    }
-
-    public function prepare_module_autocomplete()
-    {
-        return [
-            'dependencies' => ['wp-hooks'],
-            'assets' => Asset::get_entry_assets('module-autocomplete'),
-            'data' => [
-                '_version' => SIUL::VERSION,
-                'assets' => [
-                    'url' => Asset::asset_base_url(),
-                ],
-                'tailwind' => [
-                    'version' => Config::get('general.tailwindcss.version', 'latest'),
-                ],
-            ],
-        ];
     }
 }

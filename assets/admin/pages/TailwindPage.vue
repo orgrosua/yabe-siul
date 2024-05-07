@@ -123,7 +123,7 @@ const stop = watchEffect(() => {
         }];
 
         Object.entries(import.meta.glob([
-            '../../../node_modules/@types/lodash/**/*.d.ts', // Lodash
+            // '../../../node_modules/@types/lodash/**/*.d.ts', // Lodash
             '../../../node_modules/tailwindcss/**/*.d.ts', // Tailwind CSS
         ], {
             query: '?raw',

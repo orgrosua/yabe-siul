@@ -34,4 +34,5 @@ export default defineConfig({
         // target: 'esnext',
         target: 'modules',
     },
+    publicDir: 'assets/static',
 });

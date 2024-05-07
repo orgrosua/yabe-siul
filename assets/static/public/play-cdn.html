@@ -1,0 +1,251 @@
+<script src="https://cdn.tailwindcss.com" id="siul-tailwindcss-jit"></script>
+
+<script type="module" id="siul-tailwindcss-play-cdn">
+    import { parse as parsePackage } from 'https://esm.sh/parse-package-name';
+    import { set } from 'https://esm.sh/lodash-es';
+    import fs from 'fs';
+    import postcss from "postcss";
+    import generateRules from "tailwindcss/lib/lib/generateRules";
+    import setupContextUtil from "tailwindcss/lib/lib/setupContextUtils";
+    import evaluateTailwindFunctions from "tailwindcss/lib/lib/evaluateTailwindFunctions";
+    import resolveConfig from "tailwindcss/resolveConfig";
+    import { addEquivalents } from 'https://esm.sh/gh/tailwindlabs/tailwindcss-intellisense@daa8bb2821/packages/tailwindcss-language-service/src/util/equivalents.ts';
+    import TailwindcssAutocomplete from 'https://esm.sh/@yabe-siul/tailwindcss-autocomplete/dist/index.js';
+
+    // listen broadcast message from the settings page
+    const bc = new BroadcastChannel('siul_channel');
+
+    // intercept fs read, and if the path is contains `css/preflight.css`, return the preflight.css content
+    let preflightCss = null;
+    fs.readFileSync = function (path, encoding) {
+        // create browser virtual file ./css/preflight.css
+        if (path.includes('css/preflight.css')) {
+            if (preflightCss === null) {
+                const preflight = new XMLHttpRequest();
+                preflight.open('GET', `https://esm.sh/tailwindcss/src/css/preflight.css?raw`, false);
+                preflight.send(null);
+                preflightCss = preflight.responseText;
+            }
+            return preflightCss;
+        }
+        return fs.readFileSync
+    }
+
+    let importShim;
+    try {
+        await (0, eval)('import("")');
+    } catch (error) {
+        if (error instanceof TypeError) {
+            importShim = (0, eval)('u=>import(u)');
+        } else {
+            var s = document.createElement('script');
+            s.src = 'https://esm.sh/shimport/index.js?raw';
+            document.head.appendChild(s);
+            importShim = __shimport__.load;
+        }
+    }
+
+    const require = async (m) => {
+        let result;
+        try {
+            const _m = parsePackage(m);
+            const href = 'https://esm.sh/' + _m.name + '@' + _m.version + _m.path;
+            result = await importShim(href);
+        } catch (error) {
+            console.log(`Cannot find module '${m}'`);
+        }
+        return result.default || result;
+    };
+
+    //-@-tailwindcss
+
+    while (!window.tailwind) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+
+    tailwind.config = siul;
+
+    const oldStyleEl = document.getElementById('siul-tailwindcss-main-css');
+    const newStyleEl = document.createElement('style');
+    newStyleEl.type = 'text/tailwindcss';
+    newStyleEl.textContent = oldStyleEl.textContent;
+    oldStyleEl.replaceWith(newStyleEl);
+
+    bc.addEventListener('message', (event) => {
+        if (event.data.key === 'update-main-css') {
+            newStyleEl.textContent = event.data.value;
+        }
+    });
+
+    set(window, 'siul.loaded.siul', true);
+
+    let twContext = setupContextUtil.createContext(resolveConfig(tailwind.config));
+
+    /**
+     * @module autocomplete
+     */
+
+    const autocomplete = new TailwindcssAutocomplete(tailwind.config);
+
+    const getSuggestionList = async (value) => await autocomplete.getSuggestionList(value);
+
+    // check if the wp-hooks is available
+    if (window.wp?.hooks) {
+        window.wp.hooks.addFilter('siul.module.autocomplete', 'siul', getSuggestionList);
+    }
+
+    set(window, 'siul.loaded.module.autocomplete', true);
+    set(window, 'siul.module.autocomplete.query', async (q) => await getSuggestionList(q));
+
+    /**
+     * @module class-sorter
+     */
+
+    const moduleClassSorter = {
+        sort(classes) {
+            let tailwindConfig = tailwind.config;
+
+            const parts = classes
+                .split(/\s+/)
+                .filter((x) => x !== "" && x !== "|");
+
+            const unknownClassNames = [];
+
+            const knownClassNamesWithOrder = twContext.getClassOrder
+                ? twContext.getClassOrder(parts)
+                : this.getClassOrderPolyfill(parts, twContext);
+
+            const knownClassNames = knownClassNamesWithOrder
+
+                .sort(([, a], [, z]) => {
+                    if (a === z) return 0;
+
+                    if (a === null) return -1;
+
+                    if (z === null) return 1;
+
+                    return this.bigSign(a - z);
+                })
+
+                .map(([className]) => className);
+
+            return [...unknownClassNames, ...knownClassNames].join(" ");
+        },
+
+        bigSign(bigIntValue) {
+            return (bigIntValue > 0n) - (bigIntValue < 0n);
+        },
+
+        prefixCandidate(context, selector) {
+            const prefix = context.tailwindConfig.prefix;
+
+            return typeof prefix === "function" ? prefix(selector) : prefix + selector;
+        },
+
+        getClassOrderPolyfill(classes, context) {
+            const parasiteUtilities = new Set([
+                this.prefixCandidate(context, "group"),
+
+                this.prefixCandidate(context, "peer"),
+            ]);
+
+            const classNamesWithOrder = [];
+
+            for (const className of classes) {
+                let order =
+                    generateRules.generateRules(new Set([className]), context).sort(([a], [z]) =>
+                        bigSign(z - a)
+                    )[0]?.[0] ?? null;
+
+                if (order === null && parasiteUtilities.has(className)) {
+                    order = context.layerOrder.components;
+                }
+
+                classNamesWithOrder.push([className, order]);
+            }
+
+            return classNamesWithOrder;
+        },
+    }
+
+    // if the wp-hooks is available
+    if (window.wp?.hooks) {
+        window.wp.hooks.addFilter('siul.module.class-sorter', 'siul', moduleClassSorter.sort);
+    }
+
+    set(window, 'siul.loaded.module.classSorter', true);
+    set(window, 'siul.module.classSorter.sort', (classes) => moduleClassSorter.sort(classes));
+
+    /**
+     * @module class-name-to-css
+     */
+    const moduleClassNameToCss = {
+        generate(className) {
+            if (className === null) return null;
+
+            let { root, rules } = this.generateRules([className]);
+
+            if (rules.length === 0) {
+                return null;
+            }
+
+            return this.stringifyRoot(root);
+        },
+
+        generateRules(classNames, filter = () => true) {
+            let rules = generateRules.generateRules(new Set(classNames), twContext)
+                .sort(([a], [z]) => bigSign(a - z));
+
+            let root = postcss.root({ nodes: rules.map(([, rule]) => rule) });
+
+            // expandApplyAtRules.expandApplyAtRules(twContext)(root);
+            evaluateTailwindFunctions.default(twContext)(root);
+
+            let actualRules = [];
+            root.walkRules((subRule) => {
+                if (filter(subRule)) {
+                    actualRules.push(subRule)
+                }
+            });
+
+            return {
+                root,
+                rules: actualRules,
+            };
+        },
+
+        stringifyRoot(root) {
+            let clone = root.clone();
+
+            clone.walkAtRules('defaults', (node) => {
+                node.remove();
+            });
+
+            let css = clone.toString();
+
+            css = addEquivalents(css, {
+                showPixelEquivalents: true,
+                rootFontSize: 16
+            });
+
+            let identSize = 4;
+            let identPattern = /^(?:    )+/gm;
+
+            return css
+                .replace(/([^;{}\s])(\n\s*})/g, (_match, before, after) => `${before};${after}`)
+                .replace(identPattern, (indent) =>
+                    ' '.repeat((indent.length / identSize) * 4),
+                );
+        }
+    }
+
+    // if the wp-hooks is available
+    if (window.wp?.hooks) {
+        window.wp.hooks.addFilter('siul.module.class-name-to-css', 'siul', moduleClassNameToCss.generate);
+    }
+
+    set(window, 'siul.loaded.module.classNameToCss', true);
+    set(window, 'siul.module.classNameToCss.generate', (className) => moduleClassNameToCss.generate(className));
+</script>
+
+<style type="text/siul-tailwindcss-main-css" id="siul-tailwindcss-main-css"></style>

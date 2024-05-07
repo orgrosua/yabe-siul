@@ -81,10 +81,6 @@ class Main implements IntegrationInterface
 
     public function register_movebender_autocomplete()
     {
-        if (!Config::get('general.autocomplete.engine.enabled', false)) {
-            return;
-        }
-
         echo <<<HTML
             <script>
                 document.addEventListener('DOMContentLoaded', async function () {

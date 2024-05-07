@@ -65,10 +65,6 @@ class Main implements IntegrationInterface
 
     public function register_livecanvas_autocomplete()
     {
-        if (!Config::get('general.autocomplete.engine.enabled', false)) {
-            return;
-        }
-
         echo <<<HTML
             <script>
                 document.addEventListener('DOMContentLoaded', async function () {
