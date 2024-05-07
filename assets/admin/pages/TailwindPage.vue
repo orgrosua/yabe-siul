@@ -1,9 +1,9 @@
 <script setup>
-import { ref, watch, computed, watchEffect, onBeforeMount, onMounted, onUnmounted, toRaw, shallowRef, nextTick } from 'vue';
+import { ref, watch, computed, watchEffect, onBeforeMount, onMounted, toRaw, shallowRef, nextTick } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useMonaco } from '@guolao/vue-monaco-editor';
-import { useStorage, useRefHistory } from '@vueuse/core';
+import { useStorage } from '@vueuse/core';
 import axios from 'axios';
 import { __ } from '@wordpress/i18n';
 import * as prettier from 'https://esm.sh/prettier';
@@ -12,17 +12,12 @@ import prettierPluginEstree from 'https://esm.sh/prettier/plugins/estree';
 
 import { debounce } from 'lodash-es';
 
-import { configureMonacoTailwindcss, tailwindcssData } from 'monaco-tailwindcss';
-
 import { useTailwindStore } from '../stores/tailwind.js';
 import { useSettingsStore } from '../stores/settings.js';
 import { useBusyStore } from '../stores/busy.js';
 import { useNotifier } from '../library/notifier';
 
-import twResolveConfig from 'tailwindcss/resolveConfig';
-import {
-    parseConfig as playParseConfig
-} from '../library/tailwindcss/compiler.js';
+import { parseConfig as playParseConfig } from '../library/tailwindcss/compiler.js';
 
 import ExpansionPanel from '../components/ExpansionPanel.vue';
 import { wizardToTailwindConfig } from '../components/Wizard/TailwindConfig.js';
@@ -38,7 +33,6 @@ const bc = new BroadcastChannel('siul_channel');
 const { css: twCss, preset: twPreset, wizard: twWizard, config: twConfig } = storeToRefs(tailwindStore);
 
 const configError = ref(null);
-
 
 const tw_versions = ref([]);
 
@@ -67,9 +61,6 @@ const MONACO_EDITOR_OPTIONS = {
     formatOnPaste: true,
 }
 
-// configure monaco for tailwind
-let monacoTailwindcss;
-
 // CSS Editor
 /** @type {?import('monaco-editor').editor.IStandaloneCodeEditor} */
 const editorCssRef = shallowRef();
@@ -85,7 +76,6 @@ const handlePresetEditorMount = editor => (editorPresetRef.value = editor);
 const editorConfigRef = shallowRef();
 const handleConfigEditorMount = editor => (editorConfigRef.value = editor);
 
-
 function doSave() {
     const promise = tailwindStore.doPush();
 
@@ -96,7 +86,6 @@ function doSave() {
         'Storing TailwindCSS config...'
     );
 }
-
 
 const stop = watchEffect(() => {
     if (monacoRef.value) {
@@ -121,83 +110,6 @@ const stop = watchEffect(() => {
             moduleResolution: 2, // monaco.languages.typescript.ModuleResolutionKind.NodeJs,
             typeRoots: ['node_modules/@types'],
         };
-
-        console.log('monacoRef', monacoRef.value);
-
-        // add https://esm.sh/monaco-tailwindcss@0.6.0/tailwindcss.worker?worker to the worker
-        // monacoRef.value.editor.createWebWorker({
-        //     moduleId: 'file:///tailwindcss.worker',
-        //     label: 'TailwindCSS Worker',
-        //     // Create a new monaco editor worker
-        //     createData: {
-        //         languageId: 'tailwindcss',
-        //         workerId: 'tailwindcss',
-        //         worker: {
-        //             label: 'TailwindCSS Worker',
-        //             src: 'https://esm.sh/monaco-tailwindcss/tailwindcss.worker?worker',
-        //             type: 'module',
-        //         },
-        //     },
-        // });
-
-
-        // window.MonacoEnvironment = {
-        //     getWorkerUrl: function (moduleId, label) {
-        //         switch(label) {
-        //             case 'tailwindcss':
-        //                 return 'https://esm.sh/monaco-tailwindcss/tailwindcss.worker?worker';
-        //             default:
-        //                 return '';
-        //         }
-        //     }
-        // };
-
-
-
-
-        window.MonacoEnvironment = { getWorker: () => proxy };
-
-        let proxy = URL.createObjectURL(new Blob([/*js*/`
-            import editorWorker from "https://cdn.jsdelivr.net/npm/monaco-editor@0.48.0/esm/vs/editor/editor.worker.js?worker"
-            import tsWorker from "https://cdn.jsdelivr.net/npm/monaco-editor@0.48.0/esm/vs/language/typescript/ts.worker.js?worker";
-            import cssWorker from "https://cdn.jsdelivr.net/npm/monaco-editor/esm/vs/language/css/css.worker.js?worker"
-
-            self.MonacoEnvironment = {
-                // baseUrl: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.48.0/min/',
-                getWorker(moduleId, label) {
-                    console.log('getWorker', moduleId, label);
-                    if (label === "css" || label === "scss" || label === "less") {
-                        return new cssWorker()
-                    }
-                    if (label === "typescript" || label === "javascript") {
-                        return new tsWorker();
-                    }
-                    return new editorWorker();
-                    
-                }
-            };
-            console.log('workerMain.js loaded');
-            console.log('proxy', self.MonacoEnvironment);
-        `], { type: 'text/javascript' }));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         monacoRef.value.languages.typescript.javascriptDefaults.setDiagnosticsOptions(langJSDiagnosticOptions);
         monacoRef.value.languages.typescript.typescriptDefaults.setDiagnosticsOptions(langJSDiagnosticOptions);
@@ -280,14 +192,6 @@ async function consumeConfig() {
                 configError.value = tailwindConfig._error;
                 return;
             }
-
-            const resolvedConfig = JSON.parse(JSON.stringify(twResolveConfig(tailwindConfig)));
-
-            if (monacoTailwindcss) {
-                monacoTailwindcss.setTailwindConfig(resolvedConfig);
-            } else {
-                monacoTailwindcss = configureMonacoTailwindcss(monacoRef.value, { tailwindConfig: resolvedConfig });
-            }
         });
 }
 
@@ -334,6 +238,10 @@ watch(twConfig, () => {
     consumeConfig();
 });
 
+watch(twCss, () => {
+    debouncedBroadcast({ key: 'update-main-css', value: twCss.value });
+});
+
 onBeforeMount(() => {
     fetchVersion();
 });
@@ -352,10 +260,16 @@ onMounted(() => {
     })();
 });
 
+onBeforeRouteLeave((to, from, next) => {
+    if (tailwindStore.hasChanged() && !confirm(__('You have unsaved changes. Are you sure you want to leave?', 'yabe-siul'))) next(from);
+    else next();
+});
 
-
-
-
+window.onbeforeunload = function () {
+    if (tailwindStore.hasChanged()) {
+        return __('You have unsaved changes. Are you sure you want to leave?', 'yabe-siul');
+    }
+};
 
 // Expose the doSave function to be used by the App.vue
 defineExpose({
@@ -376,7 +290,6 @@ defineExpose({
             <template #default>
                 <div class="">
                     <div class="editor-container">
-                        <!-- <div ref="editorCssRef" class="h:600"></div> -->
                         <div class="h:600">
                             <vue-monaco-editor v-model:value="twCss" language="scss" path="file:///main.css" :theme="monacoTheme" :options="MONACO_EDITOR_OPTIONS" @mount="handleCssEditorMount" />
                         </div>
@@ -396,7 +309,6 @@ defineExpose({
             <template #default>
                 <div class="">
                     <div class="editor-container">
-                        <!-- <div id="editorPreset" ref="editorPresetEl" class="h:600"></div> -->
                         <div class="h:600">
                             <vue-monaco-editor v-model:value="twPreset" language="javascript" path="file:///preset.js" :theme="monacoTheme" :options="MONACO_EDITOR_OPTIONS" @mount="handlePresetEditorMount" />
                         </div>
@@ -467,8 +379,6 @@ defineExpose({
             <template #default>
                 <div class="">
                     <div class="editor-container">
-                        <!-- <div id="editorConfig" ref="editorConfigEl" class="h:600"></div> -->
-
                         <div class="h:600">
                             <vue-monaco-editor v-model:value="twConfig" path="file:///tailwind.config.js" language="typescript" :theme="monacoTheme" :options="{ ...MONACO_EDITOR_OPTIONS, readOnly: true }" @mount="handleConfigEditorMount" />
                         </div>

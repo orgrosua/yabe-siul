@@ -98,7 +98,7 @@ onBeforeUnmount(() => {
                     <div class="flex flex:row mx:30">
                         <ul class="flex uppercase {bb:3|solid|black}>li:has(>.router-link-active) {fg:black}>li:has(>.router-link-active)>a align-items:baseline box-shadow:none>li>a:focus fg:gray-70>li>a fg:gray-90>li>a:hover flex-grow:1 font:12 font:semibold gap-x:28 m:0 m:0>li pb:6>li pt:20 pt:10>li px:4>li text-decoration:none>li>a">
                             <li><router-link :to="{ name: 'tailwind' }" activeClass="router-link-active">Tailwind CSS</router-link></li>
-                            <!-- <li><router-link :to="{ name: 'settings' }" activeClass="router-link-active">Settings</router-link></li> -->
+                            <li><router-link :to="{ name: 'settings' }" activeClass="router-link-active">Settings</router-link></li>
                         </ul>
                         <div id="navbar-right-side"></div>
                     </div>
