@@ -34,8 +34,8 @@ app.config.globalProperties.sprintf = sprintf;
 app.config.globalProperties.siul = window.siul;
 
 // // https://github.com/lightvue/lightvue/blob/d3219dd658e960c85a27ad151bd0ba65c68993a7/docs-v3/src/main.js#L12
-// app.config.globalProperties.$listeners = '';
-// app.config.globalProperties.$lightvue = { ripple: true, version: 3 };
+app.config.globalProperties.$listeners = '';
+app.config.globalProperties.$lightvue = { ripple: true, version: 3 };
 
 app
     .use(pinia)

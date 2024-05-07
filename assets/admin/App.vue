@@ -6,7 +6,6 @@ import WordpressNotice from './components/WordpressNotice.vue';
 
 import Logo from '../../siul.svg';
 
-
 const busyStore = useBusyStore();
 
 const theme = useColorMode({
