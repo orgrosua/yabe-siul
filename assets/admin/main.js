@@ -6,6 +6,7 @@
 import './styles/app.scss';
 import 'floating-vue/dist/style.css';
 import './master.css.js';
+import './monaco.js';
 
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { createApp } from 'vue';

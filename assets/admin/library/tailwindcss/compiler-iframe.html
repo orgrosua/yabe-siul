@@ -239,19 +239,17 @@
             }, '*');
         });
 
-        // event listerner to receive message from the parent window, for resolving config
+        // event listerner to receive message from the parent window, for parsing config
         window.addEventListener('message', async function (event) {
-            if (event.data.type !== 'action' || event.data.action !== 'resolve-config') {
+            if (event.data.type !== 'action' || event.data.action !== 'parse-config') {
                 return;
             }
-            const tw_config = await parseConfig(event.data.tw_config).then((data) => {
-                return resolveConfig(data);
-            })
+            const parsed_config = await parseConfig(event.data.tw_config).then(data => data);
 
             window.parent.postMessage({
                 type: 'action',
-                action: 'resolve-config',
-                config: JSON.parse(JSON.stringify(tw_config)),
+                action: 'parse-config',
+                config: JSON.parse(JSON.stringify(parsed_config)),
             }, '*');
         });
 

@@ -1,7 +1,7 @@
-import compilerIframe from './compiler-iframe.html';
+import compilerIframe from './compiler-iframe.html?raw';
 import axios from 'axios';
 import { useStorage } from '@vueuse/core';
-import { Generator as JspmGenerator } from '@jspm/generator';
+import { Generator as JspmGenerator } from 'https://esm.sh/@jspm/generator?bundle';
 
 export class IframeManager {
     static compilerIframeEl = null;
@@ -132,17 +132,16 @@ export class IframeManager {
     }
 }
 
-export async function resolveConfig(tw_version, tw_config) {
-    const iframe = await IframeManager.getConfigResolverIframe(tw_version, false);
+export async function parseConfig(tw_version, tw_config) {
+    const iframe = await IframeManager.getCompilerIframe(tw_version, false);
 
     const iframeEval = await new Promise(resolve => {
         // add event listener, and remove before resolve
         const listener = (event) => {
             // Check if the message comes from the specific iframe
-            if (event.source === iframe.contentWindow && event.data.type === 'action' && event.data.action === 'resolve-config') {
+            if (event.source === iframe.contentWindow && event.data.type === 'action' && event.data.action === 'parse-config') {
                 // Process the message from the iframe
                 window.removeEventListener('message', listener);
-                
                 resolve(event.data);
             }
         };
@@ -151,7 +150,7 @@ export async function resolveConfig(tw_version, tw_config) {
 
         iframe.contentWindow.postMessage({
             type: 'action',
-            action: 'resolve-config',
+            action: 'parse-config',
             tw_config,
         }, '*');
     });

@@ -4,18 +4,32 @@ import { onBeforeRouteLeave } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useMonaco } from '@guolao/vue-monaco-editor';
 import { useStorage, useRefHistory } from '@vueuse/core';
+import axios from 'axios';
 import { __ } from '@wordpress/i18n';
+import * as prettier from 'https://esm.sh/prettier';
+import prettierPluginBabel from 'https://esm.sh/prettier/plugins/babel';
+import prettierPluginEstree from 'https://esm.sh/prettier/plugins/estree';
+
 import { debounce } from 'lodash-es';
 
 import { configureMonacoTailwindcss, tailwindcssData } from 'monaco-tailwindcss';
 
 import { useTailwindStore } from '../stores/tailwind.js';
 import { useSettingsStore } from '../stores/settings.js';
+import { useBusyStore } from '../stores/busy.js';
 import { useNotifier } from '../library/notifier';
+
+import twResolveConfig from 'tailwindcss/resolveConfig';
+import {
+    parseConfig as playParseConfig
+} from '../library/tailwindcss/compiler.js';
+
 import ExpansionPanel from '../components/ExpansionPanel.vue';
+import { wizardToTailwindConfig } from '../components/Wizard/TailwindConfig.js';
 
 const tailwindStore = useTailwindStore();
 const settingsStore = useSettingsStore();
+const busyStore = useBusyStore();
 const notifier = useNotifier();
 const { monacoRef } = useMonaco();
 
@@ -24,6 +38,24 @@ const bc = new BroadcastChannel('siul_channel');
 const { css: twCss, preset: twPreset, wizard: twWizard, config: twConfig } = storeToRefs(tailwindStore);
 
 const configError = ref(null);
+
+
+const tw_versions = ref([]);
+
+function fetchVersion() {
+    busyStore.add('settings.general.versions.fetchVersions');
+
+    axios
+        .get('https://data.jsdelivr.com/v1/package/npm/tailwindcss')
+        .then((response) => {
+            tw_versions.value = response.data.versions.filter((v) => {
+                return v >= '3.0.0' && v < '4.0.0';
+            });
+        })
+        .finally(() => {
+            busyStore.remove('settings.general.versions.fetchVersions');
+        });
+}
 
 // monaco theme
 const theme = useStorage('theme', 'light');
@@ -52,6 +84,7 @@ const handlePresetEditorMount = editor => (editorPresetRef.value = editor);
 /** @type {?import('monaco-editor').editor.IStandaloneCodeEditor} */
 const editorConfigRef = shallowRef();
 const handleConfigEditorMount = editor => (editorConfigRef.value = editor);
+
 
 function doSave() {
     const promise = tailwindStore.doPush();
@@ -88,6 +121,83 @@ const stop = watchEffect(() => {
             moduleResolution: 2, // monaco.languages.typescript.ModuleResolutionKind.NodeJs,
             typeRoots: ['node_modules/@types'],
         };
+
+        console.log('monacoRef', monacoRef.value);
+
+        // add https://esm.sh/monaco-tailwindcss@0.6.0/tailwindcss.worker?worker to the worker
+        // monacoRef.value.editor.createWebWorker({
+        //     moduleId: 'file:///tailwindcss.worker',
+        //     label: 'TailwindCSS Worker',
+        //     // Create a new monaco editor worker
+        //     createData: {
+        //         languageId: 'tailwindcss',
+        //         workerId: 'tailwindcss',
+        //         worker: {
+        //             label: 'TailwindCSS Worker',
+        //             src: 'https://esm.sh/monaco-tailwindcss/tailwindcss.worker?worker',
+        //             type: 'module',
+        //         },
+        //     },
+        // });
+
+
+        // window.MonacoEnvironment = {
+        //     getWorkerUrl: function (moduleId, label) {
+        //         switch(label) {
+        //             case 'tailwindcss':
+        //                 return 'https://esm.sh/monaco-tailwindcss/tailwindcss.worker?worker';
+        //             default:
+        //                 return '';
+        //         }
+        //     }
+        // };
+
+
+
+
+        window.MonacoEnvironment = { getWorker: () => proxy };
+
+        let proxy = URL.createObjectURL(new Blob([/*js*/`
+            import editorWorker from "https://cdn.jsdelivr.net/npm/monaco-editor@0.48.0/esm/vs/editor/editor.worker.js?worker"
+            import tsWorker from "https://cdn.jsdelivr.net/npm/monaco-editor@0.48.0/esm/vs/language/typescript/ts.worker.js?worker";
+            import cssWorker from "https://cdn.jsdelivr.net/npm/monaco-editor/esm/vs/language/css/css.worker.js?worker"
+
+            self.MonacoEnvironment = {
+                // baseUrl: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.48.0/min/',
+                getWorker(moduleId, label) {
+                    console.log('getWorker', moduleId, label);
+                    if (label === "css" || label === "scss" || label === "less") {
+                        return new cssWorker()
+                    }
+                    if (label === "typescript" || label === "javascript") {
+                        return new tsWorker();
+                    }
+                    return new editorWorker();
+                    
+                }
+            };
+            console.log('workerMain.js loaded');
+            console.log('proxy', self.MonacoEnvironment);
+        `], { type: 'text/javascript' }));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         monacoRef.value.languages.typescript.javascriptDefaults.setDiagnosticsOptions(langJSDiagnosticOptions);
         monacoRef.value.languages.typescript.typescriptDefaults.setDiagnosticsOptions(langJSDiagnosticOptions);
@@ -154,6 +264,33 @@ const stop = watchEffect(() => {
     }
 })
 
+// debounce the config parsing to avoid too many calls
+const debouncedPlayParseConfig = debounce(() => {
+    playParseConfig(settingsStore.options?.general?.tailwindcss?.version ?? tw_versions.value[0], twPreset.value)
+        .then((result) => {
+            configError.value = result.config._error ?? null;
+        });
+}, 500);
+
+async function consumeConfig() {
+    await playParseConfig(settingsStore.options?.general?.tailwindcss?.version ?? tw_versions.value[0], twConfig.value)
+        .then((tailwindConfig) => {
+            if (tailwindConfig._error) {
+                console.error('tailwindConfig._error', tailwindConfig._error);
+                configError.value = tailwindConfig._error;
+                return;
+            }
+
+            const resolvedConfig = JSON.parse(JSON.stringify(twResolveConfig(tailwindConfig)));
+
+            if (monacoTailwindcss) {
+                monacoTailwindcss.setTailwindConfig(resolvedConfig);
+            } else {
+                monacoTailwindcss = configureMonacoTailwindcss(monacoRef.value, { tailwindConfig: resolvedConfig });
+            }
+        });
+}
+
 function resetToDefault(k) {
     if (confirm(__('Are you sure you want to reset to default?', 'yabe-siul'))) {
         if (k === 'css') {
@@ -164,6 +301,42 @@ function resetToDefault(k) {
     }
 }
 
+function updateTwConfig() {
+    const _preset = twPreset.value.includes('//-@-wizard')
+        ? twPreset.value.replace('//-@-wizard', wizardToTailwindConfig(toRaw(twWizard.value), settingsStore.options?.general?.tailwindcss?.version ?? 'latest'))
+        : twPreset.value;
+
+    (async () => {
+        try {
+            const formatted = await prettier.format(_preset, {
+                parser: 'babel',
+                plugins: [prettierPluginBabel, prettierPluginEstree],
+            });
+
+            twConfig.value = formatted;
+
+
+
+        } catch (e) { /* empty */ }
+    })();
+}
+
+const debouncedBroadcast = debounce((data) => {
+    bc.postMessage(data);
+}, 150);
+
+watch(twPreset, () => {
+    updateTwConfig();
+    debouncedPlayParseConfig();
+});
+
+watch(twConfig, () => {
+    consumeConfig();
+});
+
+onBeforeMount(() => {
+    fetchVersion();
+});
 
 onMounted(() => {
     // set the monaco editor content
