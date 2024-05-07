@@ -96,10 +96,6 @@ class Main implements IntegrationInterface
 
     public function register_oxybender_autocomplete()
     {
-        if (!Config::get('general.autocomplete.engine.enabled', false)) {
-            return;
-        }
-
         wp_add_inline_script('oxybender:editor', <<<JS
             document.addEventListener('DOMContentLoaded', function () {
                 const iframeWindow = document.getElementById('ct-artificial-viewport');

@@ -1,208 +1,86 @@
 <script setup>
-import { ref, watch, computed, watchEffect, onBeforeMount, onMounted, onUnmounted, toRaw } from 'vue';
+import { ref, watch, computed, watchEffect, onBeforeMount, onMounted, toRaw, shallowRef, nextTick } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router';
-import { configureMonacoTailwindcss, tailwindcssData } from 'monaco-tailwindcss';
-import * as monaco from 'monaco-editor';
-import { debounce } from 'lodash-es';
+import { storeToRefs } from 'pinia';
+import { useMonaco } from '@guolao/vue-monaco-editor';
+import { useRefHistory, useStorage } from '@vueuse/core';
+import axios from 'axios';
 import { __ } from '@wordpress/i18n';
-import { useStorage, useRefHistory } from '@vueuse/core';
+import * as prettier from 'https://esm.sh/prettier';
+import prettierPluginBabel from 'https://esm.sh/prettier/plugins/babel';
+import prettierPluginEstree from 'https://esm.sh/prettier/plugins/estree';
 
-import * as prettier from 'prettier';
-import prettierPluginBabel from 'prettier/plugins/babel';
-import prettierPluginEstree from 'prettier/plugins/estree';
+import { debounce } from 'lodash-es';
 
-import {
-    collectTypes,
-    resolveConfig as playResolveConfig
-} from '../library/tailwindcss/config-resolver.js';
-import twResolveConfig from 'tailwindcss/resolveConfig';
-
-import ExpansionPanel from '../components/ExpansionPanel.vue';
 import { useTailwindStore } from '../stores/tailwind.js';
 import { useSettingsStore } from '../stores/settings.js';
-import { storeToRefs } from 'pinia';
-import WizardLayout from '../components/Wizard/WizardLayout.vue';
+import { useBusyStore } from '../stores/busy.js';
 import { useNotifier } from '../library/notifier';
 
+import { parseConfig as playParseConfig } from '../library/tailwindcss/compiler.js';
+
+import ExpansionPanel from '../components/ExpansionPanel.vue';
 import { wizardToTailwindConfig } from '../components/Wizard/TailwindConfig.js';
+import WizardLayout from '../components/Wizard/WizardLayout.vue';
 
 const tailwindStore = useTailwindStore();
 const settingsStore = useSettingsStore();
+const busyStore = useBusyStore();
 const notifier = useNotifier();
+const { monacoRef } = useMonaco();
 
 const bc = new BroadcastChannel('siul_channel');
 
 const { css: twCss, preset: twPreset, wizard: twWizard, config: twConfig } = storeToRefs(tailwindStore);
 
 // listen undo/redo event key binding, windows: undo: ctrl+z, redo: ctrl+y, mac: undo: cmd+z, redo: cmd+shift+z
-
 const { history: twWizardHistory, undo: twWizardUndo, redo: twWizardRedo, canUndo: twWizardCanUndo, canRedo: twWizardCanRedo } = useRefHistory(twWizard, {
     deep: true,
 });
 
 const configError = ref(null);
 
-// monaco models
-const model = {
-    css: null,
-    preset: null,
-    config: null,
-};
+const tw_versions = ref([]);
 
-const modelUri = {
-    css: monaco.Uri.parse('file:///main.css'),
-    preset: monaco.Uri.parse('file:///preset.js'),
-    config: monaco.Uri.parse('file:///tailwind.config.js'),
-};
+function fetchVersion() {
+    busyStore.add('settings.general.versions.fetchVersions');
 
-model.css = monaco.editor.getModels().find((model) => model.uri.path === modelUri.css.path) ?? monaco.editor.createModel(tailwindStore.css, 'css', modelUri.css);
-model.preset = monaco.editor.getModels().find((model) => model.uri.path === modelUri.preset.path) ?? monaco.editor.createModel(tailwindStore.preset, 'javascript', modelUri.preset);
-model.config = monaco.editor.getModels().find((model) => model.uri.path === modelUri.config.path) ?? monaco.editor.createModel(tailwindStore.config, 'typescript', modelUri.config);
-
-const langJSDiagnosticOptions = {
-    noSemanticValidation: false,
-    noSyntaxValidation: false,
-    noSuggestionDiagnostics: false,
-    diagnosticCodesToIgnore: [
-        80001, // "File is a CommonJS module; it may be converted to an ES6 module."
-        2307, // "Cannot find module 'x'."
-    ],
-};
-
-const langJSCompilerOptions = {
-    allowJs: true,
-    allowNonTsExtensions: true,
-    module: monaco.languages.typescript.ModuleKind.CommonJS,
-    target: monaco.languages.typescript.ScriptTarget.Latest,
-    checkJs: true,
-    moduleResolution:
-        monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-    typeRoots: ['node_modules/@types'],
-};
-
-monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions(langJSDiagnosticOptions);
-monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions(langJSDiagnosticOptions);
-
-monaco.languages.typescript.javascriptDefaults.setCompilerOptions(langJSCompilerOptions);
-monaco.languages.typescript.typescriptDefaults.setCompilerOptions(langJSCompilerOptions);
-
-// webpack 5 now use ?resource instead of !raw-loader
-const typeFiles = collectTypes(
-    require.context('tailwindcss/?source', false, /\.d\.ts$/),
-    require.context('tailwindcss/types/?source', true, /\.d\.ts$/)
-);
-
-// Add all the types to the monaco editor
-for (let file in typeFiles) {
-    monaco.languages.typescript.javascriptDefaults.addExtraLib(
-        typeFiles[file],
-        `file:///node_modules/@types/tailwindcss/${file}`
-    );
-
-    monaco.languages.typescript.typescriptDefaults.addExtraLib(
-        typeFiles[file],
-        `file:///node_modules/@types/tailwindcss/${file}`
-    );
+    axios
+        .get('https://data.jsdelivr.com/v1/package/npm/tailwindcss')
+        .then((response) => {
+            tw_versions.value = response.data.versions.filter((v) => {
+                return v >= '3.0.0' && v < '4.0.0';
+            });
+        })
+        .finally(() => {
+            busyStore.remove('settings.general.versions.fetchVersions');
+        });
 }
-
-// add Lodash types
-const _importAll = (r) => {
-    return r.keys().map((path) => ({ path, mod: r(path) }));
-};
-
-const lodashTypes = {
-    ...Object.fromEntries(
-        _importAll(require.context('@types/lodash/?source', true, /\.d\.ts$/)).map(({ path, mod }) => [
-            path.replace('./', ''),
-            mod,
-        ])
-    )
-};
-
-for (let file in lodashTypes) {
-    monaco.languages.typescript.javascriptDefaults.addExtraLib(
-        lodashTypes[file],
-        `file:///node_modules/@types/lodash/${file}`
-    );
-
-    monaco.languages.typescript.typescriptDefaults.addExtraLib(
-        lodashTypes[file],
-        `file:///node_modules/@types/lodash/${file}`
-    );
-}
-
-// tailwind directives for monaco
-monaco.languages.css.cssDefaults.setOptions({
-    data: {
-        dataProviders: {
-            tailwind: tailwindcssData,
-        },
-    },
-});
-
-// configure monaco for tailwind
-let monacoTailwindcss;
 
 // monaco theme
 const theme = useStorage('theme', 'light');
-const monacoTheme = computed(() => theme.value === 'light' ? 'vs-light' : 'vs-dark');
-watchEffect(() => {
-    monaco.editor.setTheme(monacoTheme.value);
-});
+const monacoTheme = computed(() => theme.value === 'light' ? 'vs' : 'vs-dark');
 
-// add key binding command to monaco.editor to save all changes
-monaco.editor.addEditorAction({
-    id: 'save',
-    label: 'Save',
-    keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS],
-    run: () => {
-        doSave();
-    }
-});
+const MONACO_EDITOR_OPTIONS = {
+    colorDecorators: true,
+    automaticLayout: true,
+    formatOnPaste: true,
+}
 
 // CSS Editor
-const editorCssEl = ref(null);
-
 /** @type {?import('monaco-editor').editor.IStandaloneCodeEditor} */
-let editorCss = null;
+const editorCssRef = shallowRef();
+const handleCssEditorMount = editor => (editorCssRef.value = editor);
 
-// Preset Editor
-const editorPresetEl = ref(null);
-
+// Preset editor
 /** @type {?import('monaco-editor').editor.IStandaloneCodeEditor} */
-let editorPreset = null;
+const editorPresetRef = shallowRef();
+const handlePresetEditorMount = editor => (editorPresetRef.value = editor);
 
-// Config Editor
-const editorConfigEl = ref(null);
-
+// Config editor
 /** @type {?import('monaco-editor').editor.IStandaloneCodeEditor} */
-let editorConfig = null;
-
-// debounce the config parsing to avoid too many calls
-const debouncedPlayResolveConfig = debounce(() => {
-    playResolveConfig(model.preset.getValue())
-        .then((result) => {
-            configError.value = result.config._error ?? null;
-        });
-}, 500);
-
-async function consumeConfig() {
-    await playResolveConfig(model.config.getValue())
-        .then((tailwindConfig) => {
-            if (tailwindConfig._error) {
-                console.error('tailwindConfig._error', tailwindConfig._error);
-                return;
-            }
-
-            const parsed = JSON.parse(JSON.stringify(twResolveConfig(tailwindConfig)));
-
-            if (monacoTailwindcss) {
-                monacoTailwindcss.setTailwindConfig(parsed);
-            } else {
-                monacoTailwindcss = configureMonacoTailwindcss(monaco, { tailwindConfig: parsed });
-            }
-        });
-}
+const editorConfigRef = shallowRef();
+const handleConfigEditorMount = editor => (editorConfigRef.value = editor);
 
 function doSave() {
     const promise = tailwindStore.doPush();
@@ -215,13 +93,123 @@ function doSave() {
     );
 }
 
-watch(twConfig, (value, oldValue) => {
-    if (!editorConfig || value == oldValue) {
-        return;
-    }
+const stop = watchEffect(() => {
+    if (monacoRef.value) {
+        nextTick(() => stop());
 
-    editorConfig.setValue(`${tailwindStore.customValue.config.prepend}\n${twConfig.value}\n${tailwindStore.customValue.config.append}`);
-});
+        const langJSDiagnosticOptions = {
+            noSemanticValidation: false,
+            noSyntaxValidation: false,
+            noSuggestionDiagnostics: false,
+            diagnosticCodesToIgnore: [
+                80001, // "File is a CommonJS module; it may be converted to an ES6 module."
+                2307, // "Cannot find module 'x'."
+            ],
+        };
+
+        const langJSCompilerOptions = {
+            allowJs: true,
+            allowNonTsExtensions: true,
+            module: 1, // monaco.languages.typescript.ModuleKind.CommonJS,
+            target: 99, // monaco.languages.typescript.ScriptTarget.Latest,
+            checkJs: true,
+            moduleResolution: 2, // monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+            typeRoots: ['node_modules/@types'],
+        };
+
+        monacoRef.value.languages.typescript.javascriptDefaults.setDiagnosticsOptions(langJSDiagnosticOptions);
+        monacoRef.value.languages.typescript.typescriptDefaults.setDiagnosticsOptions(langJSDiagnosticOptions);
+
+        monacoRef.value.languages.typescript.javascriptDefaults.setCompilerOptions(langJSCompilerOptions);
+        monacoRef.value.languages.typescript.typescriptDefaults.setCompilerOptions(langJSCompilerOptions);
+
+        const typeFiles = [{
+            path: 'node_modules/types/tailwindcss/index.d.ts',
+            content: 'export * from "./types/config"',
+        }];
+
+        Object.entries(import.meta.glob([
+            // '../../../node_modules/@types/lodash/**/*.d.ts', // Lodash
+            '../../../node_modules/tailwindcss/**/*.d.ts', // Tailwind CSS
+        ], {
+            query: '?raw',
+            import: 'default',
+            eager: true,
+        })).forEach(([key, value]) => {
+            let path = key.replaceAll('../', '');
+            let content = value;
+
+            // if tailwind css
+            if (path.indexOf('node_modules/tailwindcss/types/') !== -1) {
+                path = path.replace('node_modules/tailwindcss/types/', 'node_modules/tailwindcss/');
+                content = content?.replace(
+                    /interface RequiredConfig \{.*?\}/s,
+                    'interface RequiredConfig {}'
+                );
+            }
+
+            // if path 'node_modules/' doesn't continued by '@types', add it
+            if (path.indexOf('node_modules/') !== -1 && path.indexOf('/@types/') === -1) {
+                path = path.replace('node_modules/', 'node_modules/@types/');
+            }
+
+            typeFiles.push({
+                path,
+                content,
+            });
+        });
+
+        typeFiles.forEach(({ path, content }) => {
+            monacoRef.value.languages.typescript.javascriptDefaults.addExtraLib(
+                content,
+                `file:///${path}`
+            );
+            monacoRef.value.languages.typescript.typescriptDefaults.addExtraLib(
+                content,
+                `file:///${path}`
+            );
+        });
+
+        // add key binding command to monaco.editor to save all changes
+        monacoRef.value.editor.addEditorAction({
+            id: 'save',
+            label: 'Save',
+            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS],
+            run: () => {
+                doSave();
+            }
+        });
+    }
+})
+
+// debounce the config parsing to avoid too many calls
+const debouncedPlayParseConfig = debounce(() => {
+    playParseConfig(settingsStore.options?.general?.tailwindcss?.version ?? tw_versions.value[0], twPreset.value)
+        .then((result) => {
+            configError.value = result.config._error ?? null;
+        });
+}, 500);
+
+async function consumeConfig() {
+    await playParseConfig(settingsStore.options?.general?.tailwindcss?.version ?? tw_versions.value[0], twConfig.value)
+        .then((tailwindConfig) => {
+            if (tailwindConfig._error) {
+                console.error('tailwindConfig._error', tailwindConfig._error);
+                configError.value = tailwindConfig._error;
+                return;
+            }
+        });
+}
+
+function resetToDefault(k) {
+    if (confirm(__('Are you sure you want to reset to default?', 'yabe-siul'))) {
+        if (k === 'css') {
+            twCss.value = tailwindStore.defaultValues.css;
+        } else if (k === 'preset') {
+            twPreset.value = tailwindStore.defaultValues.preset;
+        }
+    }
+}
 
 function updateTwConfig() {
     const _preset = twPreset.value.includes('//-@-wizard')
@@ -236,79 +224,36 @@ function updateTwConfig() {
             });
 
             twConfig.value = formatted;
-
         } catch (e) { /* empty */ }
     })();
-}
-
-function resetToDefault(k) {
-    if (confirm(__('Are you sure you want to reset to default?', 'yabe-siul'))) {
-        if (k === 'css') {
-            editorCss.setValue(tailwindStore.defaultValues.css);
-        } else if (k === 'preset') {
-            editorPreset.setValue(tailwindStore.defaultValues.preset);
-        }
-    }
 }
 
 const debouncedBroadcast = debounce((data) => {
     bc.postMessage(data);
 }, 150);
 
+watch(twPreset, () => {
+    updateTwConfig();
+    debouncedPlayParseConfig();
+});
+
 watch(twWizard, () => {
     updateTwConfig();
 }, { deep: true });
 
-watch(twPreset, () => {
-    updateTwConfig();
+watch(twConfig, () => {
+    consumeConfig();
+});
+
+watch(twCss, () => {
+    debouncedBroadcast({ key: 'update-main-css', value: twCss.value });
 });
 
 onBeforeMount(() => {
+    fetchVersion();
 });
 
 onMounted(() => {
-    /** @type {import('monaco-editor').editor.IStandaloneEditorConstructionOptions} */
-    const cssMonacoOptions = {
-        colorDecorators: true,
-        automaticLayout: true,
-        model: model.css,
-    };
-
-    editorCss = monaco.editor.create(editorCssEl.value, cssMonacoOptions);
-
-    /** @type {import('monaco-editor').editor.IStandaloneEditorConstructionOptions} */
-    const presetMonacoOptions = {
-        automaticLayout: true,
-        model: model.preset,
-    };
-
-    editorPreset = monaco.editor.create(editorPresetEl.value, presetMonacoOptions);
-
-    /** @type {import('monaco-editor').editor.IStandaloneEditorConstructionOptions} */
-    const configMonacoOptions = {
-        automaticLayout: true,
-        model: model.config,
-        readOnly: true,
-    };
-
-    editorConfig = monaco.editor.create(editorConfigEl.value, configMonacoOptions);
-
-    // if the css editor content changes
-    model.css?.onDidChangeContent(() => {
-        twCss.value = model.css.getValue();
-        debouncedBroadcast({ key: 'update-main-css', value: model.css.getValue() });
-    });
-
-    // if the preset editor content changes
-    model.preset?.onDidChangeContent(() => {
-        debouncedPlayResolveConfig();
-        twPreset.value = model.preset.getValue();
-    });
-
-    model.config?.onDidChangeContent(() => {
-        consumeConfig();
-    });
-
     // set the monaco editor content
     (async () => {
         if (tailwindStore.initValues.preset === null) {
@@ -319,12 +264,6 @@ onMounted(() => {
         if (Object.keys(settingsStore.options).length === 0) {
             await settingsStore.doPull();
         }
-
-        // set the css editor content
-        editorCss.setValue(tailwindStore.css);
-
-        // set the preset editor content
-        editorPreset.setValue(tailwindStore.preset);
     })();
 });
 
@@ -338,11 +277,6 @@ window.onbeforeunload = function () {
         return __('You have unsaved changes. Are you sure you want to leave?', 'yabe-siul');
     }
 };
-
-onUnmounted(() => {
-    editorCss?.dispose();
-    editorPreset?.dispose();
-});
 
 // Expose the doSave function to be used by the App.vue
 defineExpose({
@@ -363,7 +297,9 @@ defineExpose({
             <template #default>
                 <div class="">
                     <div class="editor-container">
-                        <div id="editorCss" ref="editorCssEl" class="h:600"></div>
+                        <div class="h:600">
+                            <vue-monaco-editor v-model:value="twCss" language="scss" path="file:///main.css" :theme="monacoTheme" :options="MONACO_EDITOR_OPTIONS" @mount="handleCssEditorMount" />
+                        </div>
                     </div>
                 </div>
             </template>
@@ -380,7 +316,9 @@ defineExpose({
             <template #default>
                 <div class="">
                     <div class="editor-container">
-                        <div id="editorPreset" ref="editorPresetEl" class="h:600"></div>
+                        <div class="h:600">
+                            <vue-monaco-editor v-model:value="twPreset" language="javascript" path="file:///preset.js" :theme="monacoTheme" :options="MONACO_EDITOR_OPTIONS" @mount="handlePresetEditorMount" />
+                        </div>
                     </div>
                 </div>
             </template>
@@ -448,7 +386,9 @@ defineExpose({
             <template #default>
                 <div class="">
                     <div class="editor-container">
-                        <div id="editorConfig" ref="editorConfigEl" class="h:600"></div>
+                        <div class="h:600">
+                            <vue-monaco-editor v-model:value="twConfig" path="file:///tailwind.config.js" language="typescript" :theme="monacoTheme" :options="{ ...MONACO_EDITOR_OPTIONS, readOnly: true }" @mount="handleConfigEditorMount" />
+                        </div>
                     </div>
                 </div>
             </template>

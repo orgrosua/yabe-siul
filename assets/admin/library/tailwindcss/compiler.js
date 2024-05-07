@@ -1,54 +1,11 @@
-import configResolverIframe from './config-resolver-iframe.html';
-import compilerIframe from './compiler-iframe.html';
+import compilerIframe from './compiler-iframe.html?raw';
 import axios from 'axios';
 import { useStorage } from '@vueuse/core';
-import { Generator as JspmGenerator } from '@jspm/generator';
+import { Generator as JspmGenerator } from 'https://esm.sh/@jspm/generator?bundle';
 
-class IframeManager {
-    static configResolverIframeEl = null;
+export class IframeManager {
     static compilerIframeEl = null;
-    static configResolverIframeReady = false;
     static compilerIframeReady = false;
-
-    /**
-     * @param {boolean} forceRecreate - If true, the iframe will be recreated
-     * @returns {Promise<HTMLIFrameElement>} The iframe element
-     */
-    static async getConfigResolverIframe(forceRecreate = false) {
-        if (forceRecreate) {
-            IframeManager.removeConfigResolverIframe();
-            IframeManager.configResolverIframeReady = false;
-        }
-
-        if (!IframeManager.configResolverIframeEl) {
-            IframeManager.configResolverIframeEl = document.createElement('iframe');
-            IframeManager.configResolverIframeEl.id = 'siul-config-resolver-iframe';
-            IframeManager.configResolverIframeEl.srcdoc = configResolverIframe;
-            IframeManager.configResolverIframeEl.style.display = 'none';
-            document.body.appendChild(IframeManager.configResolverIframeEl);
-        }
-
-        // Wait for the iframe to be ready. it will send a message to the parent window when it's ready
-        if (!IframeManager.configResolverIframeReady) {
-            await new Promise((resolve) => {
-                window.addEventListener('message', (event) => {
-                    if (event.source === IframeManager.configResolverIframeEl.contentWindow && event.data.type === 'iframe-ready') {
-                        IframeManager.configResolverIframeReady = true;
-                        resolve();
-                    }
-                });
-            });
-        }
-
-        return IframeManager.configResolverIframeEl;
-    }
-
-    static removeConfigResolverIframe() {
-        if (IframeManager.configResolverIframeEl) {
-            IframeManager.configResolverIframeEl.remove();
-            IframeManager.configResolverIframeEl = null;
-        }
-    }
 
     /**
      * @param {string} version - The Tailwind CSS version
@@ -175,4 +132,56 @@ class IframeManager {
     }
 }
 
-export default IframeManager;
+export async function parseConfig(tw_version, tw_config) {
+    const iframe = await IframeManager.getCompilerIframe(tw_version, false);
+
+    const iframeEval = await new Promise(resolve => {
+        // add event listener, and remove before resolve
+        const listener = (event) => {
+            // Check if the message comes from the specific iframe
+            if (event.source === iframe.contentWindow && event.data.type === 'action' && event.data.action === 'parse-config') {
+                // Process the message from the iframe
+                window.removeEventListener('message', listener);
+                resolve(event.data);
+            }
+        };
+
+        window.addEventListener('message', listener, false);
+
+        iframe.contentWindow.postMessage({
+            type: 'action',
+            action: 'parse-config',
+            tw_config,
+        }, '*');
+    });
+
+    return iframeEval;
+}
+
+export async function compileCSS(tw_version, tw_config, main_css, contents) {
+    const iframe = await IframeManager.getCompilerIframe(tw_version, true);
+
+    const iframeEval = await new Promise(resolve => {
+        // add event listener, and remove before resolve
+        const listener = (event) => {
+            // Check if the message comes from the specific iframe
+            if (event.source === iframe.contentWindow && event.data.type === 'action' && event.data.action === 'compile-css') {
+                // Process the message from the iframe
+                window.removeEventListener('message', listener);
+                resolve(event.data);
+            }
+        };
+
+        window.addEventListener('message', listener, false);
+
+        iframe.contentWindow.postMessage({
+            type: 'action',
+            action: 'compile-css',
+            tw_config,
+            main_css,
+            contents,
+        }, '*');
+    });
+
+    return iframeEval;
+}

@@ -4,7 +4,7 @@ Donate link: https://ko-fi.com/Q5Q75XSF7
 Tags: tailwind css, bricks builder, oxygen builder, breakdance builder
 Requires at least: 6.0
 Tested up to: 6.4
-Stable tag: 1.0.26
+Stable tag: 2.0.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -57,6 +57,11 @@ Visit [our website](https://siul.yabe.land) for more information.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= 2.0.0 =
+* **Improve**: Reduce the size of plugin file.
+* **Improve**: Autocomplete module now always active.
+* **Change**: The main.css editor no longer includes the [extension](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss).
 
 = 1.0.26 =
 * **New**: Autocomplete integration for [Yabe Oxybender](https://oxybender.yabe.land/)

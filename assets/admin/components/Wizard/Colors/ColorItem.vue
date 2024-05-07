@@ -122,9 +122,9 @@ watch([() => props.color.key, () => props.color.value], (newValue, oldValue) => 
                 <div v-if="props.color.options.enableShades" class="flex-grow:1">
                     <div class="gap:25|4 grid-cols:11">
                         <div v-for="[kShade, vShade] in Object.entries(props.color.shades)" :key="kShade">
-                            <div :title="kShade" :class="[`bg:${vShade}`, `fg:${Color(vShade).luminosity() < 0.4 ? Color(props.color.shades[100]).hex() : Color(props.color.shades[900]).hex()}`]" class="center-content flex {hide}:hover>span:first {block}:hover>span:last font:12 h:40 ls:.5 r:6 w:full">
+                            <div :title="kShade" :class="[`bg:${vShade}`, `fg:${Color(vShade).luminosity() < 0.4 ? Color(props.color.shades[100]).hex() : Color(props.color.shades[900]).hex()}`]" class="center-content flex {hidden}:hover>span:first {block}:hover>span:last font:12 h:40 ls:.5 r:6 w:full">
                                 <span :class="{ 'font:bold': vShade.toUpperCase() == Color(props.color.value).hex() }" class="">{{ kShade }}</span>
-                                <span :class="{ 'font:bold': vShade.toUpperCase() == Color(props.color.value).hex() }" class="hide fg:gray-60 translateY(-30)">{{ vShade }}</span>
+                                <span :class="{ 'font:bold': vShade.toUpperCase() == Color(props.color.value).hex() }" class="hidden fg:gray-60 translateY(-30)">{{ vShade }}</span>
                             </div>
                         </div>
                     </div>

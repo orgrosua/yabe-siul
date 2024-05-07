@@ -36,8 +36,6 @@ watch(() => newColor.value.value, (value) => {
         try {
             const masterCSSColorShades = Object.entries(masterCSSColors).find(([key, value]) => value['DEFAULT'] === newColor.value.value);
             
-            console.log(masterCSSColorShades);
-
             if (masterCSSColorShades) {
                 newColor.value.key = masterCSSColorShades[0];
                 newColor.value.shades = Object.fromEntries(Object.entries(masterCSSColorShades[1]).filter(([key, value]) => key !== 'DEFAULT'));
@@ -146,9 +144,9 @@ onMounted(() => {
                             <div v-if="newColor.options.enableShades" class="flex-grow:1">
                                 <div class="gap:25|4 grid-cols:11">
                                     <div v-for="[kShade, vShade] in currentShades" :key="kShade">
-                                        <div :title="kShade" :class="[`bg:${vShade}`, `fg:${Color(vShade).luminosity() < 0.4 ? Color(newColor.shades[100]).hex() : Color(newColor.shades[900]).hex()}`]" class="center-content flex {hide}:hover>span:first {block}:hover>span:last font:12 h:40 ls:.5 r:6 w:full">
+                                        <div :title="kShade" :class="[`bg:${vShade}`, `fg:${Color(vShade).luminosity() < 0.4 ? Color(newColor.shades[100]).hex() : Color(newColor.shades[900]).hex()}`]" class="center-content flex {hidden}:hover>span:first {block}:hover>span:last font:12 h:40 ls:.5 r:6 w:full">
                                             <span :class="{'font:bold' : vShade.toUpperCase() == Color(newColor.value).hex()}" class="">{{ kShade }}</span>
-                                            <span :class="{ 'font:bold': vShade.toUpperCase() == Color(newColor.value).hex() }" class="hide fg:gray-60 translateY(-30)">{{ vShade }}</span>
+                                            <span :class="{ 'font:bold': vShade.toUpperCase() == Color(newColor.value).hex() }" class="hidden fg:gray-60 translateY(-30)">{{ vShade }}</span>
                                         </div>
                                     </div>
                                 </div>

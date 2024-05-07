@@ -1,4 +1,4 @@
-import { stringify } from 'javascript-stringify';
+import { stringify } from 'https://esm.sh/javascript-stringify';
 
 const wizardToTailwindConfig = (wizards, tw_version) => {
     let configStr = `const _wizardDefaultTheme = require('tailwindcss@${tw_version}/defaultTheme');`;

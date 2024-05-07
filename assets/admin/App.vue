@@ -4,6 +4,8 @@ import { useColorMode } from '@vueuse/core';
 import { useBusyStore } from './stores/busy.js';
 import WordpressNotice from './components/WordpressNotice.vue';
 
+import Logo from '../../siul.svg';
+
 const busyStore = useBusyStore();
 
 const theme = useColorMode({
@@ -39,7 +41,7 @@ onBeforeUnmount(() => {
         <div class="siul-main rel">
             <header id="siul-header" class="flex sticky align-items:center bg:white px:20 py:6 top:$(wp-admin--admin-bar--height) z:12">
                 <div class="flex align-items:center fg:black!_* flex-grow:1 gap:10">
-                    <inline-svg :src="require('../../siul.svg')" class="inline-svg f:40 fill:current px:2" />
+                    <inline-svg :src="Logo" class="inline-svg f:40 fill:current px:2" />
                     <h1 class="">Yabe Siul</h1>
                 </div>
                 <div class="">
@@ -70,19 +72,18 @@ onBeforeUnmount(() => {
                             <template #popper>
                                 <div>
                                     <div role="group" class="flex flex:column font:14 min-w:120 p:4 w:auto">
-                                        <a href="https://siul.yabe.land/docs?utm_source=wordpress-plugins&utm_medium=plugin-menu&utm_campaign=yabe-siul&utm_id=pro-version" target="_blank" class="flex align-items:center bg:white bg:gray-10:hover box-shadow:none:focus cursor:pointer fg:gray-90 gap:10 px:10 py:6 r:4 text:none user-select:none">
+                                        <a href="https://siul.yabe.land/docs?utm_source=wordpress-plugins&utm_medium=plugin-menu&utm_campaign=yabe-siul&utm_id=pro-version" target="_blank" class="flex align-items:center bg:white bg:gray-10:hover box-shadow:none:focus cursor:pointer fg:gray-90 gap:10 px:10 py:6 r:4 text-decoration:none user-select:none">
                                             <font-awesome-icon :icon="['fas', 'book']" class="min-w:14" />
                                             Documentation
                                         </a>
-                                        <a href="https://rosua.org/support-portal" target="_blank" class="flex align-items:center bg:white bg:gray-10:hover box-shadow:none:focus cursor:pointer fg:gray-90 gap:10 px:10 py:6 r:4 text:none user-select:none">
+                                        <a href="https://rosua.org/support-portal" target="_blank" class="flex align-items:center bg:white bg:gray-10:hover box-shadow:none:focus cursor:pointer fg:gray-90 gap:10 px:10 py:6 r:4 text-decoration:none user-select:none">
                                             <font-awesome-icon :icon="['fas', 'user-headset']" class="min-w:14" />
                                             Support
                                         </a>
-                                        <a href="https://www.facebook.com/groups/1142662969627943" target="_blank" class="flex align-items:center bg:white bg:gray-10:hover box-shadow:none:focus cursor:pointer fg:gray-90 gap:10 px:10 py:6 r:4 text:none user-select:none">
+                                        <a href="https://www.facebook.com/groups/1142662969627943" target="_blank" class="flex align-items:center bg:white bg:gray-10:hover box-shadow:none:focus cursor:pointer fg:gray-90 gap:10 px:10 py:6 r:4 text-decoration:none user-select:none">
                                             <font-awesome-icon :icon="['fab', 'facebook']" class="min-w:14" />
                                             Community
                                         </a>
-                                        <!-- changelog -->
                                     </div>
                                 </div>
                             </template>
@@ -109,9 +110,9 @@ onBeforeUnmount(() => {
 
                 <div class="siul-content my:20 px:20">
                     <router-view v-slot="{ Component }">
-                        <KeepAlive>
+                        <!-- <KeepAlive> -->
                             <component ref="componentRef" :is="Component" />
-                        </KeepAlive>
+                        <!-- </KeepAlive> -->
                     </router-view>
                 </div>
             </div>

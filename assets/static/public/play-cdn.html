@@ -10,6 +10,7 @@
     import evaluateTailwindFunctions from "tailwindcss/lib/lib/evaluateTailwindFunctions";
     import resolveConfig from "tailwindcss/resolveConfig";
     import { addEquivalents } from 'https://esm.sh/gh/tailwindlabs/tailwindcss-intellisense@daa8bb2821/packages/tailwindcss-language-service/src/util/equivalents.ts';
+    import TailwindcssAutocomplete from 'https://esm.sh/@yabe-siul/tailwindcss-autocomplete/dist/index.js';
 
     // listen broadcast message from the settings page
     const bc = new BroadcastChannel('siul_channel');
@@ -79,6 +80,22 @@
     set(window, 'siul.loaded.siul', true);
 
     let twContext = setupContextUtil.createContext(resolveConfig(tailwind.config));
+
+    /**
+     * @module autocomplete
+     */
+
+    const autocomplete = new TailwindcssAutocomplete(tailwind.config);
+
+    const getSuggestionList = async (value) => await autocomplete.getSuggestionList(value);
+
+    // check if the wp-hooks is available
+    if (window.wp?.hooks) {
+        window.wp.hooks.addFilter('siul.module.autocomplete', 'siul', getSuggestionList);
+    }
+
+    set(window, 'siul.loaded.module.autocomplete', true);
+    set(window, 'siul.module.autocomplete.query', async (q) => await getSuggestionList(q));
 
     /**
      * @module class-sorter

@@ -62,7 +62,7 @@
 
     // Inject the mutation observer script into the root iframe
     let sandboxScript = document.createElement('script');
-    sandboxScript.innerHTML = `
+    sandboxScript.innerHTML = /* javascript */`
         // Create a textarea element to manipulate script content
         let textareaPlayElement = document.createElement('textarea');
         let textareaJitElement = document.createElement('textarea');

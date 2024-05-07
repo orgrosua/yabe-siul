@@ -13,8 +13,9 @@ import { useNotifier } from '../library/notifier';
 import { useSettingsStore } from '../stores/settings';
 import { useApi } from '../library/api';
 import { useTailwindStore } from '../stores/tailwind';
+import { compileCSS } from '../library/tailwindcss/compiler';
 
-import iframeManager from '../library/tailwindcss/iframe-manager.js';
+// import iframeManager from '../library/tailwindcss/iframe-manager.js';
 
 const notifier = useNotifier();
 const busyStore = useBusyStore();
@@ -193,32 +194,6 @@ function doGenerateCache() {
     );
 }
 
-async function compileCSS(tw_version, tw_config, main_css, contents) {
-    const iframe = await iframeManager.getCompilerIframe(tw_version, true);
-
-    const iframeEval = await new Promise(resolve => {
-        // add event listener, and remove before resolve
-        const listener = (event) => {
-            // Check if the message comes from the specific iframe
-            if (event.source === iframe.contentWindow && event.data.type === 'action' && event.data.action === 'compile-css') {
-                // Process the message from the iframe
-                window.removeEventListener('message', listener);
-                resolve(event.data);
-            }
-        };
-
-        window.addEventListener('message', listener, false);
-
-        iframe.contentWindow.postMessage({
-            tw_config,
-            main_css,
-            contents,
-        }, '*');
-    });
-
-    return iframeEval;
-}
-
 const bc = new BroadcastChannel('siul_channel');
 
 onBeforeMount(() => {
@@ -311,14 +286,14 @@ defineExpose({
                             </select>
                             <p class="my:0">Please refer to the <a href="https://github.com/tailwindlabs/tailwindcss/releases" target="_blank">release notes</a> to learn more about the Tailwind CSS versions.</p>
                         </div>
-                        <div class="flex flex:column gap:10">
+                        <!-- <div class="flex flex:column gap:10">
                             <span class="fg:gray-60 font:15 font:medium">Autocomplete engine</span>
                             <div class="flex align-items:center gap:4">
                                 <input type="checkbox" id="enable_autocomplete_engine" v-model="settingsStore.virtualOptions('general.autocomplete.engine.enabled', false).value" class="checkbox mt:0">
                                 <label for="enable_autocomplete_engine" class="font:medium">Enable engine integration</label>
                             </div>
                             <p class="my:0">The engine can be integrated with external tools to provide autocomplete suggestion items.</p>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </template>

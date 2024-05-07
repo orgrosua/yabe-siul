@@ -200,8 +200,12 @@
             }
         }
 
-        // event listerner to receive message from the parent window
+        // event listerner to receive message from the parent window, for compiling css
         window.addEventListener('message', async function (event) {
+            if (event.data.type !== 'action' || event.data.action !== 'compile-css') {
+                return;
+            }
+
             const tw_config = await parseConfig(event.data.tw_config).then((data) => {
                 return resolveConfig(data);
             })
@@ -232,6 +236,20 @@
                 type: 'action',
                 action: 'compile-css',
                 css: result
+            }, '*');
+        });
+
+        // event listerner to receive message from the parent window, for parsing config
+        window.addEventListener('message', async function (event) {
+            if (event.data.type !== 'action' || event.data.action !== 'parse-config') {
+                return;
+            }
+            const parsed_config = await parseConfig(event.data.tw_config).then(data => data);
+
+            window.parent.postMessage({
+                type: 'action',
+                action: 'parse-config',
+                config: JSON.parse(JSON.stringify(parsed_config)),
             }, '*');
         });
 

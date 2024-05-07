@@ -75,9 +75,9 @@ class Main implements IntegrationInterface
         Runtime::get_instance()->enqueue_play_cdn();
 
         if (strpos($_SERVER['REQUEST_URI'], 'site-editor.php') !== false) {
-            wp_enqueue_script(SIUL::WP_OPTION . '-gutenberg-fse', plugin_dir_url(SIUL::FILE) . 'build/frontend/gutenberg/fse.js', [], SIUL::VERSION, true);
+            wp_enqueue_script(SIUL::WP_OPTION . '-gutenberg-fse', plugin_dir_url(SIUL::FILE) . 'build/public/gutenberg/fse.js', [], SIUL::VERSION, true);
         } else {
-            wp_enqueue_script(SIUL::WP_OPTION . '-gutenberg-observer', plugin_dir_url(SIUL::FILE) . 'build/frontend/gutenberg/observer.js', [], SIUL::VERSION, true);
+            wp_enqueue_script(SIUL::WP_OPTION . '-gutenberg-observer', plugin_dir_url(SIUL::FILE) . 'build/public/gutenberg/observer.js', [], SIUL::VERSION, true);
         }
     }
 }
