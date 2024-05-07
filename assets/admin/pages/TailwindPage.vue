@@ -7,7 +7,6 @@ import { useStorage, useRefHistory } from '@vueuse/core';
 import { __ } from '@wordpress/i18n';
 import { debounce } from 'lodash-es';
 
-
 import { configureMonacoTailwindcss, tailwindcssData } from 'monaco-tailwindcss';
 
 import { useTailwindStore } from '../stores/tailwind.js';
@@ -18,7 +17,7 @@ import ExpansionPanel from '../components/ExpansionPanel.vue';
 const tailwindStore = useTailwindStore();
 const settingsStore = useSettingsStore();
 const notifier = useNotifier();
-const { monacoRef, unload } = useMonaco();
+const { monacoRef } = useMonaco();
 
 const bc = new BroadcastChannel('siul_channel');
 
@@ -35,7 +34,6 @@ const MONACO_EDITOR_OPTIONS = {
     automaticLayout: true,
     formatOnPaste: true,
 }
-
 
 // configure monaco for tailwind
 let monacoTailwindcss;
@@ -69,13 +67,7 @@ function doSave() {
 
 const stop = watchEffect(() => {
     if (monacoRef.value) {
-        nextTick(() => stop())
-
-        console.log('editorConfigRef', editorConfigRef.value)
-
-        // monacoRef.value.editor
-        console.log('monacoRef.value', monacoRef.value);
-
+        nextTick(() => stop());
 
         const langJSDiagnosticOptions = {
             noSemanticValidation: false,
@@ -103,7 +95,10 @@ const stop = watchEffect(() => {
         monacoRef.value.languages.typescript.javascriptDefaults.setCompilerOptions(langJSCompilerOptions);
         monacoRef.value.languages.typescript.typescriptDefaults.setCompilerOptions(langJSCompilerOptions);
 
-        const typeFiles = [];
+        const typeFiles = [{
+            path: 'node_modules/types/tailwindcss/index.d.ts',
+            content: 'export * from "./types/config"',
+        }];
 
         Object.entries(import.meta.glob([
             '../../../node_modules/@types/lodash/**/*.d.ts', // Lodash
@@ -136,14 +131,6 @@ const stop = watchEffect(() => {
             });
         });
 
-        // Tailwind CSS
-        typeFiles.push({
-            path: 'node_modules/types/tailwindcss/index.d.ts',
-            content: 'export * from "./types/config"',
-        });
-
-        console.log('typeFiles', typeFiles);
-
         typeFiles.forEach(({ path, content }) => {
             monacoRef.value.languages.typescript.javascriptDefaults.addExtraLib(
                 content,
@@ -154,12 +141,6 @@ const stop = watchEffect(() => {
                 `file:///${path}`
             );
         });
-
-
-
-        console.log('compilers', monacoRef.value.languages.typescript.javascriptDefaults.getCompilerOptions());
-
-        console.log('extralibs', monacoRef.value.languages.typescript.typescriptDefaults.getExtraLibs());
 
         // add key binding command to monaco.editor to save all changes
         monacoRef.value.editor.addEditorAction({
@@ -177,9 +158,8 @@ function resetToDefault(k) {
     if (confirm(__('Are you sure you want to reset to default?', 'yabe-siul'))) {
         if (k === 'css') {
             twCss.value = tailwindStore.defaultValues.css;
-            // editorCss.setValue(tailwindStore.defaultValues.css);
         } else if (k === 'preset') {
-            // editorPreset.setValue(tailwindStore.defaultValues.preset);
+            twPreset.value = tailwindStore.defaultValues.preset;
         }
     }
 }
