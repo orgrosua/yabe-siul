@@ -31,7 +31,7 @@ class SIUL
     /**
      * @var int
      */
-    public const VERSION_ID = 2000;
+    public const VERSION_ID = 20000;
 
     /**
      * @var int
