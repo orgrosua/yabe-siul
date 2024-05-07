@@ -167,12 +167,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/orgrosua/edd-sl-plugin-updater.git",
-                "reference": "08541c36691b1490fa926a8f731b1d000cf04e68"
+                "reference": "11148110fca81ae10bbeef3fd20d3571dc4881e1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/orgrosua/edd-sl-plugin-updater/zipball/08541c36691b1490fa926a8f731b1d000cf04e68",
-                "reference": "08541c36691b1490fa926a8f731b1d000cf04e68",
+                "url": "https://api.github.com/repos/orgrosua/edd-sl-plugin-updater/zipball/11148110fca81ae10bbeef3fd20d3571dc4881e1",
+                "reference": "11148110fca81ae10bbeef3fd20d3571dc4881e1",
                 "shasum": ""
             },
             "default-branch": true,
@@ -206,7 +206,7 @@
                 "issues": "https://github.com/orgrosua/edd-sl-plugin-updater/issues",
                 "source": "https://github.com/orgrosua/edd-sl-plugin-updater/tree/master"
             },
-            "time": "2024-01-25T04:13:40+00:00"
+            "time": "2024-04-30T15:47:58+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
@@ -277,16 +277,16 @@
         },
         {
             "name": "symfony/finder",
-            "version": "v5.4.35",
+            "version": "v5.4.39",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
-                "reference": "abe6d6f77d9465fed3cd2d029b29d03b56b56435"
+                "reference": "f6a96e4fcd468a25fede16ee665f50ced856bd0a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/finder/zipball/abe6d6f77d9465fed3cd2d029b29d03b56b56435",
-                "reference": "abe6d6f77d9465fed3cd2d029b29d03b56b56435",
+                "url": "https://api.github.com/repos/symfony/finder/zipball/f6a96e4fcd468a25fede16ee665f50ced856bd0a",
+                "reference": "f6a96e4fcd468a25fede16ee665f50ced856bd0a",
                 "shasum": ""
             },
             "require": {
@@ -320,7 +320,7 @@
             "description": "Finds files and directories via an intuitive fluent interface",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/finder/tree/v5.4.35"
+                "source": "https://github.com/symfony/finder/tree/v5.4.39"
             },
             "funding": [
                 {
@@ -336,7 +336,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-01-23T13:51:25+00:00"
+            "time": "2024-04-18T08:26:06+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -738,16 +738,16 @@
         },
         {
             "name": "symfony/property-access",
-            "version": "v5.4.38",
+            "version": "v5.4.39",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/property-access.git",
-                "reference": "b58ea319e56b440b4daaa38201ee63ba9efa44d5"
+                "reference": "1b93ca45890ce5555895efe27bd848c41396530c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/property-access/zipball/b58ea319e56b440b4daaa38201ee63ba9efa44d5",
-                "reference": "b58ea319e56b440b4daaa38201ee63ba9efa44d5",
+                "url": "https://api.github.com/repos/symfony/property-access/zipball/1b93ca45890ce5555895efe27bd848c41396530c",
+                "reference": "1b93ca45890ce5555895efe27bd848c41396530c",
                 "shasum": ""
             },
             "require": {
@@ -799,7 +799,7 @@
                 "reflection"
             ],
             "support": {
-                "source": "https://github.com/symfony/property-access/tree/v5.4.38"
+                "source": "https://github.com/symfony/property-access/tree/v5.4.39"
             },
             "funding": [
                 {
@@ -815,20 +815,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-03-18T16:56:51+00:00"
+            "time": "2024-04-18T08:26:06+00:00"
         },
         {
             "name": "symfony/property-info",
-            "version": "v5.4.38",
+            "version": "v5.4.39",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/property-info.git",
-                "reference": "f3e4b84e5a33e655222167894398b671e93322d0"
+                "reference": "bf257e78b0471e67757af038344919f498af804d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/property-info/zipball/f3e4b84e5a33e655222167894398b671e93322d0",
-                "reference": "f3e4b84e5a33e655222167894398b671e93322d0",
+                "url": "https://api.github.com/repos/symfony/property-info/zipball/bf257e78b0471e67757af038344919f498af804d",
+                "reference": "bf257e78b0471e67757af038344919f498af804d",
                 "shasum": ""
             },
             "require": {
@@ -890,7 +890,7 @@
                 "validator"
             ],
             "support": {
-                "source": "https://github.com/symfony/property-info/tree/v5.4.38"
+                "source": "https://github.com/symfony/property-info/tree/v5.4.39"
             },
             "funding": [
                 {
@@ -906,7 +906,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-03-21T07:26:31+00:00"
+            "time": "2024-04-19T15:51:11+00:00"
         },
         {
             "name": "symfony/service-contracts",
@@ -993,16 +993,16 @@
         },
         {
             "name": "symfony/stopwatch",
-            "version": "v5.4.35",
+            "version": "v5.4.39",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/stopwatch.git",
-                "reference": "887762aa99ff16f65dc8b48aafead415f942d407"
+                "reference": "fb97497490bcec8a3c32c809cacfdd4c15dc8390"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/stopwatch/zipball/887762aa99ff16f65dc8b48aafead415f942d407",
-                "reference": "887762aa99ff16f65dc8b48aafead415f942d407",
+                "url": "https://api.github.com/repos/symfony/stopwatch/zipball/fb97497490bcec8a3c32c809cacfdd4c15dc8390",
+                "reference": "fb97497490bcec8a3c32c809cacfdd4c15dc8390",
                 "shasum": ""
             },
             "require": {
@@ -1035,7 +1035,7 @@
             "description": "Provides a way to profile code",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/stopwatch/tree/v5.4.35"
+                "source": "https://github.com/symfony/stopwatch/tree/v5.4.39"
             },
             "funding": [
                 {
@@ -1051,20 +1051,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-01-23T13:51:25+00:00"
+            "time": "2024-04-18T08:26:06+00:00"
         },
         {
             "name": "symfony/string",
-            "version": "v5.4.36",
+            "version": "v5.4.39",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/string.git",
-                "reference": "4e232c83622bd8cd32b794216aa29d0d266d353b"
+                "reference": "495e71bae5862308051b9e63cc3e34078eed83ef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/string/zipball/4e232c83622bd8cd32b794216aa29d0d266d353b",
-                "reference": "4e232c83622bd8cd32b794216aa29d0d266d353b",
+                "url": "https://api.github.com/repos/symfony/string/zipball/495e71bae5862308051b9e63cc3e34078eed83ef",
+                "reference": "495e71bae5862308051b9e63cc3e34078eed83ef",
                 "shasum": ""
             },
             "require": {
@@ -1121,7 +1121,7 @@
                 "utf8"
             ],
             "support": {
-                "source": "https://github.com/symfony/string/tree/v5.4.36"
+                "source": "https://github.com/symfony/string/tree/v5.4.39"
             },
             "funding": [
                 {
@@ -1137,7 +1137,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-02-01T08:49:30+00:00"
+            "time": "2024-04-18T08:26:06+00:00"
         }
     ],
     "packages-dev": [
@@ -1278,16 +1278,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.10.66",
+            "version": "1.10.67",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "94779c987e4ebd620025d9e5fdd23323903950bd"
+                "reference": "16ddbe776f10da6a95ebd25de7c1dbed397dc493"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/94779c987e4ebd620025d9e5fdd23323903950bd",
-                "reference": "94779c987e4ebd620025d9e5fdd23323903950bd",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/16ddbe776f10da6a95ebd25de7c1dbed397dc493",
+                "reference": "16ddbe776f10da6a95ebd25de7c1dbed397dc493",
                 "shasum": ""
             },
             "require": {
@@ -1330,13 +1330,9 @@
                 {
                     "url": "https://github.com/phpstan",
                     "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/phpstan/phpstan",
-                    "type": "tidelift"
                 }
             ],
-            "time": "2024-03-28T16:17:31+00:00"
+            "time": "2024-04-16T07:22:02+00:00"
         },
         {
             "name": "rector/rector",
