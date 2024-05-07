@@ -7,7 +7,6 @@ import { useStorage, useRefHistory } from '@vueuse/core';
 import { __ } from '@wordpress/i18n';
 import { debounce } from 'lodash-es';
 
-// import * as monaco from 'monaco-editor';
 
 import { configureMonacoTailwindcss, tailwindcssData } from 'monaco-tailwindcss';
 
@@ -15,7 +14,6 @@ import { useTailwindStore } from '../stores/tailwind.js';
 import { useSettingsStore } from '../stores/settings.js';
 import { useNotifier } from '../library/notifier';
 import ExpansionPanel from '../components/ExpansionPanel.vue';
-import { editor } from 'monaco-editor';
 
 const tailwindStore = useTailwindStore();
 const settingsStore = useSettingsStore();
@@ -38,25 +36,6 @@ const MONACO_EDITOR_OPTIONS = {
     formatOnPaste: true,
 }
 
-const langJSDiagnosticOptions = {
-    noSemanticValidation: false,
-    noSyntaxValidation: false,
-    noSuggestionDiagnostics: false,
-    diagnosticCodesToIgnore: [
-        80001, // "File is a CommonJS module; it may be converted to an ES6 module."
-        2307, // "Cannot find module 'x'."
-    ],
-};
-
-const langJSCompilerOptions = {
-    allowJs: true,
-    allowNonTsExtensions: true,
-    module: 1, // monaco.languages.typescript.ModuleKind.CommonJS,
-    target: 99, // monaco.languages.typescript.ScriptTarget.Latest,
-    checkJs: true,
-    moduleResolution: 2, // monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-    typeRoots: ['node_modules/@types'],
-};
 
 // configure monaco for tailwind
 let monacoTailwindcss;
@@ -97,6 +76,27 @@ const stop = watchEffect(() => {
         // monacoRef.value.editor
         console.log('monacoRef.value', monacoRef.value);
 
+
+        const langJSDiagnosticOptions = {
+            noSemanticValidation: false,
+            noSyntaxValidation: false,
+            noSuggestionDiagnostics: false,
+            diagnosticCodesToIgnore: [
+                80001, // "File is a CommonJS module; it may be converted to an ES6 module."
+                2307, // "Cannot find module 'x'."
+            ],
+        };
+
+        const langJSCompilerOptions = {
+            allowJs: true,
+            allowNonTsExtensions: true,
+            module: 1, // monaco.languages.typescript.ModuleKind.CommonJS,
+            target: 99, // monaco.languages.typescript.ScriptTarget.Latest,
+            checkJs: true,
+            moduleResolution: 2, // monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+            typeRoots: ['node_modules/@types'],
+        };
+
         monacoRef.value.languages.typescript.javascriptDefaults.setDiagnosticsOptions(langJSDiagnosticOptions);
         monacoRef.value.languages.typescript.typescriptDefaults.setDiagnosticsOptions(langJSDiagnosticOptions);
 
@@ -105,48 +105,44 @@ const stop = watchEffect(() => {
 
         const typeFiles = [];
 
-        // Lodash
-        Object.entries(import.meta.glob('../../../node_modules/@types/lodash/*.d.ts', {
+        Object.entries(import.meta.glob([
+            '../../../node_modules/@types/lodash/**/*.d.ts', // Lodash
+            '../../../node_modules/tailwindcss/**/*.d.ts', // Tailwind CSS
+        ], {
             query: '?raw',
             import: 'default',
             eager: true,
         })).forEach(([key, value]) => {
+            let path = key.replaceAll('../', '');
+            let content = value;
+
+            // if tailwind css
+            if (path.indexOf('node_modules/tailwindcss/types/') !== -1) {
+                path = path.replace('node_modules/tailwindcss/types/', 'node_modules/tailwindcss/');
+                content = content?.replace(
+                    /interface RequiredConfig \{.*?\}/s,
+                    'interface RequiredConfig {}'
+                );
+            }
+
+            // if path 'node_modules/' doesn't continued by '@types', add it
+            if (path.indexOf('node_modules/') !== -1 && path.indexOf('/@types/') === -1) {
+                path = path.replace('node_modules/', 'node_modules/@types/');
+            }
+
             typeFiles.push({
-                path: key.replaceAll('../', ''),
-                content: value,
+                path,
+                content,
             });
         });
 
-        // TailwindCSS
-        Object.entries(import.meta.glob('../../../node_modules/tailwindcss/**/*.d.ts', {
-            query: '?raw',
-            import: 'default',
-            eager: true,
-        })).forEach(([key, value]) => {
-            typeFiles.push({
-                path: key.replaceAll('../', ''),
-                content: value,
-            });
+        // Tailwind CSS
+        typeFiles.push({
+            path: 'node_modules/types/tailwindcss/index.d.ts',
+            content: 'export * from "./types/config"',
         });
 
         console.log('typeFiles', typeFiles);
-
-
-
-        
-
-        
-
-        // for (const [key, value] of Object.entries(lodashTypes)) {
-        //     monacoRef.value.languages.typescript.javascriptDefaults.addExtraLib(
-        //         value,
-        //         `file:///${key.replaceAll('../', '')}`
-        //     );
-        //     monacoRef.value.languages.typescript.typescriptDefaults.addExtraLib(
-        //         value,
-        //         `file:///${key.replaceAll('../', '')}`
-        //     );
-        // }
 
         typeFiles.forEach(({ path, content }) => {
             monacoRef.value.languages.typescript.javascriptDefaults.addExtraLib(
@@ -229,7 +225,7 @@ defineExpose({
                     <div class="editor-container">
                         <!-- <div ref="editorCssRef" class="h:600"></div> -->
                         <div class="h:600">
-                            <vue-monaco-editor v-model:value="twCss" language="scss" :theme="monacoTheme" :options="MONACO_EDITOR_OPTIONS" @mount="handleCssEditorMount" />
+                            <vue-monaco-editor v-model:value="twCss" language="scss" path="file:///main.css" :theme="monacoTheme" :options="MONACO_EDITOR_OPTIONS" @mount="handleCssEditorMount" />
                         </div>
                     </div>
                 </div>
@@ -249,7 +245,7 @@ defineExpose({
                     <div class="editor-container">
                         <!-- <div id="editorPreset" ref="editorPresetEl" class="h:600"></div> -->
                         <div class="h:600">
-                            <vue-monaco-editor v-model:value="twPreset" language="javascript" :theme="monacoTheme" :options="MONACO_EDITOR_OPTIONS" @mount="handlePresetEditorMount" />
+                            <vue-monaco-editor v-model:value="twPreset" language="javascript" path="file:///preset.js" :theme="monacoTheme" :options="MONACO_EDITOR_OPTIONS" @mount="handlePresetEditorMount" />
                         </div>
                     </div>
                 </div>
@@ -321,7 +317,7 @@ defineExpose({
                         <!-- <div id="editorConfig" ref="editorConfigEl" class="h:600"></div> -->
 
                         <div class="h:600">
-                            <vue-monaco-editor v-model:value="twConfig" language="typescript" :theme="monacoTheme" :options="{ ...MONACO_EDITOR_OPTIONS, readOnly: true }" @mount="handleConfigEditorMount" />
+                            <vue-monaco-editor v-model:value="twConfig" path="file:///tailwind.config.js" language="typescript" :theme="monacoTheme" :options="{ ...MONACO_EDITOR_OPTIONS, readOnly: true }" @mount="handleConfigEditorMount" />
                         </div>
                     </div>
                 </div>
