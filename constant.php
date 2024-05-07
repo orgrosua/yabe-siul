@@ -26,7 +26,7 @@ class SIUL
     /**
      * @var string
      */
-    public const VERSION = '2.0.0-DEV';
+    public const VERSION = '2.0.0';
 
     /**
      * @var int
@@ -51,7 +51,7 @@ class SIUL
     /**
      * @var string
      */
-    public const EXTRA_VERSION = 'DEV';
+    public const EXTRA_VERSION = '';
 
     /**
      * @var string
@@ -127,21 +127,10 @@ class SIUL
         @tailwind utilities;
 
         @layer components {
-            .example-siul-button {
-                @apply px-3 py-1 text-black bg-[#ffd64f] rounded border shadow-[5px_5px_0_0_rgba(0,0,0,0.2)];
-            }
-
             /* ... */
         }
 
         @layer components {
-            .example-siul-card {
-                background-color: theme('colors.white', '#fff');
-                border-radius: theme('borderRadius.lg', '0.5rem');
-                padding: theme('spacing.6', '1.5rem');
-                box-shadow: theme('boxShadow.xl', '0 25px 50px -12px rgba(0, 0, 0, 0.25)');
-            }
-
             /* ... */
         }
         CSS;
