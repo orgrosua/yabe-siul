@@ -3,7 +3,7 @@ import { ref, watch, computed, watchEffect, onBeforeMount, onMounted, toRaw, sha
 import { onBeforeRouteLeave } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useMonaco } from '@guolao/vue-monaco-editor';
-import { useStorage } from '@vueuse/core';
+import { useRefHistory, useStorage } from '@vueuse/core';
 import axios from 'axios';
 import { __ } from '@wordpress/i18n';
 import * as prettier from 'https://esm.sh/prettier';
@@ -21,6 +21,7 @@ import { parseConfig as playParseConfig } from '../library/tailwindcss/compiler.
 
 import ExpansionPanel from '../components/ExpansionPanel.vue';
 import { wizardToTailwindConfig } from '../components/Wizard/TailwindConfig.js';
+import WizardLayout from '../components/Wizard/WizardLayout.vue';
 
 const tailwindStore = useTailwindStore();
 const settingsStore = useSettingsStore();
@@ -31,6 +32,11 @@ const { monacoRef } = useMonaco();
 const bc = new BroadcastChannel('siul_channel');
 
 const { css: twCss, preset: twPreset, wizard: twWizard, config: twConfig } = storeToRefs(tailwindStore);
+
+// listen undo/redo event key binding, windows: undo: ctrl+z, redo: ctrl+y, mac: undo: cmd+z, redo: cmd+shift+z
+const { history: twWizardHistory, undo: twWizardUndo, redo: twWizardRedo, canUndo: twWizardCanUndo, canRedo: twWizardCanRedo } = useRefHistory(twWizard, {
+    deep: true,
+});
 
 const configError = ref(null);
 
@@ -218,9 +224,6 @@ function updateTwConfig() {
             });
 
             twConfig.value = formatted;
-
-
-
         } catch (e) { /* empty */ }
     })();
 }
@@ -233,6 +236,10 @@ watch(twPreset, () => {
     updateTwConfig();
     debouncedPlayParseConfig();
 });
+
+watch(twWizard, () => {
+    updateTwConfig();
+}, { deep: true });
 
 watch(twConfig, () => {
     consumeConfig();
@@ -331,7 +338,7 @@ defineExpose({
             </template>
         </ExpansionPanel>
 
-        <!-- <ExpansionPanel namespace="tailwind" name="wizard" class="my:8">
+        <ExpansionPanel namespace="tailwind" name="wizard" class="my:8">
             <template #header>
                 <div class="flex">
                     <div class="flex-grow:1">
@@ -356,7 +363,7 @@ defineExpose({
                     <WizardLayout />
                 </div>
             </template>
-        </ExpansionPanel> -->
+        </ExpansionPanel>
 
         <ExpansionPanel namespace="tailwind" name="config" class="my:8">
             <template #header>

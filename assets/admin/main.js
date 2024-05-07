@@ -13,12 +13,12 @@ import { createPinia } from 'pinia';
 import FloatingVue from 'floating-vue';
 import InlineSvg from 'vue-inline-svg';
 import { FontAwesomeIcon } from './font-awesome.js';
-// import Draggable from 'zhyswan-vuedraggable';
-// import VueSelect from 'vue-select';
-// import LvButton from 'lightvue/button';
-// import LvInput from 'lightvue/input';
-// import LvColorpicker from 'lightvue/color-picker';
-// import LvOverlayPanel from 'lightvue/overlay-panel';
+import Draggable from 'zhyswan-vuedraggable';
+import VueSelect from 'vue-select';
+import LvButton from 'lightvue/button';
+import LvInput from 'lightvue/input';
+import LvColorpicker from 'lightvue/color-picker';
+import LvOverlayPanel from 'lightvue/overlay-panel';
 
 import { install as VueMonacoEditorPlugin } from '@guolao/vue-monaco-editor';
 
@@ -54,12 +54,12 @@ app
 app
     .component('font-awesome-icon', FontAwesomeIcon)
     .component('inline-svg', InlineSvg)
-    //     .component('VueSelect', VueSelect)
-    //     .component('Draggable', Draggable)
-    //     .component('LvButton', LvButton)
-    //     .component('LvInput', LvInput)
-    //     .component('LvColorpicker', LvColorpicker)
-    //     .component('LvOverlayPanel', LvOverlayPanel)
+        .component('VueSelect', VueSelect)
+        .component('Draggable', Draggable)
+        .component('LvButton', LvButton)
+        .component('LvInput', LvInput)
+        .component('LvColorpicker', LvColorpicker)
+        .component('LvOverlayPanel', LvOverlayPanel)
     ;
 
 app.mount('#siul-app');

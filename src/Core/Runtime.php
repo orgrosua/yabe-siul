@@ -15,7 +15,6 @@ namespace Yabe\Siul\Core;
 
 use Exception;
 use SIUL;
-use Yabe\Siul\Utils\Asset;
 use Yabe\Siul\Utils\Config;
 
 /**

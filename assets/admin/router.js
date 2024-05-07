@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-// import TailwindPage from './pages/TailwindPage.vue';
-// import SettingsPage from './pages/SettingsPage.vue';
+import TailwindPage from './pages/TailwindPage.vue';
+import SettingsPage from './pages/SettingsPage.vue';
 
 const router = createRouter({
     history: createWebHistory(`${window.siul.web_history}#/`),
@@ -13,14 +13,14 @@ const router = createRouter({
         {
             path: '/tailwind',
             name: 'tailwind',
-            // component: TailwindPage,
-            component: () => import('./pages/TailwindPage.vue'),
+            component: TailwindPage,
+            // component: () => import('./pages/TailwindPage.vue'),
         },
         {
             path: '/settings',
             name: 'settings',
-            // component: SettingsPage,
-            component: () => import('./pages/SettingsPage.vue'),
+            component: SettingsPage,
+            // component: () => import('./pages/SettingsPage.vue'),
         },
         {
             path: '/:pathMatch(.*)*',

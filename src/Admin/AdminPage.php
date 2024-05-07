@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Yabe\Siul\Admin;
 
 use SIUL;
-use Yabe\Siul\Utils\Asset;
 use Yabe\Siul\Utils\AssetVite;
 
 class AdminPage
@@ -80,7 +79,7 @@ class AdminPage
                 'url' => esc_url_raw(rest_url(SIUL::REST_NAMESPACE)),
             ],
             'assets' => [
-                'url' => Asset::asset_base_url(),
+                'url' => AssetVite::asset_base_url(),
             ],
             'site_meta' => [
                 'name' => get_bloginfo('name'),
