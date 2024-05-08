@@ -14,13 +14,11 @@ const router = createRouter({
             path: '/tailwind',
             name: 'tailwind',
             component: TailwindPage,
-            // component: () => import('./pages/TailwindPage.vue'),
         },
         {
             path: '/settings',
             name: 'settings',
             component: SettingsPage,
-            // component: () => import('./pages/SettingsPage.vue'),
         },
         {
             path: '/:pathMatch(.*)*',

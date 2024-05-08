@@ -1,8 +1,3 @@
-// import './public-path.js';
-
-// require('./bootstrap');
-
-
 import './styles/app.scss';
 import 'floating-vue/dist/style.css';
 import './master.css.js';
@@ -54,12 +49,12 @@ app
 app
     .component('font-awesome-icon', FontAwesomeIcon)
     .component('inline-svg', InlineSvg)
-        .component('VueSelect', VueSelect)
-        .component('Draggable', Draggable)
-        .component('LvButton', LvButton)
-        .component('LvInput', LvInput)
-        .component('LvColorpicker', LvColorpicker)
-        .component('LvOverlayPanel', LvOverlayPanel)
+    .component('VueSelect', VueSelect)
+    .component('Draggable', Draggable)
+    .component('LvButton', LvButton)
+    .component('LvInput', LvInput)
+    .component('LvColorpicker', LvColorpicker)
+    .component('LvOverlayPanel', LvOverlayPanel)
     ;
 
 app.mount('#siul-app');

@@ -110,14 +110,10 @@ onBeforeUnmount(() => {
 
                 <div class="siul-content my:20 px:20">
                     <router-view v-slot="{ Component }">
-                        <!-- <KeepAlive> -->
-                            <component ref="componentRef" :is="Component" />
-                        <!-- </KeepAlive> -->
+                        <component ref="componentRef" :is="Component" />
                     </router-view>
                 </div>
             </div>
         </div>
     </div>
 </template>
-
-<style lang="scss"></style>

@@ -15,8 +15,6 @@ import { useApi } from '../library/api';
 import { useTailwindStore } from '../stores/tailwind';
 import { compileCSS } from '../library/tailwindcss/compiler';
 
-// import iframeManager from '../library/tailwindcss/iframe-manager.js';
-
 const notifier = useNotifier();
 const busyStore = useBusyStore();
 const api = useApi();
