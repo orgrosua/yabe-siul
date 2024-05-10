@@ -1,7 +1,7 @@
 import { stringify } from 'https://esm.sh/javascript-stringify';
 
 const wizardToTailwindConfig = (wizards, tw_version) => {
-    let configStr = `const _wizardDefaultTheme = require('tailwindcss@${tw_version}/defaultTheme');`;
+    let configStr = /* javascript */ `const _wizardDefaultTheme = require('tailwindcss@${tw_version}/defaultTheme');`;
 
     let {
         screensItems,
@@ -32,7 +32,7 @@ const wizardToTailwindConfig = (wizards, tw_version) => {
             _screenItems[screenKey] = _screen;
         });
 
-        configStr += `
+        configStr += /* javascript */ `
             \n\n
             // https://tailwindcss.com/docs/screens
             const _wizardScreens = {};
@@ -116,7 +116,7 @@ const wizardToTailwindConfig = (wizards, tw_version) => {
             _spacingItems[spacingKey] = _spacing.value;
         });
 
-        configStr += `
+        configStr += /* javascript */ `
             \n\n
             // https://tailwindcss.com/docs/customizing-spacing
             _merge(siul, {
@@ -139,7 +139,7 @@ const wizardToTailwindConfig = (wizards, tw_version) => {
             _typographyItems[typographyKey] = _typography.value;
         });
 
-        configStr += `
+        configStr += /* javascript */ `
             \n\n
             // https://tailwindcss.com/docs/font-size#customizing-your-theme
             _merge(siul, {
@@ -176,7 +176,7 @@ const wizardToTailwindConfig = (wizards, tw_version) => {
             _colorsItems[colorKey] = _colorValue;
         });
 
-        configStr += `
+        configStr += /* javascript */ `
             \n\n
             // https://tailwindcss.com/docs/customizing-colors#using-custom-colors
             _merge(siul, {
@@ -201,10 +201,10 @@ const wizardToTailwindConfig = (wizards, tw_version) => {
                 _pluginPath = `/${_plugin.path.trim().replace(/^\//, '')}`;
             }
 
-            pluginStr += `require('${_plugin.name}@${_plugin.version}${_pluginPath}'),\n`;
+            pluginStr += /* javascript */ `require('${_plugin.name}@${_plugin.version}${_pluginPath}'),\n`;
         });
 
-        configStr += `
+        configStr += /* javascript */ `
             \n\n
             // https://tailwindcss.com/docs/plugins
             _merge(siul, {
@@ -215,7 +215,7 @@ const wizardToTailwindConfig = (wizards, tw_version) => {
         `;
     }
 
-    return `
+    return /* javascript */ `
         \n\n
         /**
          * Generated from the Wizard.

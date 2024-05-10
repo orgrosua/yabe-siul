@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed } from 'vue';
 import { useColorMode } from '@vueuse/core';
 import { useBusyStore } from './stores/busy.js';
 import WordpressNotice from './components/WordpressNotice.vue';
@@ -28,12 +28,6 @@ function doSave() {
         componentRef.value.doSave();
     }
 }
-
-onMounted(() => {
-});
-
-onBeforeUnmount(() => {
-});
 </script>
 
 <template>

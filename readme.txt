@@ -58,6 +58,9 @@ Visit [our website](https://siul.yabe.land) for more information.
 
 == Changelog ==
 
+= unreleased =
+* **Improve**: Purge the [SiteGround Speed Optimizer](https://wordpress.org/plugins/sg-cachepress/) plugin's cache if the plugin is active.
+
 = 2.0.0 =
 * **Improve**: Reduce the size of plugin file.
 * **Improve**: Autocomplete module now always active.
