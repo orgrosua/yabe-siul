@@ -4,8 +4,8 @@ import { storeToRefs } from 'pinia';
 import { useStorage } from '@vueuse/core';
 import { nanoid } from 'nanoid';
 import { Switch } from '@headlessui/vue';
-import Color from 'color';
-import { getColors as getShades } from 'theme-colors';
+import Color from 'https://esm.sh/color';
+import { getColors as getShades } from 'https://esm.sh/theme-colors';
 import { colors as masterCSSColors } from './MasterCSSColors.js';
 
 import WizardProfileBar from '../WizardProfileBar.vue';

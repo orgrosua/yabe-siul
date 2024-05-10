@@ -7,8 +7,8 @@ export default defineConfig({
     plugins: [
         v4wp({
             input: {
-                // bricks: 'assets/bricks/main.js',
                 admin: 'assets/admin/main.js',
+                bricksbender: 'assets/integration/bricks/main.js',
             },
             outDir: 'build',
         }),
