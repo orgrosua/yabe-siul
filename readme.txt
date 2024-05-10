@@ -60,6 +60,8 @@ Visit [our website](https://siul.yabe.land) for more information.
 
 = unreleased =
 * **Improve**: Purge the [SiteGround Speed Optimizer](https://wordpress.org/plugins/sg-cachepress/) plugin's cache if the plugin is active.
+* **[Bricks] New**: The current [Bricksbender](https://wordpress.org/plugins/yabe-bricksbender/) functionality is now merged into the Yabe Siul plugin. The Bricksbender plugin will be updated for another new exclusive features. Join our [Facebook Group](https://www.facebook.com/groups/1142662969627943) to get the latest news.
+* **[Oxygen] New**: The current [Oxybender](https://wordpress.org/plugins/yabe-oxybender/) functionality is now merged into the Yabe Siul plugin. The Oxybender plugin will be updated for another new exclusive features. Join our [Facebook Group](https://www.facebook.com/groups/1142662969627943) to get the latest news.
 
 = 2.0.0 =
 * **Improve**: Reduce the size of plugin file.

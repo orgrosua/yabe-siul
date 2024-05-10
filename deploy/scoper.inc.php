@@ -149,6 +149,7 @@ return [
             'WP_CLI_Command',
             // 'ReflectionClassConstant',
 
+            'DOMXPath',
         ]
     ),
     'exclude-functions' => array_merge(

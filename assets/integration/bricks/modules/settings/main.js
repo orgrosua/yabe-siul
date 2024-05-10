@@ -8,7 +8,7 @@ import Logo from '../../../../../siul.svg?raw';
 const bricksToolbarSelector = '#bricks-toolbar ul.group-wrapper.right';
 
 // create element from html string
-const koFiButtonHtml = document.createRange().createContextualFragment(/*html*/`
+const settingButtonHtml = document.createRange().createContextualFragment(/*html*/`
     <li id="siulbricks-settings-navbar" data-balloon="Siul — Bricks settings" data-balloon-pos="bottom">
         <span class="bricks-svg-wrapper">
             ${Logo}
@@ -18,7 +18,7 @@ const koFiButtonHtml = document.createRange().createContextualFragment(/*html*/`
 
 // add the button to the bricks toolbar as the first item
 const bricksToolbar = document.querySelector(bricksToolbarSelector);
-bricksToolbar.insertBefore(koFiButtonHtml, bricksToolbar.firstChild);
+bricksToolbar.insertBefore(settingButtonHtml, bricksToolbar.firstChild);
 
 bricksToolbar.addEventListener('click', (event) => {
     brxGlobalProp.$_showMessage('[Siul] Settings functionality is not available yet, coming soon!');
