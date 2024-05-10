@@ -1,6 +1,6 @@
 /**
  * @module plain-classes 
- * @package Yabe Bricksbender
+ * @package Yabe Siul
  * @since 1.0.0
  * @author Joshua Gugun Siagian <suabahasa@gmail.com>
  * 
@@ -25,7 +25,7 @@ import { brxGlobalProp, brxIframeGlobalProp, brxIframe } from '../../constant.js
 let shikiHighlighter = null;
 
 (async () => {
-    await loadWasm(import('https://esm.sh/shiki/dist/onig.wasm?init'));
+    await loadWasm(import('https://esm.sh/shiki/wasm'));
     shikiHighlighter = await getHighlighterCore({
         themes: [
             import('https://esm.sh/shiki/themes/dark-plus.mjs'),
@@ -38,22 +38,22 @@ let shikiHighlighter = null;
 })();
 
 const textInput = document.createRange().createContextualFragment(/*html*/ `
-    <textarea id="bricksbender-plc-input" class="bricksbender-plc-input" rows="2" spellcheck="false"></textarea>
-`).querySelector('#bricksbender-plc-input');
+    <textarea id="siulbricks-plc-input" class="siulbricks-plc-input" rows="2" spellcheck="false"></textarea>
+`).querySelector('#siulbricks-plc-input');
 
 const containerAction = document.createRange().createContextualFragment(/*html*/ `
-    <div class="bricksbender-plc-action-container">
+    <div class="siulbricks-plc-action-container">
         <div class="actions">
         </div>
     </div>
-`).querySelector('.bricksbender-plc-action-container');
+`).querySelector('.siulbricks-plc-action-container');
 const containerActionButtons = containerAction.querySelector('.actions');
 
 const classSortButton = document.createRange().createContextualFragment(/*html*/ `
-    <span id="bricksbender-plc-class-sort" class="bricks-svg-wrapper bricksbender-plc-class-sort" data-balloon="Automatic Class Sorting" data-balloon-pos="bottom-right">
+    <span id="siulbricks-plc-class-sort" class="bricks-svg-wrapper siulbricks-plc-class-sort" data-balloon="Automatic Class Sorting" data-balloon-pos="bottom-right">
         <svg  xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round" class="bricks-svg icon icon-tabler icons-tabler-outline icon-tabler-reorder"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 15m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z" /><path d="M10 15m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z" /><path d="M17 15m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z" /><path d="M5 11v-3a3 3 0 0 1 3 -3h8a3 3 0 0 1 3 3v3" /><path d="M16.5 8.5l2.5 2.5l2.5 -2.5" /></svg>    
     </span>
-`).querySelector('#bricksbender-plc-class-sort');
+`).querySelector('#siulbricks-plc-class-sort');
 containerActionButtons.appendChild(classSortButton);
 
 const visibleElementPanel = ref(false);
@@ -109,15 +109,15 @@ autosize(textInput);
 
 let autocompleteItems = [];
 
-wp.hooks.addAction('bricksbender-autocomplete-items-refresh', 'bricksbender', () => {
+wp.hooks.addAction('siulbricks-autocomplete-items-refresh', 'siulbricks', () => {
     // wp hook filters. {value, color?, fontWeight?, namespace?}[]
-    autocompleteItems = wp.hooks.applyFilters('bricksbender-autocomplete-items', [], textInput.value);
+    autocompleteItems = wp.hooks.applyFilters('siulbricks-autocomplete-items', [], textInput.value);
 });
 
-wp.hooks.doAction('bricksbender-autocomplete-items-refresh');
+wp.hooks.doAction('siulbricks-autocomplete-items-refresh');
 
 const tribute = new Tribute({
-    containerClass: 'bricksbender-tribute-container',
+    containerClass: 'siulbricks-tribute-container',
 
     autocompleteMode: true,
 
@@ -127,7 +127,7 @@ const tribute = new Tribute({
     noMatchTemplate: '',
 
     values: async function (text, cb) {
-        const filters = await wp.hooks.applyFilters('bricksbender-autocomplete-items-query', autocompleteItems, text);
+        const filters = await wp.hooks.applyFilters('siulbricks-autocomplete-items-query', autocompleteItems, text);
         cb(filters);
     },
 
@@ -254,7 +254,7 @@ watch([activeElementId, visibleElementPanel], (newVal, oldVal) => {
     if (newVal[0] && newVal[1]) {
         nextTick(() => {
             const panelElementClassesEl = document.querySelector('#bricks-panel-element-classes');
-            if (panelElementClassesEl.querySelector('.bricksbender-plc-input') === null) {
+            if (panelElementClassesEl.querySelector('.siulbricks-plc-input') === null) {
                 panelElementClassesEl.appendChild(containerAction);
 
                 panelElementClassesEl.appendChild(textInput);
@@ -295,10 +295,10 @@ function onTextInputChanges() {
 };
 
 // Disabled until the feature is stable
-// textInput.addEventListener('highlights-updated', function (e) {
-//     colorizeBackground();
-//     hoverPreviewProvider();
-// });
+textInput.addEventListener('highlights-updated', function (e) {
+    colorizeBackground();
+    // hoverPreviewProvider();
+});
 
 function hoverPreviewProvider() {
     if (brxIframe.contentWindow.siul?.loaded?.module?.classNameToCss !== true) {
@@ -455,7 +455,7 @@ let menuAutocompleteItemeEl = null;
 
 textInput.addEventListener('tribute-active-true', function (e) {
     if (menuAutocompleteItemeEl === null) {
-        menuAutocompleteItemeEl = document.querySelector('.bricksbender-tribute-container>ul');
+        menuAutocompleteItemeEl = document.querySelector('.siulbricks-tribute-container>ul');
     }
     nextTick(() => {
         if (menuAutocompleteItemeEl) {

@@ -1,6 +1,6 @@
 /**
  * @module html2bricks 
- * @package Yabe Bricksbender
+ * @package Yabe Siul
  * @since 1.0.1
  * @author Joshua Gugun Siagian <suabahasa@gmail.com>
  * 
@@ -60,7 +60,7 @@ async function checkAndRequestClipboardPermission() {
 
 async function htmlPasteHandler() {
     if (!await checkAndRequestClipboardPermission()) {
-        brxGlobalProp.$_showMessage('[Bricksbender] Clipboard access not available');
+        brxGlobalProp.$_showMessage('[Siul] Clipboard access not available');
         return;
     }
 
@@ -68,7 +68,7 @@ async function htmlPasteHandler() {
 
     if (!clipboardText || clipboardText.charAt(0) !== '<') {
         logger('Pasted content is not HTML', { module: 'html2bricks', type: 'error' });
-        brxGlobalProp.$_showMessage('[Bricksbender] Pasted content is not HTML');
+        brxGlobalProp.$_showMessage('[Siul] Pasted content is not HTML');
         return;
     }
 
@@ -92,7 +92,7 @@ async function htmlPasteHandler() {
 
     brxGlobalProp.$_pasteElements();
 
-    brxGlobalProp.$_showMessage('[Bricksbender] HTML pasted');
+    brxGlobalProp.$_showMessage('[Siul] HTML pasted');
 
     // restore clipboard content
     await navigator.clipboard.writeText(clipboardText);
@@ -119,7 +119,7 @@ document.addEventListener('keydown', (event) => {
 // insert "Paste HTML" menu item after "Paste" menu item
 const pasteItemContextMenu = document.querySelector('#bricks-builder-context-menu li:nth-child(2)');
 const pasteMenu = document.createElement('li');
-pasteMenu.id = 'bricksbender-html2bricks-context-menu';
+pasteMenu.id = 'siulbricks-html2bricks-context-menu';
 pasteMenu.classList.add('sep');
 pasteMenu.innerHTML = '<span class="label">Paste HTML</span><span class="shortcut">CTRL + SHIFT + V</span>';
 pasteMenu.addEventListener('click', htmlPasteHandler);

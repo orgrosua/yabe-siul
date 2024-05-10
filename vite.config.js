@@ -8,7 +8,8 @@ export default defineConfig({
         v4wp({
             input: {
                 admin: 'assets/admin/main.js',
-                bricksbender: 'assets/integration/bricks/main.js',
+                'integration/bricks': 'assets/integration/bricks/main.js',
+                // 'integration/oxybender': 'assets/integration/oxygen/main.js',
             },
             outDir: 'build',
         }),

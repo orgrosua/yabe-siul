@@ -15,6 +15,8 @@ import { useApi } from '../library/api';
 import { useTailwindStore } from '../stores/tailwind';
 import { compileCSS } from '../library/tailwindcss/compiler';
 
+import { debounce } from 'lodash-es';
+
 const notifier = useNotifier();
 const busyStore = useBusyStore();
 const api = useApi();
@@ -192,6 +194,15 @@ function doGenerateCache() {
     );
 }
 
+// debounce the generate cache function. only execute after is busyStore is not busy
+const debounceGenerateCache = debounce(() => {
+    if (!busyStore.isBusy) {
+        doGenerateCache();
+    } else {
+        debounceGenerateCache();
+    }
+}, 1000);
+
 const bc = new BroadcastChannel('siul_channel');
 
 onBeforeMount(() => {
@@ -214,7 +225,10 @@ onBeforeMount(() => {
 onMounted(() => {
     bc.addEventListener('message', (event) => {
         if (event.data.key === 'generate-cache') {
-            doGenerateCache();
+            // if it's enabled, generate the cache
+            if (settingsStore.virtualOptions('performance.cache.enabled', false).value) {
+                debounceGenerateCache();
+            }
         }
     });
 });

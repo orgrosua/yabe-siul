@@ -1,5 +1,5 @@
 .bricks-panel {
-    textarea.bricksbender-plc-input {
+    textarea.siulbricks-plc-input {
         /* margin-top: 4px; */
         min-height: auto;
         form-sizing: content;
@@ -40,7 +40,7 @@
     overflow: hidden !important;
 
     .hit-backdrop,
-    textarea.bricksbender-plc-input {
+    textarea.siulbricks-plc-input {
         word-spacing: 8px !important;
     }
 
@@ -108,7 +108,7 @@
     }
 }
 
-.bricksbender-tribute-container {
+.siulbricks-tribute-container {
     position: absolute;
     top: 0;
     left: 0;
@@ -191,7 +191,7 @@
     }
 }
 
-.bricksbender-plc-action-container {
+.siulbricks-plc-action-container {
     align-items: center;
     display: flex;
     gap: 4px;

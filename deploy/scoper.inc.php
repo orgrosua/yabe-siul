@@ -139,6 +139,8 @@ return [
         'Breakdance',
 
         'SiteGround_Optimizer',
+
+        '_YabeBricksbender', // https://wordpress.org/plugins/yabe-bricksbender/
     ],
     'exclude-classes' => array_merge(
         $wp_classes,
