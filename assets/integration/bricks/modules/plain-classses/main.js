@@ -19,7 +19,7 @@ import Tribute from 'https://esm.sh/gh/zurb/tribute';
 
 import { getHighlighterCore, loadWasm } from 'https://esm.sh/shiki/core';
 
-import HighlightInTextarea from '../../../vendor/highlight-in-textarea.js';
+import HighlightInTextarea from '../../../library/highlight-in-textarea.js';
 import { brxGlobalProp, brxIframeGlobalProp, brxIframe } from '../../constant.js';
 
 let shikiHighlighter = null;

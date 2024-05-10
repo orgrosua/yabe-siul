@@ -4,7 +4,7 @@ Donate link: https://ko-fi.com/Q5Q75XSF7
 Tags: tailwind css, bricks builder, oxygen builder, breakdance builder
 Requires at least: 6.0
 Tested up to: 6.4
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -58,10 +58,11 @@ Visit [our website](https://siul.yabe.land) for more information.
 
 == Changelog ==
 
-= unreleased =
-* **Improve**: Purge the [SiteGround Speed Optimizer](https://wordpress.org/plugins/sg-cachepress/) plugin's cache if the plugin is active.
-* **[Bricks] New**: The current [Bricksbender](https://wordpress.org/plugins/yabe-bricksbender/) functionality is now merged into the Yabe Siul plugin. The Bricksbender plugin will be updated for another new exclusive features. Join our [Facebook Group](https://www.facebook.com/groups/1142662969627943) to get the latest news.
-* **[Oxygen] New**: The current [Oxybender](https://wordpress.org/plugins/yabe-oxybender/) functionality is now merged into the Yabe Siul plugin. The Oxybender plugin will be updated for another new exclusive features. Join our [Facebook Group](https://www.facebook.com/groups/1142662969627943) to get the latest news.
+= 2.0.1 =
+* **New**: Added banner message on the front page when on the Play CDN mode.
+* **Improve**: Purge the [SiteGround Speed Optimizer](https://wordpress.org/plugins/sg-cachepress/) plugin's cache if it is active.
+* **[Bricks] New**: The current [Bricksbender](https://wordpress.org/plugins/yabe-bricksbender/) functionality is now merged into the Yabe Siul plugin. The Bricksbender plugin will be updated for another new exclusive features.
+* **[Oxygen] New**: The current [Oxybender](https://wordpress.org/plugins/yabe-oxybender/) functionality is now merged into the Yabe Siul plugin. The Oxybender plugin will be updated for another new exclusive features.
 
 = 2.0.0 =
 * **Improve**: Reduce the size of plugin file.
