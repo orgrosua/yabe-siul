@@ -61,6 +61,25 @@ class Notice
         return $notices;
     }
 
+    /**
+     * Callback for the admin_notices action.
+     * Prints the notices in the admin page.
+     */
+    public static function admin_notices(): void
+    {
+        $messages = self::get_lists();
+        if ($messages && is_array($messages)) {
+            foreach ($messages as $message) {
+                echo sprintf(
+                    '<div class="notice notice-%s is-dismissible %s">%s</div>',
+                    $message['status'],
+                    self::OPTION_NAME,
+                    $message['message']
+                );
+            }
+        }
+    }
+
     public static function add(string $status, string $message, ?string $key = null, bool $unique = false): void
     {
         $notices = get_option(self::OPTION_NAME, []);
