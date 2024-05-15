@@ -15,7 +15,7 @@
     let timeoutOccurred = false;
     let timeout = setTimeout(() => {
         timeoutOccurred = true;
-    }, 3000);
+    }, 45000); // 45 seconds timeout
 
     // wait for the script and style to be available
     while (!timeoutOccurred) {
@@ -60,13 +60,12 @@
     // Function to inject the script and style into the editor canvas
     let injectIntoEditorCanvas = async () => {
         let editorCanvas;
-        
 
         // Timeout flag to limit search duration
         let timeoutOccurred = false;
         let timeout = setTimeout(() => {
             timeoutOccurred = true;
-        }, 3000); // 3 seconds timeout
+        }, 45000); // 45 seconds timeout
 
         // wait for the editor canvas to be available
         while (!timeoutOccurred) {

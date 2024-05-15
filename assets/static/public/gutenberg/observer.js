@@ -16,7 +16,7 @@
     let timeoutOccurred = false;
     let timeout = setTimeout(() => {
         timeoutOccurred = true;
-    }, 3000);
+    }, 45000); // 45 seconds timeout
 
     // wait for the script and style to be available
     while (!timeoutOccurred) {
