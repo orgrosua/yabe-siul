@@ -57,4 +57,6 @@ app
     .component('LvOverlayPanel', LvOverlayPanel)
     ;
 
+app.directive('ripple', vRipple);
+
 app.mount('#siul-app');

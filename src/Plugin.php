@@ -209,6 +209,8 @@ final class Plugin
         // Load translations.
         load_plugin_textdomain(SIUL::TEXT_DOMAIN, false, dirname(plugin_basename(SIUL::FILE)) . '/languages/');
 
+        new ApiRouter();
+
         // Instantiate the AdminPage class.
         Runtime::get_instance()->init();
         new AdminPage();
@@ -224,8 +226,6 @@ final class Plugin
         do_action('a!yabe/siul/plugin:plugins_loaded.start');
 
         IntegrationLoader::get_instance()->register_integrations();
-
-        new ApiRouter();
 
         if (is_admin()) {
             add_action('admin_notices', static fn () => Notice::admin_notices());
