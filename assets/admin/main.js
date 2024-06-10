@@ -19,6 +19,7 @@ import { install as VueMonacoEditorPlugin } from '@guolao/vue-monaco-editor';
 
 import App from './App.vue';
 import router from './router.js';
+import vRipple from './directives/ripple/ripple.js';
 
 const pinia = createPinia();
 const app = createApp(App);
@@ -28,9 +29,9 @@ app.config.globalProperties._n = _n;
 app.config.globalProperties.sprintf = sprintf;
 app.config.globalProperties.siul = window.siul;
 
-// // https://github.com/lightvue/lightvue/blob/d3219dd658e960c85a27ad151bd0ba65c68993a7/docs-v3/src/main.js#L12
-app.config.globalProperties.$listeners = '';
-app.config.globalProperties.$lightvue = { ripple: true, version: 3 };
+// https://github.com/lightvue/lightvue/blob/d3219dd658e960c85a27ad151bd0ba65c68993a7/docs-v3/src/main.js#L12
+// app.config.globalProperties.$listeners = '';
+// app.config.globalProperties.$lightvue = { ripple: true, version: 3 };
 
 app
     .use(pinia)

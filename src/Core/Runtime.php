@@ -15,6 +15,7 @@ namespace Yabe\Siul\Core;
 
 use Exception;
 use SIUL;
+use Yabe\Siul\Utils\AssetVite;
 use Yabe\Siul\Utils\Config;
 
 /**
@@ -93,6 +94,10 @@ class Runtime
         } else {
             add_action('wp_head', fn () => $this->enqueue_importmap(), 1);
             add_action('wp_head', fn () => $this->enqueue_play_cdn(), 1_000_001);
+
+            if (Config::get('general.compiler.embedded.enabled', false) && current_user_can('manage_options')) {
+                add_action('wp_head', fn () => $this->enqueue_compiler(), 1_000_001);
+            }
         }
     }
 
@@ -222,5 +227,24 @@ class Runtime
         } else {
             return $template;
         }
+    }
+
+    public function enqueue_compiler() {
+        $handle = SIUL::WP_OPTION . ':lib-compiler';
+
+        AssetVite::get_instance()->enqueue_asset('assets/integration/common/compiler-bootstrap.js', [
+            'handle' => $handle,
+            'in_footer' => true,
+        ]);
+
+        wp_localize_script($handle, 'siul', [
+            '_version' => SIUL::VERSION,
+            'rest_api' => [
+                'nonce' => wp_create_nonce('wp_rest'),
+                'root' => esc_url_raw(rest_url()),
+                'namespace' => SIUL::REST_NAMESPACE,
+                'url' => esc_url_raw(rest_url(SIUL::REST_NAMESPACE)),
+            ],
+        ]);
     }
 }

@@ -26,12 +26,12 @@ class SIUL
     /**
      * @var string
      */
-    public const VERSION = '2.0.1';
+    public const VERSION = '2.0.2';
 
     /**
      * @var int
      */
-    public const VERSION_ID = 20001;
+    public const VERSION_ID = 20002;
 
     /**
      * @var int
@@ -46,7 +46,7 @@ class SIUL
     /**
      * @var int
      */
-    public const RELEASE_VERSION = 1;
+    public const RELEASE_VERSION = 2;
 
     /**
      * @var string
@@ -88,9 +88,6 @@ class SIUL
     public static function default_tailwind()
     {
         $default_preset = <<<JS
-        /**
-         * @type {import('lodash').merge}
-         */
         const _merge = require('lodash.merge');
         /**
          * The Tailwind CSS configuration required by the SIUL plugin.

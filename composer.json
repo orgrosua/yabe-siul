@@ -1,5 +1,5 @@
 {
-    "name": "yabe/yabe-siul-src",
+    "name": "yabe/yabe-siul",
     "description": "Tailwind CSS for WordPress",
     "license": "GPL-3.0-or-later",
     "autoload": {

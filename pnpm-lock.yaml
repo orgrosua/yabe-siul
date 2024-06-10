@@ -1481,6 +1481,17 @@ packages:
       '@vue/composition-api':
         optional: true
 
+  vue-demi@0.14.8:
+    resolution: {integrity: sha512-Uuqnk9YE9SsWeReYqK2alDI5YzciATE0r2SkA6iMAtuXvNTMNACJLJEXNXaEy94ECuBe4Sk6RzRU80kjdbIo1Q==}
+    engines: {node: '>=12'}
+    hasBin: true
+    peerDependencies:
+      '@vue/composition-api': ^1.0.0-rc.1
+      vue: ^3.0.0-0 || ^2.6.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+
   vue-inline-svg@3.1.2:
     resolution: {integrity: sha512-K01sLANBnjosObee4JrBu/igXpYIFhQfy4EcEyVWxEWf6nmrxp7Isz6pmeRCsWx6XGrGWfrQH3uNwt4nOmrFdA==}
     peerDependencies:
@@ -1686,7 +1697,7 @@ snapshots:
       '@monaco-editor/loader': 1.4.0(monaco-editor@0.48.0)
       monaco-editor: 0.48.0
       vue: 3.4.26
-      vue-demi: 0.14.7(vue@3.4.26)
+      vue-demi: 0.14.8(vue@3.4.26)
 
   '@headlessui/vue@1.7.21(vue@3.4.26)':
     dependencies:
@@ -2710,6 +2721,10 @@ snapshots:
   vscode-languageserver-types@3.17.5: {}
 
   vue-demi@0.14.7(vue@3.4.26):
+    dependencies:
+      vue: 3.4.26
+
+  vue-demi@0.14.8(vue@3.4.26):
     dependencies:
       vue: 3.4.26
 

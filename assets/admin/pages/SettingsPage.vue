@@ -121,13 +121,9 @@ function doGenerateCache() {
 
         let content_pool = [];
 
-        for (const provider of providers.value) {
+        // Helper function to handle batch processing for a single provider
+        async function fetchProviderContents(provider) {
             let batch = false;
-
-            // if the provider is not enabled, skip
-            if (!provider.enabled) {
-                continue;
-            }
 
             do {
                 const scan = await api
@@ -141,7 +137,14 @@ function doGenerateCache() {
 
                 batch = scan.metadata?.next_batch || false;
             } while (batch !== false);
+
+            return Promise.resolve();
         }
+
+        const promises = providers.value.filter(provider => provider.enabled)
+            .map(provider => fetchProviderContents(provider));
+
+        await Promise.all(promises);
 
         const contents = content_pool.map((c) => {
             let content = atob(c.content);
@@ -297,6 +300,16 @@ defineExpose({
                                 <option v-for="version in versions" :key="version" :value="version">{{ version }}</option>
                             </select>
                             <p class="my:0">Please refer to the <a href="https://github.com/tailwindlabs/tailwindcss/releases" target="_blank">release notes</a> to learn more about the Tailwind CSS versions.</p>
+                        </div>
+                        <div class="flex flex:column gap:10">
+                            <span class="fg:gray-60 font:15 font:medium">Embedded compiler</span>
+                            <div class="flex align-items:center gap:4">
+                                <input type="checkbox" id="enable_embedded_compiler" v-model="settingsStore.virtualOptions('general.compiler.embedded.enabled', false).value" class="checkbox mt:0">
+                                <label for="enable_embedded_compiler" class="font:medium">Enable compiler on the front page</label>
+                            </div>
+                            <p class="my:0">
+                                The compiler can be utilized to compile the Tailwind CSS for 3rd party integrations.
+                            </p>
                         </div>
                         <!-- <div class="flex flex:column gap:10">
                             <span class="fg:gray-60 font:15 font:medium">Autocomplete engine</span>
