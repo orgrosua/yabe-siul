@@ -3,8 +3,8 @@ Contributors: suabahasa, rosua
 Donate link: https://ko-fi.com/Q5Q75XSF7
 Tags: tailwind css, bricks builder, oxygen builder, breakdance builder
 Requires at least: 6.0
-Tested up to: 6.4
-Stable tag: 2.0.2
+Tested up to: 6.5
+Stable tag: 2.0.3
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -57,6 +57,9 @@ Visit [our website](https://siul.yabe.land) for more information.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= 2.0.3 =
+* **Improve**: Test compatibility with WordPress 6.5
 
 = 2.0.2 =
 * **Improve**: Parallel scanner on compile.
