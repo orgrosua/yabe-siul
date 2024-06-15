@@ -225,6 +225,8 @@ return [
     'expose-classes' => [
         'SIUL',
     ],
-    'expose-functions' => [],
+    'expose-functions' => [
+        'leak',
+    ],
     'expose-constants' => [],
 ];

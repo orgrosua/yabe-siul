@@ -95,7 +95,7 @@ class Runtime
             /**
              * @see https://make.wordpress.org/core/2024/03/04/script-modules-in-6-5/
              */
-            if (version_compare(get_bloginfo('version'), '6.5', '>=')) {
+            if (version_compare(get_bloginfo('version'), '6.5.0', '>=') && wp_is_block_theme()) {
                 // unregister 'print_import_map' from wp_head
                 remove_action('wp_head', array(wp_script_modules(), 'print_import_map'));
 
