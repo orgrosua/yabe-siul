@@ -34,9 +34,14 @@ function doSave() {
     <div>
         <div class="siul-main rel">
             <header id="siul-header" class="flex sticky align-items:center bg:white px:20 py:6 top:$(wp-admin--admin-bar--height) z:12">
-                <div class="flex align-items:center fg:black!_* flex-grow:1 gap:10">
+                <div class="flex align-items:center fg:black_* flex-grow:1 gap:10">
                     <inline-svg :src="Logo" class="inline-svg f:40 fill:current px:2" />
                     <h1 class="">Yabe Siul</h1>
+                    <div class="ml:20">
+                        <div class="px:16 py:6 r:8 bg:#e5f5ff! fg:#0073e0! fg:#0073e0!_* b:1|solid|#005cc6! text:center font:medium ls:2 lh:1.5">
+                            <font-awesome-icon :icon="['fas', 'bullhorn']" class="fill:current fg:#0073e0! pr:6" />
+                            The <span class="ls:1 font:bold">Tailwind CSS v4</span> support is now available at <a href="https://wind.press" class="ls:1 font:bold text:underline">https://wind.press</a></div>
+                    </div>
                 </div>
                 <div class="">
                     <div class="flex align-items:center flex:row gap:10">

@@ -103,12 +103,12 @@ function switchProviderStatus(providerId) {
     doSave();
 }
 
-function doGenerateCache() {
+function doGenerateCache(forcePull = false) {
     busyStore.add('settings.performance.cached_css.generate');
     compileError.value = null;
 
     const promise = (async () => {
-        if (tailwindStore.initValues.preset === null) {
+        if (forcePull === true || tailwindStore.initValues.preset === null) {
             await tailwindStore.doPull();
         }
 
@@ -198,11 +198,11 @@ function doGenerateCache() {
 }
 
 // debounce the generate cache function. only execute after is busyStore is not busy
-const debounceGenerateCache = debounce(() => {
+const debounceGenerateCache = debounce((forcePull = false) => {
     if (!busyStore.isBusy) {
         doGenerateCache();
     } else {
-        debounceGenerateCache();
+        debounceGenerateCache(forcePull);
     }
 }, 1000);
 
@@ -230,7 +230,9 @@ onMounted(() => {
         if (event.data.key === 'generate-cache') {
             // if it's enabled, generate the cache
             if (settingsStore.virtualOptions('performance.cache.enabled', false).value) {
-                debounceGenerateCache();
+                debounceGenerateCache(
+                    event.data.force_pull === true
+                );
             }
         }
     });

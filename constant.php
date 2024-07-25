@@ -26,32 +26,12 @@ class SIUL
     /**
      * @var string
      */
-    public const VERSION = '2.0.4';
+    public const VERSION = '2.0.5';
 
     /**
      * @var int
      */
-    public const VERSION_ID = 20004;
-
-    /**
-     * @var int
-     */
-    public const MAJOR_VERSION = 2;
-
-    /**
-     * @var int
-     */
-    public const MINOR_VERSION = 0;
-
-    /**
-     * @var int
-     */
-    public const RELEASE_VERSION = 4;
-
-    /**
-     * @var string
-     */
-    public const EXTRA_VERSION = '';
+    public const VERSION_ID = 20005;
 
     /**
      * @var string
@@ -81,7 +61,7 @@ class SIUL
      */
     public const EDD_STORE = [
         'store_url' => 'https://rosua.org',
-        'item_id' => 2250,
+        'item_id' => 3591, // Yabe Siul - Legacy
         'author' => 'idrosua',
     ];
 

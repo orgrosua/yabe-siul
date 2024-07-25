@@ -3,8 +3,8 @@ Contributors: suabahasa, rosua
 Donate link: https://ko-fi.com/Q5Q75XSF7
 Tags: tailwind css, bricks builder, oxygen builder, breakdance builder
 Requires at least: 6.0
-Tested up to: 6.5
-Stable tag: 2.0.4
+Tested up to: 6.6
+Stable tag: 2.0.5
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -57,6 +57,10 @@ Visit [our website](https://siul.yabe.land) for more information.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= 2.0.5 =
+* **Change**: A new license key are required to enable the Update feature. To generate the new license key, please visit the [Yabe Siul](https://siul.yabe.land) website.
+* **Improve**: Test compatibility with WordPress 6.6
 
 = 2.0.4 =
 * **Improve**: Test compatibility with WordPress 6.5
