@@ -10,13 +10,35 @@
 
 <p align="center">
   <a href="https://github.com/orgrosua/yabe-siul/tags">
+    <picture>
     <img src="https://img.shields.io/github/v/tag/orgrosua/yabe-siul.svg" alt="GitHub Release" />
+    </picture>
   </a>
   <a href="https://github.com/orgrosua/yabe-siul/blob/master/LICENSE">
+    <picture>
     <img src="https://img.shields.io/github/license/orgrosua/yabe-siul.svg" alt="MIT License" />
+    </picture>
   </a>
   <a href="https://github.com/orgrosua/yabe-siul/actions">
+    <picture>
     <img src="https://img.shields.io/github/actions/workflow/status/orgrosua/yabe-siul/deploy-pro.yaml" alt="Build Status" />
+    </picture>
+  </a>
+  <br />
+  <a aria-label="GitHub Sponsors" href="https://github.com/sponsors/suabahasa">
+    <picture>
+      <img alt="GitHub Sponsors button" src="https://img.shields.io/github/sponsors/suabahasa?logo=github">
+    </picture>
+  </a>
+  <a aria-label="Support me on Ko-fi" href="https://ko-fi.com/Q5Q75XSF7">
+    <picture>
+      <img alt="ko-fi button" src="https://img.shields.io/badge/Buy_me_a_Coffee-ff5e5b?logo=ko-fi&label=Ko-fi">
+    </picture>
+  </a>
+  <a aria-label="Join Our Facebook community" href="https://www.facebook.com/groups/1142662969627943">
+    <picture>
+      <img alt="facebook group button" src="https://img.shields.io/badge/Join_us-0866ff?logo=facebook&label=Community">
+    </picture>
   </a>
 </p>
 
@@ -100,11 +122,13 @@ Seamless integration with the most popular visual/page builders:
 ## Sponsors
 
 If you like this project, please consider supporting it by becoming a sponsor.
+
 <a aria-label="GitHub Sponsors" href="https://github.com/sponsors/suabahasa">
     <picture>
         <img alt="GitHub Sponsors button" src="https://img.shields.io/github/sponsors/suabahasa?logo=github">
     </picture>
 </a>
+
 <a aria-label="Support me on Ko-fi" href="https://ko-fi.com/Q5Q75XSF7">
     <picture>
         <img alt="ko-fi button" src="https://img.shields.io/badge/Buy_me_a_Coffee-ff5e5b?logo=ko-fi&label=Ko-fi">
