@@ -37,6 +37,9 @@ jobs:
         # clean up the dev files
         - run: rm -rf ecs.php rector.php
 
+        # clean up the meta files
+        - run: rm -rf README.md CHANGELOG.md
+
         # clean up the .wordpress-org directory as it is not needed in the PRO build
         - run: rm -rf .wordpress-org
 

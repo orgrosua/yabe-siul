@@ -93,6 +93,8 @@ class Runtime
             add_action('wp_head', fn () => $this->enqueue_css_cache(), 1_000_001);
         } else {
             /**
+             * Temporary workaround for WordPress 6.5 and above.
+             * @see https://core.trac.wordpress.org/ticket/61771
              * @see https://make.wordpress.org/core/2024/03/04/script-modules-in-6-5/
              */
             if (version_compare(get_bloginfo('version'), '6.5.0', '>=') && wp_is_block_theme()) {
