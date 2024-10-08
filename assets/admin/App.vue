@@ -40,7 +40,8 @@ function doSave() {
                     <div class="ml:20">
                         <div class="px:16 py:6 r:8 bg:#e5f5ff! fg:#0073e0! fg:#0073e0!_* b:1|solid|#005cc6! text:center font:medium ls:2 lh:1.5">
                             <font-awesome-icon :icon="['fas', 'bullhorn']" class="fill:current fg:#0073e0! pr:6" />
-                            The <span class="ls:1 font:bold">Tailwind CSS v4</span> support is now available at <a href="https://wind.press" class="ls:1 font:bold text:underline">https://wind.press</a></div>
+                            <span class="ls:1 font:bold">Yabe Siul is no longer maintained</span>. Please consider migrating to <a href="https://wind.press" target="_blank" class="ls:1 font:bold text:underline">https://wind.press</a> for the latest features and updates.
+                        </div>
                     </div>
                 </div>
                 <div class="">
@@ -95,6 +96,7 @@ function doSave() {
                 <div class="bb:1|solid|gray-20 bg:gray-5 mb:20">
                     <div class="flex flex:row mx:30">
                         <ul class="flex uppercase {bb:3|solid|black}>li:has(>.router-link-active) {fg:black}>li:has(>.router-link-active)>a align-items:baseline box-shadow:none>li>a:focus fg:gray-70>li>a fg:gray-90>li>a:hover flex-grow:1 font:12 font:semibold gap-x:28 m:0 m:0>li pb:6>li pt:20 pt:10>li px:4>li text-decoration:none>li>a">
+                            <li><router-link :to="{ name: 'windpress' }" activeClass="router-link-active">Migrate to WindPress</router-link></li>
                             <li><router-link :to="{ name: 'tailwind' }" activeClass="router-link-active">Tailwind CSS</router-link></li>
                             <li><router-link :to="{ name: 'settings' }" activeClass="router-link-active">Settings</router-link></li>
                         </ul>

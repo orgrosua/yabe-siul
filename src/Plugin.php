@@ -249,7 +249,7 @@ final class Plugin
 
         array_unshift($links, sprintf(
             '<a href="%s">%s</a>',
-            esc_url(sprintf('%s#/settings', $base_url)),
+            esc_url(sprintf('%s#/windpress', $base_url)),
             esc_html__('Settings', 'yabe-siul')
         ));
 

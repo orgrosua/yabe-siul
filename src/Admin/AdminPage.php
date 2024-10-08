@@ -85,6 +85,15 @@ class AdminPage
                 'name' => get_bloginfo('name'),
                 'site_url' => get_site_url(),
             ],
+            'windpress' => [
+                'is_active' => class_exists('\WindPress\WindPress\Plugin'),
+                
+                'version' => class_exists('\WindPress\WindPress\Plugin') 
+                    ? (class_exists('\WindPress\WindPress\WIND_PRESS') 
+                        ? \WindPress\WindPress\WIND_PRESS::VERSION 
+                        : \WIND_PRESS::VERSION)
+                    : '-',
+            ]
         ]);
     }
 }

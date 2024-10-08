@@ -141,6 +141,8 @@ return [
         'SiteGround_Optimizer',
 
         '_YabeBricksbender', // https://wordpress.org/plugins/yabe-bricksbender/
+
+        'WindPress',
     ],
     'exclude-classes' => array_merge(
         $wp_classes,
@@ -150,6 +152,8 @@ return [
             // 'ReflectionClassConstant',
 
             'DOMXPath',
+
+            'WIND_PRESS',
         ]
     ),
     'exclude-functions' => array_merge(
