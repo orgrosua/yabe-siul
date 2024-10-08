@@ -1,64 +1,18 @@
-<p align="center">
-  <img src="https://github.com/orgrosua/yabe-siul/raw/main/siul.svg" alt="Yabe Siul Logo" width="100">
-</p>
 
-<h1 align="center">Yabe Siul</h1>
+# Yabe Siul
 
-<p align="center">
-  <i>Yabe Siul is a platform-agnostic plugin for integrating Tailwind CSS into WordPress, allowing you to harness the full power of Tailwind CSS within the WordPress ecosystem.</i>
-</p>
-
-<p align="center">
-  <a href="https://github.com/orgrosua/yabe-siul/tags">
-    <picture>
-    <img src="https://img.shields.io/github/v/tag/orgrosua/yabe-siul.svg" alt="GitHub Release" />
-    </picture>
-  </a>
-  <a href="https://github.com/orgrosua/yabe-siul/blob/master/LICENSE">
-    <picture>
-    <img src="https://img.shields.io/github/license/orgrosua/yabe-siul.svg" alt="MIT License" />
-    </picture>
-  </a>
-  <a href="https://github.com/orgrosua/yabe-siul/actions">
-    <picture>
-    <img src="https://img.shields.io/github/actions/workflow/status/orgrosua/yabe-siul/deploy-pro.yaml" alt="Build Status" />
-    </picture>
-  </a>
-  <br />
-  <a aria-label="GitHub Sponsors" href="https://github.com/sponsors/suabahasa">
-    <picture>
-      <img alt="GitHub Sponsors button" src="https://img.shields.io/github/sponsors/suabahasa?logo=github">
-    </picture>
-  </a>
-  <a aria-label="Support me on Ko-fi" href="https://ko-fi.com/Q5Q75XSF7">
-    <picture>
-      <img alt="ko-fi button" src="https://img.shields.io/badge/Buy_me_a_Coffee-ff5e5b?logo=ko-fi&label=Ko-fi">
-    </picture>
-  </a>
-  <a aria-label="Join Our Facebook community" href="https://www.facebook.com/groups/1142662969627943">
-    <picture>
-      <img alt="facebook group button" src="https://img.shields.io/badge/Join_us-0866ff?logo=facebook&label=Community">
-    </picture>
-  </a>
-</p>
-
-> [!NOTE]
+> [!WARNING]
 >
-> You are looking at the WordPress plugin for integrating `Tailwind CSS v3`.
->
-> The support for `Tailwind CSS v4` is now available at https://wind.press.
+> This repository is archived and no longer maintained. The active development has been moved to [WindPress](https://wind.press)
 
-
-## Intro
-
-Use Tailwind CSS within the block editor, page builders, plugins, and themes — no build step is required.
+Use Tailwind CSS in WordPress with ease.
 
 ### Features
 
-- ✅&nbsp; **Easy to use**: Simplified and intuitive settings to get you up and running quickly.
-- 🥰&nbsp; **Customizable Configuration**: Comes with a default Tailwind CSS configuration, which can be customized to fit your needs.
-- ⚡️&nbsp; **Lightweight and blazingly fast**: Built on top of WordPress REST API. It has a small footprint and won't slow down your site.
-- 📦&nbsp; **Compile on the browser. No server is required**: Generate the final CSS file in the browser without server-side tools. None of your data is transferred over the network.
+- ✅&nbsp; **Easy to use**: Add Tailwind CSS to WordPress, in seconds.
+- 🥰&nbsp; **Customizable**: Flexible and configurable.
+- ⚡️&nbsp; **Lightweight and fast**: Won't slow down your site.
+- 📦&nbsp; **Run on the browser**: Run on any hosting.
 
 ### Integrations
 
@@ -78,62 +32,6 @@ Seamless integration with the most popular visual/page builders:
 * [Elementor](https://be.elementor.com/visit/?bta=209150&brand=elementor) **[Planned]**
 * [Pinegrow](https://pinegrow.com/wordpress) **[Planned]**
 * [Zion Builder](https://zionbuilder.io/) **[Planned]**
-
-## 🛠 Development
-
-### Requirements
-
-- [Node.js](https://nodejs.org/)
-- [pnpm](https://pnpm.io)
-- [Composer](https://getcomposer.org/)
-
-### Getting Started
-
-1. Clone the repository to your `wp-content/plugins` directory:
-
-    ```bash
-    git clone https://github.com/orgrosua/yabe-siul.git
-    cd yabe-siul
-    ```
-2. Install the PHP dependencies:
-
-    ```bash
-    composer install
-    ```
-
-3. Install the JavaScript dependencies:
-
-    ```bash
-    pnpm install
-    ```
-
-
-4. Start the development server:
-
-    ```bash
-    pnpm run dev
-    ```
-
-## Star History
-
-<a href="https://star-history.com/#orgrosua/yabe-siul"><img src="https://api.star-history.com/svg?repos=orgrosua/yabe-siul&type=Date" alt="Star History Chart" width="600" /></a>
-
-
-## Sponsors
-
-If you like this project, please consider supporting it by becoming a sponsor.
-
-<a aria-label="GitHub Sponsors" href="https://github.com/sponsors/suabahasa">
-    <picture>
-        <img alt="GitHub Sponsors button" src="https://img.shields.io/github/sponsors/suabahasa?logo=github">
-    </picture>
-</a>
-
-<a aria-label="Support me on Ko-fi" href="https://ko-fi.com/Q5Q75XSF7">
-    <picture>
-        <img alt="ko-fi button" src="https://img.shields.io/badge/Buy_me_a_Coffee-ff5e5b?logo=ko-fi&label=Ko-fi">
-    </picture>
-</a>
 
 ## Community
 
