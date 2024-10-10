@@ -64,7 +64,7 @@ class Migration extends AbstractApi implements ApiInterface
 
             // Copy tailwind.config.js
             Common::save_file(
-                $tailwind->preset . PHP_EOL . PHP_EOL . 'export default siul;',
+                $tailwind->config . PHP_EOL  . 'export default siul;',
                 $data_dir . '/tailwind.config.js'
             );
 

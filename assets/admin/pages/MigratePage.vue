@@ -124,7 +124,7 @@ onBeforeMount(() => {
                                 2. Copy your <span class="font:bold">main.css</span> content to WindPress.
                             </p>
                             <p class="my:2 line-height:2">
-                                3. Copy your <span class="font:bold">preset.js</span> content to WindPress and add the <code>export default siul;</code> code to the end of content.
+                                3. Copy your <span class="font:bold">tailwind.config.js</span> content to WindPress and add the <code>export default siul;</code> code to the end of content.
                             </p>
                             <p class="my:2">
                                 4. Deactivate Yabe Siul (this) plugin.

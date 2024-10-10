@@ -4,7 +4,7 @@ Donate link: https://ko-fi.com/Q5Q75XSF7
 Tags: tailwind css, bricks builder, oxygen builder, breakdance builder
 Requires at least: 6.0
 Tested up to: 6.6
-Stable tag: 2.0.99
+Stable tag: 2.0.100
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -57,6 +57,9 @@ Visit [our website](https://siul.yabe.land) for more information.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= 2.0.100 (final version) =
+* **Fix [Migration]**: Use the `tailwind.config.js` content instead of the `preset.js` content.
 
 = 2.0.99 (final version) =
 * **New**: Please use the migration tool that available in this final version to migrate to [WindPress](https://wind.press/) plugin.
